@@ -7,4 +7,4 @@ const connection = mysql.createConnection({
    database: 'sunstorage'
  });
 
- module.exports = connection.promise(); // non ho ben capito a cosa serve ma ho visto che serve ovunque chiedi a luca
+ module.exports = connection.promise();

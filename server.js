@@ -7,19 +7,21 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
+var path = './src/server/routes/'
+
 // rotte da importare
-const departmentRoutes = require('./server/routes/department'); //
-const deviceRoutes = require('./server/routes/device'); //
-const deviceAssignmentRoutes = require('./server/routes/deviceassignment')
-const deviceLogRoutes = require('./server/routes/devicelog');
-const deviceSpecificRoutes = require('./server/routes/devicespecific');
-const deviceTypeRoutes = require('./server/routes/devicetype');
-const deviceWarrantyRoutes = require('./server/routes/devicewarranty');
-const userRoutes = require('./server/routes/user');
+const departmentRoutes = require(path + 'department');
+const deviceRoutes = require(path + 'device');
+const deviceAssignmentRoutes = require(path + 'deviceAssignment');
+const deviceLogRoutes = require(path + 'deviceLog');
+const deviceSpecificRoutes = require(path + 'deviceSpecific');
+const deviceTypeRoutes = require(path + 'devicetype');
+const deviceWarrantyRoutes = require(path + 'devicewarranty');
+const userRoutes = require(path + 'user');
 
 // use routes
-app.use('/api/departments', departmentRoutes); //
-app.use('/api/devices', deviceRoutes); //
+app.use('/api/departments', departmentRoutes);
+app.use('/api/devices', deviceRoutes);
 app.use('/api/deviceassignments', deviceAssignmentRoutes);
 app.use('/api/devicelogs', deviceLogRoutes);
 app.use('/api/devicespecifics', deviceSpecificRoutes);

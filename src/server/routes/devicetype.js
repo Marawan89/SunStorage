@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../../db');
+const pool = require('../../../db');
 
 // Create a new device type
 router.post('/', async (req, res) => {

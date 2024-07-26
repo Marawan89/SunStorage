@@ -42,7 +42,7 @@ export default function Home() {
                 </button>
                 <div className="spacer"></div>
                 <button className="nav-item btn p-0 mb-2">
-                  <a href="/" className="d-flex align-items-center">
+                  <a href="/view-all" className="d-flex align-items-center">
                     <FontAwesomeIcon icon={faTableList} className="mr-2" />
                     <p className="mb-0">View all</p>
                   </a>

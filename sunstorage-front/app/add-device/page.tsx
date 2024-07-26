@@ -37,14 +37,14 @@ export default function Home() {
             <div className="col-12 col-md-11 bg-side-bar">
               <div className="d-flex flex-column  align-items-start p-2">
                 <button className="nav-item btn p-0 mb-2">
-                  <a href="/" className="d-flex align-items-center">
+                  <a href="/add-device" className="d-flex align-items-center">
                     <FontAwesomeIcon icon={faCirclePlus} className="mr-2" />
                     <p className="mb-0">Add device</p>
                   </a>
                 </button>
                 <div className="spacer"></div>
                 <button className="nav-item btn p-0 mb-2">
-                  <a href="/" className="d-flex align-items-center">
+                  <a href="/view-all" className="d-flex align-items-center">
                     <FontAwesomeIcon icon={faTableList} className="mr-2" />
                     <p className="mb-0">View all</p>
                   </a>

@@ -1,25 +1,19 @@
 "use client"
 
 import React, { useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCircleUser,
-  faRightFromBracket,
-  faTableList,
-  faCirclePlus,
-  faCancel,
-  faArrowRight,
-} from "@fortawesome/free-solid-svg-icons";
+import "bootstrap/dist/css/bootstrap.min.css";
 import Menu  from "../parts/menu";
 import Navbar from "../parts/navbar";
-import {} from "@fortawesome/free-regular-svg-icons";
-import "bootstrap/dist/css/bootstrap.min.css";
 import "../globals.css";
 import "./style.css";
 
+interface Department {
+   name: string;
+ }
+
 export default function Home() {
-  //se si chiama departments sarà sempre il setter come set"nome" quindi --> setDepartments
-  const [departments, setDepartments] = useState([]);
+  // se si chiama departments sarà sempre il setter come set"nome" quindi --> setDepartments
+  const [departments, setDepartments] = useState<Department[]>([]);
 
   useEffect(() => {
      fetch('http://localhost:4000/api/departments')

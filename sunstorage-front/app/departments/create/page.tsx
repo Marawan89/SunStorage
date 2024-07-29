@@ -1,15 +1,6 @@
 "use client"
 
 import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCircleUser,
-  faRightFromBracket,
-  faTableList,
-  faCirclePlus,
-  faCancel,
-  faArrowRight,
-} from "@fortawesome/free-solid-svg-icons";
 import Menu  from "../../parts/menu";
 import Navbar from "../../parts/navbar";
 import {} from "@fortawesome/free-regular-svg-icons";

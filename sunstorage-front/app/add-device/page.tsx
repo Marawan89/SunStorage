@@ -1,10 +1,6 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faCircleUser,
-  faRightFromBracket,
-  faTableList,
-  faCirclePlus,
   faCancel,
   faArrowRight
 } from "@fortawesome/free-solid-svg-icons";

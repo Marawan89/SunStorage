@@ -36,7 +36,7 @@ export default function Home() {
           <div className="col-12 col-md-8 nav-container mt-3 mt-md-0 p-0">
             <div className="col-12 bg-content p-3 p-md-5">
               <div className="d-flex mb-3">
-                <a className="btn btn-primary" href="/departments/create">Add</a>
+                <a className="btn btn-primary" href="/departments/create">Add Department</a>
               </div>
               <div className="table-responsive">
               <table className="table">

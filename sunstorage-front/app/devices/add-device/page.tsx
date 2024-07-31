@@ -4,11 +4,11 @@ import {
   faCancel,
   faArrowRight
 } from "@fortawesome/free-solid-svg-icons";
-import Menu  from "../parts/menu";
-import Navbar from "../parts/navbar";
+import Menu  from "../../parts/menu";
+import Navbar from "../../parts/navbar";
 import {} from "@fortawesome/free-regular-svg-icons";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../globals.css";
+import "../../globals.css";
 import "./style.css";
 
 export default function Home() {

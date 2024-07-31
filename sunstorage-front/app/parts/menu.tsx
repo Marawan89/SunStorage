@@ -10,6 +10,8 @@ import {} from "@fortawesome/free-regular-svg-icons";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../globals.css";
 import "./style.css";
+import { config } from '@fortawesome/fontawesome-svg-core';
+config.autoAddCss = false;
 
 export default function Menu() {
   return (
@@ -17,7 +19,7 @@ export default function Menu() {
       <div className="col-12 col-md-11 bg-side-bar">
         <div className="d-flex flex-column align-items-start p-2">
           <button className="nav-item btn p-0 mb-2">
-            <a href="/view-all" className="d-flex align-items-center">
+            <a href="/devices" className="d-flex align-items-center">
               <FontAwesomeIcon icon={faLaptop} className="menuIcons mr-2" />
               <p className="mb-0">Devices</p>
             </a>

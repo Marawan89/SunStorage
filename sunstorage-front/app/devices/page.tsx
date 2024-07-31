@@ -16,7 +16,7 @@ export default function Home() {
           <div className="col-12 col-md-8 nav-container mt-3 mt-md-0 p-0">
             <div className="col-12 bg-content p-3 p-md-5">
               <div className="row">
-                <a href="\add-device">
+                <a href="devices\add-device">
                   <button className="btn btn-primary mb-2">Add a device</button>
                 </a>
               </div>

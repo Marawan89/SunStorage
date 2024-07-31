@@ -4,15 +4,22 @@ const pool = require('../../../db');
 
 // route to create a new department
 router.post('/', async (req, res) => {
-  const { name } = req.body;
-  console.log(req.body);
-  try {
-    const [result] = await pool.query('INSERT INTO departments (name) VALUES (?)', [name]);
-    res.status(201).json({ id: result.insertId, name });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
+   const { name } = req.body;
+   console.log(req.body);
+   try {
+     // Check if the department already exists
+     const [existingDepartment] = await pool.query('SELECT * FROM departments WHERE name = ?', [name]);
+     if (existingDepartment.length > 0) {
+       return res.status(400).json({ error: 'Department already exists' });
+     }
+ 
+     // Insert the new department
+     const [result] = await pool.query('INSERT INTO departments (name) VALUES (?)', [name]);
+     res.status(201).json({ id: result.insertId, name });
+   } catch (error) {
+     res.status(400).json({ error: error.message });
+   }
+ });
 
 // route to read all departments
 router.get('/', async (req, res) => {

@@ -8,6 +8,7 @@ import "../globals.css";
 import "./style.css";
 
 interface Department {
+   id: number;
    name: string;
  }
 
@@ -22,6 +23,26 @@ export default function Home() {
         setDepartments(data)
       })
   }, []);
+
+  // method to handle the deletion of a department from the db
+  const handleDelete = (id: number) => {
+   if (window.confirm("Sei sicuro di eliminare il reparto?")) {
+     fetch(`http://localhost:4000/api/departments/${id}`, {
+       method: 'DELETE',
+     })
+       .then((res) => {
+         if (res.status === 204) {
+           setDepartments(departments.filter(department => department.id !== id));
+         } else {
+           alert("Errore durante l'eliminazione del reparto.");
+         }
+       })
+       .catch((error) => {
+         console.error("Errore:", error);
+         alert("Errore durante l'eliminazione del reparto.");
+       });
+   }
+ };
 
   if (!departments) {
     return "loading...";
@@ -47,18 +68,16 @@ export default function Home() {
                   </tr>
                 </thead>
                 <tbody className="table-group-divider">
-                {
-                  departments.map(department =>
-                    <tr>
-                      <td scope="row">{department.name}</td>
-                      <td>
-                        <button className="btn btn-primary">Edit</button>
-                        <button className="btn btn-danger">Delete</button>
-                      </td>
-                    </tr>
-                  )
-                }
-                </tbody>
+                    {departments.map(department => (
+                      <tr key={department.id}>
+                        <td scope="row">{department.name}</td>
+                        <td>
+                          <button className="btn btn-primary">Edit</button>
+                          <button className="btn btn-danger" onClick={() => handleDelete(department.id)}>Delete</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
               </table>
               </div>
             </div>

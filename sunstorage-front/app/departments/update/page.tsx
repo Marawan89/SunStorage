@@ -1,54 +1,53 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Menu from "../../parts/menu";
 import Navbar from "../../parts/navbar";
-import {} from "@fortawesome/free-regular-svg-icons";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../globals.css";
 import "./style.css";
 
-export default function Home() {
-  async function activateLasers() {
-    const nameDepartmentElement = document.getElementById(
-      "name_department"
-    ) as HTMLInputElement;
+export default function UpdateDepartment() {
+   const [name, setName] = useState("");
+   const [id, setId] = useState<string | null>(null);
 
-    if (nameDepartmentElement) {
-      const name = nameDepartmentElement.value.trim();
-
-      // checks if the field is not blank or contains special characters
-      const regex = /^[a-zA-Z0-9\s]+$/;
-      if (!name || !regex.test(name)) {
-        alert(
-          "Il nome del dipartimento non può essere vuoto o contenere solo caratteri speciali."
-        );
-        return;
+   useEffect(() => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const departmentId = urlParams.get('id');
+      setId(departmentId);
+  
+      if (departmentId) {
+        fetch(`http://localhost:4000/api/departments/${departmentId}`)
+          .then((res) => res.json())
+          .then((data) => {
+            setName(data.name);
+          });
       }
+    }, []);
 
-      const resAdd = await fetch("http://localhost:4000/api/departments", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name: name }),
-      });
-      const dataAdd = await resAdd.json();
-
-      if (dataAdd.id) {
-        // successful insertion
-        alert("Inserimento riuscito");
-        window.location.href = "/departments"; // redirecting to the /departments page
-      } else {
-        // if the server response does not contain an id in the JSON response body
-        alert(dataAdd.error);
+    const handleUpdate = () => {
+      if (id) {
+        fetch(`http://localhost:4000/api/departments/${id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.error) {
+              alert("Errore durante l'aggiornamento del reparto.");
+            } else {
+              window.location.href = '/departments';
+            }
+          })
+          .catch((error) => {
+            console.error("Errore:", error);
+            alert("Errore durante l'aggiornamento del reparto.");
+          });
       }
-    } else {
-      // if the element with the name_department ID is not found in the DOM, then the getElementById resets null
-      alert("Element not foundElemento non trovato");
-    }
-  }
+    };
 
   return (
     <>
@@ -60,19 +59,21 @@ export default function Home() {
             <div className="col-12 bg-content p-3 p-md-5">
               <div className="row">
                 <div className="col-12">
-                  <h3> Add department</h3>
+                  <h3> Edit department</h3>
                   <input
                     type="text"
                     name="name"
                     className="form-control"
                     id="name_department"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                   />
                 </div>
                 <div className="col-12 mt-3">
                   <button
                     type="submit"
                     className="btn btn-success"
-                    onClick={activateLasers}
+                    onClick={handleUpdate}
                   >
                     Save
                   </button>

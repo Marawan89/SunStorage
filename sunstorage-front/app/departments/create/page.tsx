@@ -8,7 +8,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../../globals.css";
 import "./style.css";
 
-export default function Home() {
+export default function CreateDepartment() {
   async function activateLasers() {
     const nameDepartmentElement = document.getElementById(
       "name_department"

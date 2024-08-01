@@ -72,7 +72,7 @@ export default function Home() {
                       <tr key={department.id}>
                         <td scope="row">{department.name}</td>
                         <td>
-                          <button className="btn btn-primary">Edit</button>
+                          <a className="btn btn-primary" href={`/departments/update?id=${department.id}`}>Edit</a>
                           <button className="btn btn-danger" onClick={() => handleDelete(department.id)}>Delete</button>
                         </td>
                       </tr>

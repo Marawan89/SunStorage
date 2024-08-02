@@ -2,9 +2,9 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faRightFromBracket,
-  faUser,
   faLaptop,
-  faUserGroup
+  faUsers,
+  faComputer
 } from "@fortawesome/free-solid-svg-icons";
 import {} from "@fortawesome/free-regular-svg-icons";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -27,15 +27,15 @@ export default function Menu() {
           <div className="spacer"></div>
           <button className="nav-item btn p-0 mb-2">
             <a href="/departments" className="d-flex align-items-center">
-              <FontAwesomeIcon icon={faUserGroup} className="menuIcons mr-2" />
+              <FontAwesomeIcon icon={faUsers} className="menuIcons mr-2" />
               <p className="mb-0">Departments</p>
             </a>
           </button>
           <div className="spacer"></div>
           <button className="nav-item btn p-0 mb-2">
-            <a href="/departments\" className="d-flex align-items-center">
-              <FontAwesomeIcon icon={faUser} className="menuIcons mr-2" />
-              <p className="mb-0">User</p>
+            <a href="/device-types" className="d-flex align-items-center">
+              <FontAwesomeIcon icon={faComputer} className="menuIcons mr-2" />
+              <p className="mb-0">Device Types</p>
             </a>
           </button>    
           <div className="spacer"></div>

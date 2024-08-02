@@ -7,26 +7,26 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../../globals.css";
 import "./style.css";
 
-export default function CreateDepartment() {
-   
+export default function CreateDeviceTypes() {
+
   async function activateLasers() {
-    const nameDepartmentElement = document.getElementById(
-      "name_department"
+    const nameDevicetypesElement = document.getElementById(
+      "name_devicetypes"
     ) as HTMLInputElement;
 
-    if (nameDepartmentElement) {
-      const name = nameDepartmentElement.value.trim();
+    if (nameDevicetypesElement) {
+      const name = nameDevicetypesElement.value.trim();
 
       // checks if the field is not blank or contains special characters
       const regex = /^[a-zA-Z0-9\s]+$/;
       if (!name || !regex.test(name)) {
         alert(
-          "Il nome del dipartimento non può essere vuoto o contenere solo caratteri speciali."
+          "Il nome del tipo di device non può essere vuoto o contenere solo caratteri speciali."
         );
         return;
       }
 
-      const resAdd = await fetch("http://localhost:4000/api/departments", {
+      const resAdd = await fetch("http://localhost:4000/api/devicetypes", {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -39,13 +39,13 @@ export default function CreateDepartment() {
       if (dataAdd.id) {
         // successful insertion
         alert("Inserimento riuscito");
-        window.location.href = "/departments"; // redirecting to the /departments page
+        window.location.href = "/device-types"; // redirecting to the /device-types page
       } else {
         // if the server response does not contain an id in the JSON response body
         alert(dataAdd.error);
       }
     } else {
-      // if the element with the name_department ID is not found in the DOM, then the getElementById resets null
+      // if the element with the name_devicetypes ID is not found in the DOM, then the getElementById resets null
       alert("Elemento non trovato");
     }
   }
@@ -60,12 +60,12 @@ export default function CreateDepartment() {
             <div className="col-12 bg-content p-3 p-md-5">
               <div className="row">
                 <div className="col-12">
-                  <h3> Add department</h3>
+                  <h3> Add Device type</h3>
                   <input
                     type="text"
                     name="name"
                     className="form-control"
-                    id="name_department"
+                    id="name_devicetypes"
                   />
                 </div>
                 <div className="col-12 mt-3">

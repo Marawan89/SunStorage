@@ -1,0 +1,10 @@
+.table {
+   background-color: white;
+   border-radius: 10px;
+   overflow: hidden;
+ }
+ 
+ .table th,
+ td {
+   vertical-align: middle;
+ }

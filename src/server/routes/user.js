@@ -2,18 +2,19 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../../../db');
 
-// Create a new user
+// route to create a new user
 router.post('/', async (req, res) => {
-  const { department_id, first_name, last_name, email, hashed_password, is_admin, insert_datetime, update_datetime } = req.body;
-  try {
-    const [result] = await pool.query('INSERT INTO users (department_id, first_name, last_name, email, hashed_password, is_admin, insert_datetime, update_datetime) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [department_id, first_name, last_name, email, hashed_password, is_admin, insert_datetime, update_datetime]);
-    res.status(201).json({ id: result.insertId, department_id, first_name, last_name, email, hashed_password, is_admin, insert_datetime, update_datetime });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
+   const { department_id, name, surname, email } = req.body;
+   try { 
+     // Insert the new user
+     const [result] = await pool.query('INSERT INTO users (department_id, name, surname, email) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [department_id, name, surname, email]);
+     res.status(201).json({ id: result.insertId, department_id, name, surname, email });
+   } catch (error) {
+     res.status(400).json({ error: error.message });
+   }
+ });
 
-// Read all users
+// route to read all users
 router.get('/', async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT * FROM users');
@@ -23,7 +24,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Read a single user by id
+// route to read a single user by id
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -37,22 +38,22 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Update a user by id
+// route to update a user by id
 router.patch('/:id', async (req, res) => {
   const { id } = req.params;
-  const { department_id, first_name, last_name, email, hashed_password, is_admin, insert_datetime, update_datetime } = req.body;
+  const { department_id, name, surname, email } = req.body;
   try {
-    const [result] = await pool.query('UPDATE users SET department_id = ?, first_name = ?, last_name = ?, email = ?, hashed_password = ?, is_admin = ?, insert_datetime = ?, update_datetime = ? WHERE id = ?', [department_id, first_name, last_name, email, hashed_password, is_admin, insert_datetime, update_datetime, id]);
+    const [result] = await pool.query('UPDATE users SET department_id = ?, name = ?, surname = ?, email = ?, password = ?, is_admin = ?, insert_datetime = ?, update_datetime = ? WHERE id = ?', [department_id, name, surname, email, id]);
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: 'User not found' });
     }
-    res.json({ id, department_id, first_name, last_name, email, hashed_password, is_admin, insert_datetime, update_datetime });
+    res.json({ id, department_id, name, surname, email });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 });
 
-// Delete a user by id
+// route to delete a user by id
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {

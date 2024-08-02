@@ -3,21 +3,20 @@
 import React, { useState, useEffect } from "react";
 import Menu from "../../parts/menu";
 import Navbar from "../../parts/navbar";
-import "bootstrap/dist/css/bootstrap.min.css";
 import "../../globals.css";
 import "./style.css";
 
-export default function UpdateDepartment() {
+export default function UpdateDeviceType() {
    const [name, setName] = useState("");
    const [id, setId] = useState<string | null>(null);
 
    useEffect(() => {
       const urlParams = new URLSearchParams(window.location.search);
-      const departmentId = urlParams.get('id');
-      setId(departmentId);
+      const devicetypesId = urlParams.get('id');
+      setId(devicetypesId);
   
-      if (departmentId) {
-        fetch(`http://localhost:4000/api/departments/${departmentId}`)
+      if (devicetypesId) {
+        fetch(`http://localhost:4000/api/devicetypes/${devicetypesId}`)
           .then((res) => res.json())
           .then((data) => {
             setName(data.name);
@@ -27,7 +26,7 @@ export default function UpdateDepartment() {
 
     const handleUpdate = () => {
       if (id) {
-        fetch(`http://localhost:4000/api/departments/${id}`, {
+        fetch(`http://localhost:4000/api/devicetypes/${id}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
@@ -37,14 +36,14 @@ export default function UpdateDepartment() {
           .then((res) => res.json())
           .then((data) => {
             if (data.error) {
-              alert("Errore durante l'aggiornamento del reparto.");
+              alert("Errore durante l'aggiornamento del tipo di device.");
             } else {
-              window.location.href = '/departments';
+              window.location.href = '/device-types';
             }
           })
           .catch((error) => {
             console.error("Errore:", error);
-            alert("Errore durante l'aggiornamento del reparto.");
+            alert("Errore durante l'aggiornamento del tipo di device.");
           });
       }
     };
@@ -59,12 +58,12 @@ export default function UpdateDepartment() {
             <div className="col-12 bg-content p-3 p-md-5">
               <div className="row">
                 <div className="col-12">
-                  <h3> Edit department</h3>
+                  <h3> Edit Device type</h3>
                   <input
                     type="text"
                     name="name"
                     className="form-control"
-                    id="name_department"
+                    id="name_devicetypes"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                   />

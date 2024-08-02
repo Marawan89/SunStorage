@@ -15,7 +15,7 @@ const deviceRoutes = require(path + 'device');
 const deviceAssignmentRoutes = require(path + 'deviceAssignment');
 const deviceLogRoutes = require(path + 'deviceLog');
 const deviceSpecificRoutes = require(path + 'deviceSpecific');
-const deviceTypeRoutes = require(path + 'devicetype');
+const devicetypesRoutes = require(path + 'devicetypes');
 const deviceWarrantyRoutes = require(path + 'devicewarranty');
 const userRoutes = require(path + 'user');
 
@@ -25,7 +25,7 @@ app.use('/api/devices', deviceRoutes);
 app.use('/api/deviceassignments', deviceAssignmentRoutes);
 app.use('/api/devicelogs', deviceLogRoutes);
 app.use('/api/devicespecifics', deviceSpecificRoutes);
-app.use('/api/devicetypes', deviceTypeRoutes);
+app.use('/api/devicetypes', devicetypesRoutes);
 app.use('/api/devicewarranties', deviceWarrantyRoutes);
 app.use('/api/users', userRoutes);
 

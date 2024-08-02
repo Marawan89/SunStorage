@@ -7,7 +7,7 @@ router.post("/", async (req, res) => {
   const { name } = req.body;
   console.log(req.body);
   try {
-    // Check if the deviceType already exists
+    // Check if the devicetype already exists
     const [existingDeviceType] = await pool.query(
       "SELECT * FROM devicetypes WHERE name = ?",
       [name]
@@ -16,7 +16,7 @@ router.post("/", async (req, res) => {
       return res.status(400).json({error: "Questo tipo di device esiste già"})
     }
 
-    // Insert the new deviceType
+    // Insert the new devicetype
     const [result] = await pool.query(
       "INSERT INTO devicetypes (name) VALUES (?)",
       [name]
@@ -59,7 +59,7 @@ router.patch("/:id", async (req, res) => {
   const { name } = req.body;
   try {
     const [result] = await pool.query(
-      "UPDATE devicetypes SET name = ?, WHERE id = ?",
+      "UPDATE devicetypes SET name = ? WHERE id = ?",
       [name, id]
     );
     if (result.affectedRows === 0) {

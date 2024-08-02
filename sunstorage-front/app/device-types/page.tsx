@@ -71,7 +71,7 @@ export default function Devicetypes() {
                       <tr key={devicetypes.id}>
                         <td scope="row">{devicetypes.name}</td>
                         <td>
-                          <a className="btn btn-primary m-1" href={`/devicetypes/update?id=${devicetypes.id}`}>Edit</a>
+                          <a className="btn btn-primary m-1" href={`/device-types/update?id=${devicetypes.id}`}>Edit</a>
                           <button className="btn btn-danger m-1" onClick={() => handleDelete(devicetypes.id)}>Delete</button>
                         </td>
                       </tr>

@@ -4,10 +4,10 @@ const pool = require('../../../db');
 
 // Create a new device warranty
 router.post('/', async (req, res) => {
-  const { device_id, warranty_start_date, warranty_end_date } = req.body;
+  const { device_id, start_date, end_date } = req.body;
   try {
-    const [result] = await pool.query('INSERT INTO devicewarranties (device_id, warranty_start_date, warranty_end_date) VALUES (?, ?, ?)', [device_id, warranty_start_date, warranty_end_date]);
-    res.status(201).json({ id: result.insertId, device_id, warranty_start_date, warranty_end_date });
+    const [result] = await pool.query('INSERT INTO devicewarranties (device_id, start_date, end_date) VALUES (?, ?, ?)', [device_id, start_date, end_date]);
+    res.status(201).json({ id: result.insertId, device_id, start_date, end_date });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -40,13 +40,13 @@ router.get('/:id', async (req, res) => {
 // Update a device warranty by id
 router.patch('/:id', async (req, res) => {
   const { id } = req.params;
-  const { device_id, warranty_start_date, warranty_end_date } = req.body;
+  const { device_id, start_date, end_date } = req.body;
   try {
-    const [result] = await pool.query('UPDATE devicewarranties SET device_id = ?, warranty_start_date = ?, warranty_end_date = ? WHERE id = ?', [device_id, warranty_start_date, warranty_end_date, id]);
+    const [result] = await pool.query('UPDATE devicewarranties SET device_id = ?, start_date = ?, end_date = ? WHERE id = ?', [device_id, start_date, end_date, id]);
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: 'Device warranty not found' });
     }
-    res.json({ id, device_id, warranty_start_date, warranty_end_date });
+    res.json({ id, device_id, start_date, end_date });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

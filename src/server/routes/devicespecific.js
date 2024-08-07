@@ -4,10 +4,10 @@ const pool = require('../../../db');
 
 // Create a new device specific
 router.post('/', async (req, res) => {
-  const { device_id, description, value } = req.body;
+  const { device_id, name, value } = req.body;
   try {
-    const [result] = await pool.query('INSERT INTO devicespecifics (device_id, description, value) VALUES (?, ?, ?)', [device_id, description, value]);
-    res.status(201).json({ id: result.insertId, device_id, description, value });
+    const [result] = await pool.query('INSERT INTO devicespecifics (device_id, name, value) VALUES (?, ?, ?)', [device_id, name, value]);
+    res.status(201).json({ id: result.insertId, device_id, name, value });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -40,13 +40,13 @@ router.get('/:id', async (req, res) => {
 // Update a device specific by id
 router.patch('/:id', async (req, res) => {
   const { id } = req.params;
-  const { device_id, description, value } = req.body;
+  const { device_id, name, value } = req.body;
   try {
-    const [result] = await pool.query('UPDATE devicespecifics SET device_id = ?, description = ?, value = ? WHERE id = ?', [device_id, description, value, id]);
+    const [result] = await pool.query('UPDATE devicespecifics SET device_id = ?, name = ?, value = ? WHERE id = ?', [device_id, name, value, id]);
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: 'Device specific not found' });
     }
-    res.json({ id, device_id, description, value });
+    res.json({ id, device_id, name, value });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

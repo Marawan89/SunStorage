@@ -1,11 +1,44 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import Menu from "../parts/menu";
 import Navbar from "../parts/navbar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../globals.css";
 import "./style.css";
 
+interface DeviceOverview {
+  serial_number: string;
+  qr_code: string;
+  device_type: string;
+  warranty_start: string | null;
+  warranty_end: string | null;
+}
+
 export default function Devices() {
+  const [devices, setDevices] = useState<DeviceOverview[]>([]);
+
+  useEffect(() => {
+    const url = "http://localhost:4000/api/devices/overview";
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          const mappedData = data.map((device) => ({
+            serial_number: device.sn,
+            qr_code: device.qr_code_string,
+            device_type: device.name,
+            warranty_start: device.start_date,
+            warranty_end: device.end_date,
+          }));
+          setDevices(mappedData);
+        } else {
+          console.error("Data is not an array:", data);
+        }
+      })
+      .catch((error) => console.error("Error fetching devices:", error));
+  }, []);
+
   return (
     <>
       <Navbar />
@@ -15,7 +48,7 @@ export default function Devices() {
           <div className="col-12 col-md-8 nav-container mt-3 mt-md-0 p-0">
             <div className="col-12 bg-content p-3 p-md-5">
               <div className="row">
-                <a href="devices\add-device">
+                <a href="devices/add-device">
                   <button className="btn btn-primary mb-2">Add a device</button>
                 </a>
               </div>
@@ -41,57 +74,31 @@ export default function Devices() {
                     </tr>
                   </thead>
                   <tbody className="table-group-divider">
-                    <tr>
-                      <th scope="row">f45fe5f4w6f4w</th>
-                      <td>32r89yhrion2g</td>
-                      <td>Phone</td>
-                      <td>
-                        <p>20/11/2023</p>
-                      </td>
-                      <td>
-                        <p>20/11/2027</p>
-                      </td>
-                      <td>
-                        <button className="btn view-btn">View</button>
-                      </td>
-                      <td>
-                        <button className="btn action-btn">Action</button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">ffpwmfwgw</th>
-                      <td>iewonf2nf2h22</td>
-                      <td>PC</td>
-                      <td>
-                        <p>20/11/2023</p>
-                      </td>
-                      <td>
-                        <p>20/11/2027</p>
-                      </td>
-                      <td>
-                        <button className="btn view-btn">View</button>
-                      </td>
-                      <td>
-                        <button className="btn action-btn">Action</button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">f45fe5f4w6f4w</th>
-                      <td>vbnmòknjhgbnjc</td>
-                      <td>Laptop</td>
-                      <td>
-                        <p>20/11/2023</p>
-                      </td>
-                      <td>
-                        <p>20/11/2027</p>
-                      </td>
-                      <td>
-                        <button className="btn view-btn">View</button>
-                      </td>
-                      <td>
-                        <button className="btn action-btn">Action</button>
-                      </td>
-                    </tr>
+                    {devices.map((device, index) => (
+                      <tr key={index}>
+                        <th scope="row">{device.serial_number}</th>
+                        <td>{device.qr_code}</td>
+                        <td>{device.device_type}</td>
+                        <td>
+                          {device.warranty_start
+                            ? new Date(
+                                device.warranty_start
+                              ).toLocaleDateString()
+                            : "Not available"}
+                        </td>
+                        <td>
+                          {device.warranty_end
+                            ? new Date(device.warranty_end).toLocaleDateString()
+                            : "Not available"}
+                        </td>
+                        <td>
+                          <button className="btn view-btn">View</button>
+                        </td>
+                        <td>
+                          <button className="btn action-btn">Action</button>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -102,7 +109,3 @@ export default function Devices() {
     </>
   );
 }
-
-/*
-- Quando un valore è NULL tipo visualizzare sta informazione non è disponibile tipo oppure non è available
-*/

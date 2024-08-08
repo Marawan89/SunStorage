@@ -49,11 +49,33 @@ export default function AddDevice() {
     fetchDeviceTypes();
   }, []);
 
+  // set dates for the warranty check
+  useEffect(() => {
+    const today = new Date();
+    const warrantyStartDefault = new Date(today);
+    warrantyStartDefault.setDate(today.getDate() - 10);
+
+    const warrantyEndDefault = new Date(warrantyStartDefault);
+    warrantyEndDefault.setFullYear(warrantyStartDefault.getFullYear() + 4);
+
+    setWarrantyStart(warrantyStartDefault.toISOString().split('T')[0]);
+    setWarrantyEnd(warrantyEndDefault.toISOString().split('T')[0]);
+  }, []);
+
   // function that start when the submit button is clicked
   async function activateLasers() {
-    // check if the field is blank
-    if (!serialNumber || !selectedDeviceType) {
-      alert("Please fill in all fields.");
+   // regEx to allow only letters and numbers
+   const serialNumberPattern = /^[A-Za-z0-9]+$/;
+
+   // check if the serial number field is blank, less than 10 characters or contains special characters
+   if (!serialNumber || serialNumber.length < 10 || !serialNumberPattern.test(serialNumber)) {
+     alert("Serial Number must be at least 10 characters long and contain only letters and numbers.");
+     return;
+   }
+
+    // check if the device type is selected
+    if (!selectedDeviceType) {
+      alert("Please select a device type.");
       return;
     }
 
@@ -78,12 +100,12 @@ export default function AddDevice() {
           "PROCESSOR_TYPE"
         );
       }
-      
+
       for (const field of requiredFields) {
-         if (!(field in deviceSpecifics)){
-            alert("Please fill " + field + ' field');
-            return;
-         }
+        if (!(field in deviceSpecifics)) {
+          alert("Please fill " + field + " field");
+          return;
+        }
       }
 
       // insert new device
@@ -154,7 +176,7 @@ export default function AddDevice() {
         }
       }
 
-      // after successful inserion redirect to devices page
+      // after successful insertion redirect to devices page
       alert("Device added successfully!");
       window.location.href = "/devices";
     } catch (error) {
@@ -367,6 +389,8 @@ export default function AddDevice() {
                       type="date"
                       value={warrantyEnd}
                       onChange={(e) => setWarrantyEnd(e.target.value)}
+                      // disable dates before Warranty Start
+                      min={warrantyStart}
                     />
                   </>
                 )}
@@ -398,6 +422,7 @@ export default function AddDevice() {
     </>
   );
 }
+
 
 /* Da mettere a posto:
 - aggiunge al db anche se non si scrive niente nelle specifiche

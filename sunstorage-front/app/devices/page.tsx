@@ -36,11 +36,8 @@ export default function Devices() {
                       <th scope="col">Serial Number</th>
                       <th scope="col">Qr Code</th>
                       <th scope="col">Device Type</th>
-                      <th scope="col">Status</th>
                       <th scope="col">Warranty Start</th>
                       <th scope="col">Warranty End</th>
-                      <th scope="col">Assigned (boolean)</th>
-                      <th scope="col">Owner email</th>
                     </tr>
                   </thead>
                   <tbody className="table-group-divider">
@@ -49,19 +46,10 @@ export default function Devices() {
                       <td>32r89yhrion2g</td>
                       <td>Phone</td>
                       <td>
-                        <span className="status-dot"></span> stock
-                      </td>
-                      <td>
                         <p>20/11/2023</p>
                       </td>
                       <td>
                         <p>20/11/2027</p>
-                      </td>
-                      <td>
-                        <p>Si</p>
-                      </td>
-                      <td>
-                        <p>ciao@gmail.com</p>
                       </td>
                       <td>
                         <button className="btn view-btn">View</button>
@@ -75,19 +63,10 @@ export default function Devices() {
                       <td>iewonf2nf2h22</td>
                       <td>PC</td>
                       <td>
-                        <span className="status-dot"></span> initialized
-                      </td>
-                      <td>
                         <p>20/11/2023</p>
                       </td>
                       <td>
                         <p>20/11/2027</p>
-                      </td>
-                      <td>
-                        <p>Si</p>
-                      </td>
-                      <td>
-                        <p>ciao@gmail.com</p>
                       </td>
                       <td>
                         <button className="btn view-btn">View</button>
@@ -101,19 +80,10 @@ export default function Devices() {
                       <td>vbnmòknjhgbnjc</td>
                       <td>Laptop</td>
                       <td>
-                        <span className="status-dot"></span> initialized
-                      </td>
-                      <td>
                         <p>20/11/2023</p>
                       </td>
                       <td>
                         <p>20/11/2027</p>
-                      </td>
-                      <td>
-                        <p>No</p>
-                      </td>
-                      <td>
-                        <p>NULL</p>
                       </td>
                       <td>
                         <button className="btn view-btn">View</button>

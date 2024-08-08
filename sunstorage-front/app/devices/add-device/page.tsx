@@ -18,6 +18,8 @@ interface DeviceSpecifics {
   DISK_SIZE?: string;
   RAM_SIZE?: string;
   PROCESSOR_TYPE?: string;
+  MODEL?: string;
+  MONITOR_INCHES?: string;
 }
 
 export default function AddDevice() {
@@ -55,24 +57,35 @@ export default function AddDevice() {
       return;
     }
 
-    const diskSize = deviceSpecifics.DISK_SIZE
-      ? parseInt(deviceSpecifics.DISK_SIZE)
-      : null;
-    const ramSize = deviceSpecifics.RAM_SIZE
-      ? parseInt(deviceSpecifics.RAM_SIZE)
-      : null;
-
-    if (
-      (diskSize !== null && (diskSize < 100 || diskSize > 1000)) ||
-      (ramSize !== null && (ramSize < 4 || ramSize > 64))
-    ) {
-      alert(
-        "Please provide valid values for disk size(100-1000) and RAM size (4-64)"
-      );
-      return;
-    }
-
     try {
+      // Check if all device specifics fields are filled
+      const requiredFields: string[] = [];
+      if (selectedDeviceType === "2") {
+        requiredFields.push(
+          "DISK_TYPE",
+          "DISK_SIZE",
+          "RAM_SIZE",
+          "PROCESSOR_TYPE"
+        );
+      } else if (selectedDeviceType === "3") {
+        requiredFields.push("MODEL", "DISK_SIZE");
+      } else if (selectedDeviceType === "10") {
+        requiredFields.push(
+          "MONITOR_INCHES",
+          "DISK_TYPE",
+          "DISK_SIZE",
+          "RAM_SIZE",
+          "PROCESSOR_TYPE"
+        );
+      }
+      
+      for (const field of requiredFields) {
+         if (!(field in deviceSpecifics)){
+            alert("Please fill " + field + ' field');
+            return;
+         }
+      }
+
       // insert new device
       const deviceRes = await fetch("http://localhost:4000/api/devices", {
         method: "POST",
@@ -203,8 +216,6 @@ export default function AddDevice() {
                     ))}
                   </select>
                 </div>
-
-                {/* Conditionally render device specifics based on selected device type */}
                 {selectedDeviceType === "2" && (
                   <>
                     <p>Laptop Specifics:</p>
@@ -221,23 +232,34 @@ export default function AddDevice() {
                       <option value="HDD">HDD</option>
                     </select>
                     <p>Disk Size(GB)</p>
-                    <input
-                      type="number"
-                      min="100"
-                      max="1000"
+                    <select
                       name="devicespecifics[DISK_SIZE]"
                       onChange={handleChange}
-                      placeholder="Enter Disk size"
-                    />
+                      defaultValue=""
+                    >
+                      <option value="" disabled hidden>
+                        Choose Disk Size
+                      </option>
+                      <option value="128">128</option>
+                      <option value="256">256</option>
+                      <option value="512">512</option>
+                      <option value="1T">1T</option>
+                    </select>
                     <p>RAM(GB)</p>
-                    <input
-                      type="number"
-                      min="4"
-                      max="64"
+                    <select
                       name="devicespecifics[RAM_SIZE]"
                       onChange={handleChange}
-                      placeholder="Enter ram size"
-                    />
+                      defaultValue=""
+                    >
+                      <option value="" disabled hidden>
+                        Choose RAM Size
+                      </option>
+                      <option value="4">4</option>
+                      <option value="8">8</option>
+                      <option value="16">16</option>
+                      <option value="32">32</option>
+                      <option value="64">64</option>
+                    </select>
                     <p>Processor type</p>
                     <input
                       type="text"
@@ -257,11 +279,32 @@ export default function AddDevice() {
                       onChange={handleChange}
                       placeholder="Enter model"
                     />
+                    <p>Disk Size(GB)</p>
+                    <select
+                      name="devicespecifics[DISK_SIZE]"
+                      onChange={handleChange}
+                      defaultValue=""
+                    >
+                      <option value="" disabled hidden>
+                        Choose Disk Size
+                      </option>
+                      <option value="128">64</option>
+                      <option value="128">128</option>
+                      <option value="256">256</option>
+                      <option value="512">512</option>
+                    </select>
                   </>
                 )}
-                {selectedDeviceType === "10" && ( 
+                {selectedDeviceType === "10" && (
                   <>
                     <p>Desktop-PC Specifics:</p>
+                    <p>Monitor Inches</p>
+                    <input
+                      type="text"
+                      name="devicespecifics[MONITOR_INCHES]"
+                      onChange={handleChange}
+                      placeholder="Enter monitor inches"
+                    />
                     <p>Disk type</p>
                     <select
                       name="devicespecifics[DISK_TYPE]"
@@ -301,7 +344,6 @@ export default function AddDevice() {
                     />
                   </>
                 )}
-
                 <p>Ha la garanzia?</p>
                 <div className="form-check form-switch">
                   <input
@@ -357,7 +399,6 @@ export default function AddDevice() {
   );
 }
 
-
 /* Da mettere a posto:
 - aggiunge al db anche se non si scrive niente nelle specifiche
    - é meglio fargli aggiungere al db un valore NULL quando l'utente non scrive nulla oppure come sta facendo adesso che non aggiunge niente
@@ -367,5 +408,5 @@ export default function AddDevice() {
 
 
 Da migliorare
-- fare che se si sceglie Laptop fa vedere il pannello specifiche se no no (per adesso funziona ma è molto blando e manuale)
+- fare che se si sceglie Laptop fa vedere il pannello specifiche se no no (per adesso funziona ma è molto blando e manuale )
 */

@@ -27,7 +27,7 @@ export default function Devices() {
           const mappedData = data.map((device) => ({
             serial_number: device.sn,
             qr_code: device.qr_code_string,
-            device_type: device.name,
+            device_type: device.device_type,
             warranty_start: device.start_date,
             warranty_end: device.end_date,
           }));
@@ -47,11 +47,9 @@ export default function Devices() {
           <Menu />
           <div className="col-12 col-md-8 nav-container mt-3 mt-md-0 p-0">
             <div className="col-12 bg-content p-3 p-md-5">
-              <div className="row">
-                <a href="devices/add-device">
-                  <button className="btn btn-primary mb-2">Add a device</button>
-                </a>
-              </div>
+              <a href="devices/add-device" className="btn btn-primary mb-2">
+                Add a device
+              </a>
               <div className="d-flex mb-3">
                 <input
                   className="form-control me-2"
@@ -92,7 +90,9 @@ export default function Devices() {
                             : "Not available"}
                         </td>
                         <td>
-                          <button className="btn view-btn">View</button>
+                          <a href="devices/view" className="btn view-btn">
+                            View
+                          </a>
                         </td>
                         <td>
                           <button className="btn action-btn">Action</button>

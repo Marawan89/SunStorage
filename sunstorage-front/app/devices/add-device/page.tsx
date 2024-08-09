@@ -84,15 +84,20 @@ export default function AddDevice() {
       const requiredFields: string[] = [];
       if (selectedDeviceType === "2") {
         requiredFields.push(
+          "MODEL",
           "DISK_TYPE",
           "DISK_SIZE",
           "RAM_SIZE",
           "PROCESSOR_TYPE"
         );
       } else if (selectedDeviceType === "3") {
-        requiredFields.push("MODEL", "DISK_SIZE");
+        requiredFields.push(
+         "MODEL", 
+         "DISK_SIZE"
+      );
       } else if (selectedDeviceType === "10") {
         requiredFields.push(
+          "MODEL",
           "MONITOR_INCHES",
           "DISK_TYPE",
           "DISK_SIZE",
@@ -241,6 +246,13 @@ export default function AddDevice() {
                 {selectedDeviceType === "2" && (
                   <>
                     <p>Laptop Specifics:</p>
+                    <p>Model</p>
+                    <input
+                      type="text"
+                      name="devicespecifics[MODEL]"
+                      onChange={handleChange}
+                      placeholder="Enter model"
+                    />
                     <p>Disk type</p>
                     <select
                       name="devicespecifics[DISK_TYPE]"
@@ -320,6 +332,13 @@ export default function AddDevice() {
                 {selectedDeviceType === "10" && (
                   <>
                     <p>Desktop-PC Specifics:</p>
+                    <p>Model</p>
+                    <input
+                      type="text"
+                      name="devicespecifics[MODEL]"
+                      onChange={handleChange}
+                      placeholder="Enter model"
+                    />
                     <p>Monitor Inches</p>
                     <input
                       type="text"

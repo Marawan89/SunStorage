@@ -1,17 +1,17 @@
 /*Navbar*/
-nav a h1 {
+nav a .logo {
   color: #fbdd01;
   text-decoration: underline;
 }
 
-h1 {
+.logo {
   font-weight: bold;
   font-family: "Inter", sans-serif;
   font-size: 48px;
   color: #fbdd01;
 }
 
-h1 span {
+.logo span {
   font-weight: 100;
   color: white;
 }

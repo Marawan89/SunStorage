@@ -13,7 +13,7 @@ export default function Navbar(){
 		<nav className="navbar navbar-expand-lg p-4">
 			<div className="container">
 				<a href="/">
-					<h1>
+					<h1 className="logo">
 						Sun<span>Storage</span>
 					</h1>
 				</a>

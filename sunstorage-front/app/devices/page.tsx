@@ -8,6 +8,7 @@ import "../globals.css";
 import "./style.css";
 
 interface DeviceOverview {
+  id: number;
   serial_number: string;
   qr_code: string;
   device_type: string;
@@ -25,6 +26,7 @@ export default function Devices() {
       .then((data) => {
         if (Array.isArray(data)) {
           const mappedData = data.map((device) => ({
+            id: device.id,
             serial_number: device.sn,
             qr_code: device.qr_code_string,
             device_type: device.device_type,
@@ -90,7 +92,7 @@ export default function Devices() {
                             : "Not available"}
                         </td>
                         <td>
-                          <a href="devices/view" className="btn view-btn">
+                        <a href={`devices/view?id=${device.id}`} className="btn view-btn">
                             View
                           </a>
                         </td>

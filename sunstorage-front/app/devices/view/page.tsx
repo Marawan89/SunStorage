@@ -7,7 +7,62 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../../globals.css";
 import "./style.css";
 
-export default function Devices() {
+interface DeviceDetails {
+  id: number;
+  serial_number: string;
+  qr_code: string;
+  device_type: string;
+  warranty_start: string | null;
+  warranty_end: string | null;
+  specifics: string;
+}
+
+export default function ViewDevice() {
+  const [device, setDevice] = useState<DeviceDetails | null>(null);
+
+  // Funzione per ottenere l'ID dalla query string
+  function getDeviceId() {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("id");
+    }
+    return null;
+  }
+
+  useEffect(() => {
+    const id = getDeviceId();
+    if (id) {
+      const url = `http://localhost:4000/api/devices/overview?id=${id}`;
+      fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.length > 0) {
+            const deviceData = data[0];
+            setDevice({
+              id: deviceData.id,
+              serial_number: deviceData.sn,
+              qr_code: deviceData.qr_code_string,
+              device_type: deviceData.device_type,
+              warranty_start: deviceData.start_date,
+              warranty_end: deviceData.end_date,
+              specifics: deviceData.specifics,
+            });
+          } else {
+            console.error("No device found:", data);
+          }
+        })
+        .catch((error) => console.error("Error fetching device details:", error));
+    }
+  }, []);
+
+  if (!device) {
+    return <div>Loading...</div>;
+  }
+
+  const specificsList = device.specifics
+    .split(", ")
+    .map((spec, index) => <li key={index} className="list-group-item">{spec}</li>);
+
   return (
     <>
       <Navbar />
@@ -17,20 +72,25 @@ export default function Devices() {
           <div className="col-12 col-md-8 nav-container mt-3 mt-md-0 p-0">
             <div className="col-12 bg-content p-3 p-md-5">
               <div className="d-flex justify-content-between align-items-center">
-                <h2 className="model">Model</h2>
-                <h3 className="sn">Serial Number</h3>
+                <h3 className="sn">S/N:{device.serial_number}</h3>
               </div>
               <ul className="list-group">
                 <li className="list-group-item active">
-                  "DeviceType" specifics:
+                  {device.device_type} specifics:
                 </li>
-                <li className="list-group-item">Disk Type: </li>
-                <li className="list-group-item">Disk Size:</li>
-                <li className="list-group-item">RAM(GB) :</li>
-                <li className="list-group-item">Processor type :</li>
-                {/* se c'è garanzia fa vedere solo una riga che dice not available non c'è bisogno che fai vedere sia start_date: not available e end_date: not availble basta uno */}
-                <li className="list-group-item">warranty start_date: </li>
-                <li className="list-group-item">warranty end_date: </li>
+                {specificsList}
+                {device.warranty_start && device.warranty_end ? (
+                  <>
+                    <li className="list-group-item">
+                      Warranty Start Date: {new Date(device.warranty_start).toLocaleDateString()}
+                    </li>
+                    <li className="list-group-item">
+                      Warranty End Date: {new Date(device.warranty_end).toLocaleDateString()}
+                    </li>
+                  </>
+                ) : (
+                  <li className="list-group-item">Warranty not available</li>
+                )}
               </ul>
             </div>
           </div>

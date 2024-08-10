@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../../../db");
 
+// query to get all device specifics
 router.get("/", async (req, res) => {
   try {
     const query = `

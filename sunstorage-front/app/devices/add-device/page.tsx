@@ -82,7 +82,7 @@ export default function AddDevice() {
     try {
       // Check if all device specifics fields are filled
       const requiredFields: string[] = [];
-      if (selectedDeviceType === "2") {
+      if (selectedDeviceType === "1") {
         requiredFields.push(
           "MODEL",
           "DISK_TYPE",
@@ -90,12 +90,12 @@ export default function AddDevice() {
           "RAM_SIZE",
           "PROCESSOR_TYPE"
         );
-      } else if (selectedDeviceType === "3") {
+      } else if (selectedDeviceType === "2") {
         requiredFields.push(
          "MODEL", 
          "DISK_SIZE"
       );
-      } else if (selectedDeviceType === "10") {
+      } else if (selectedDeviceType === "3") {
         requiredFields.push(
           "MODEL",
           "MONITOR_INCHES",
@@ -243,7 +243,7 @@ export default function AddDevice() {
                     ))}
                   </select>
                 </div>
-                {selectedDeviceType === "2" && (
+                {selectedDeviceType === "1" && (
                   <>
                     <p>Laptop Specifics:</p>
                     <p>Model</p>
@@ -303,7 +303,7 @@ export default function AddDevice() {
                     />
                   </>
                 )}
-                {selectedDeviceType === "3" && (
+                {selectedDeviceType === "2" && (
                   <>
                     <p>Phone Specifics:</p>
                     <p>Model</p>
@@ -329,7 +329,7 @@ export default function AddDevice() {
                     </select>
                   </>
                 )}
-                {selectedDeviceType === "10" && (
+                {selectedDeviceType === "3" && (
                   <>
                     <p>Desktop-PC Specifics:</p>
                     <p>Model</p>

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Menu from "../parts/menu";
 import Navbar from "../parts/navbar";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min";
 import "../globals.css";
 import "./style.css";
 
@@ -91,13 +92,46 @@ export default function Devices() {
                             ? new Date(device.warranty_end).toLocaleDateString()
                             : "Not available"}
                         </td>
+                        
                         <td>
-                        <a href={`devices/view?id=${device.id}`} className="btn view-btn">
+                          <a
+                            href={`devices/view-device?id=${device.id}`}
+                            className="btn view-btn"
+                          >
                             View
                           </a>
                         </td>
                         <td>
-                          <button className="btn action-btn">Action</button>
+                          <div>
+                            <div className="btn-group drop">
+                              <button
+                                type="button"
+                                className="btn action-btn btn-secondary dropdown-toggle"
+                                data-bs-toggle="dropdown"
+                                aria-haspopup="true"
+                                aria-expanded="false"
+                              >
+                                Actions
+                              </button>
+                              <div
+                                className="dropdown-menu"
+                                aria-labelledby="dropdownMenuButton"
+                              >
+                                <a
+                                  href={`devices/edit-device?id=${device.id}`}
+                                  className="dropdown-item"
+                                >
+                                  Edit
+                                </a>
+                                <a className="dropdown-item" href="#">
+                                  Assign
+                                </a>
+                                <a className="dropdown-item" href="#">
+                                  Delete
+                                </a>
+                              </div>
+                            </div>
+                          </div>
                         </td>
                       </tr>
                     ))}

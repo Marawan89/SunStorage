@@ -19,41 +19,37 @@ interface DeviceDetails {
 
 export default function ViewDevice() {
   const [device, setDevice] = useState<DeviceDetails | null>(null);
-
-  // Funzione per ottenere l'ID dalla query string
-  function getDeviceId() {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      return params.get("id");
-    }
-    return null;
-  }
+  const [id, setId] = useState<string | null>(null);
 
   useEffect(() => {
-    const id = getDeviceId();
-    if (id) {
-      const url = `http://localhost:4000/api/devices/overview?id=${id}`;
-      fetch(url)
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.length > 0) {
-            const deviceData = data[0];
-            setDevice({
-              id: deviceData.id,
-              serial_number: deviceData.sn,
-              qr_code: deviceData.qr_code_string,
-              device_type: deviceData.device_type,
-              warranty_start: deviceData.start_date,
-              warranty_end: deviceData.end_date,
-              specifics: deviceData.specifics,
-            });
-          } else {
-            console.error("No device found:", data);
-          }
-        })
-        .catch((error) => console.error("Error fetching device details:", error));
-    }
-  }, []);
+   const urlParams = new URLSearchParams(window.location.search);
+   const deviceId = urlParams.get('id');
+   setId(deviceId);
+ 
+   if (deviceId) {
+     const url = `http://localhost:4000/api/devices/overview?id=${deviceId}`;
+     fetch(url)
+       .then((response) => response.json())
+       .then((data) => {
+         if (data.length > 0) {
+           const deviceData = data[0];
+           setDevice({
+             id: deviceData.id,
+             serial_number: deviceData.sn,
+             qr_code: deviceData.qr_code_string,
+             device_type: deviceData.device_type,
+             warranty_start: deviceData.start_date,
+             warranty_end: deviceData.end_date,
+             specifics: deviceData.specifics,
+           });
+         } else {
+           console.error("No device found:", data);
+         }
+       })
+       .catch((error) => console.error("Error fetching device details:", error));
+   }
+ }, []);
+ 
 
   if (!device) {
     return <div>Loading...</div>;

@@ -359,23 +359,34 @@ export default function AddDevice() {
                       <option value="HDD">HDD</option>
                     </select>
                     <p>Disk Size(GB)</p>
-                    <input
-                      type="number"
-                      min="100"
-                      max="1000"
+                    <select
                       name="devicespecifics[DISK_SIZE]"
                       onChange={handleChange}
-                      placeholder="Enter Disk size"
-                    />
+                      defaultValue=""
+                    >
+                      <option value="" disabled hidden>
+                        Choose Disk Size
+                      </option>
+                      <option value="128">128</option>
+                      <option value="256">256</option>
+                      <option value="512">512</option>
+                      <option value="1T">1T</option>
+                    </select>
                     <p>RAM(GB)</p>
-                    <input
-                      type="number"
-                      min="4"
-                      max="64"
+                    <select
                       name="devicespecifics[RAM_SIZE]"
                       onChange={handleChange}
-                      placeholder="Enter ram size"
-                    />
+                      defaultValue=""
+                    >
+                      <option value="" disabled hidden>
+                        Choose RAM Size
+                      </option>
+                      <option value="4">4</option>
+                      <option value="8">8</option>
+                      <option value="16">16</option>
+                      <option value="32">32</option>
+                      <option value="64">64</option>
+                    </select>
                     <p>Processor type</p>
                     <input
                       type="text"

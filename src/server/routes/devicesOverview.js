@@ -54,18 +54,18 @@ router.patch("/:id", async (req, res) => {
   }
 
   try {
-    // Esegui l'aggiornamento nella tabella devices
+    // query to update devices table
     const [result] = await pool.query(
       "UPDATE devices SET sn = ?, qr_code_string = ?, device_type_id = ?, start_date = ?, end_date = ? WHERE id = ?",
       [serial_number, qr_code, device_type, warranty_start, warranty_end, id]
     );
 
-    // Se non ci sono righe aggiornate, il dispositivo non esiste
+    // if there is no updated rows, the device does not exist
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: "Device not found" });
     }
 
-    // Aggiorna anche le specifiche se necessario
+    // updates the specifics
     if (specifics) {
       await pool.query("DELETE FROM devicespecifics WHERE device_id = ?", [id]);
       const specificsArray = specifics.split(", ").map((spec) => {

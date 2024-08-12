@@ -341,7 +341,7 @@ export default function AddDevice() {
                     />
                     <p>Monitor Inches</p>
                     <input
-                      type="text"
+                      type="number"
                       name="devicespecifics[MONITOR_INCHES]"
                       onChange={handleChange}
                       placeholder="Enter monitor inches"

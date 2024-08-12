@@ -21,22 +21,23 @@ export default function EditDevice() {
   const [device, setDevice] = useState<DeviceDetails | null>(null);
   const [id, setId] = useState<string | null>(null);
 
-  // Funzione per ottenere l'ID dalla query string
+  // Retrieve the device ID from the query parameters
   function getDeviceId() {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       const id = params.get("id");
-      console.log("Retrieved ID:", id); // Log per verificare l'ID recuperato
+      console.log("Retrieved ID:", id);
       return id;
     }
     return null;
   }
 
+  // Fetch the device details on component mount
   useEffect(() => {
     const deviceId = getDeviceId();
     if (deviceId) {
       setId(deviceId);
-      console.log("Device ID retrieved:", deviceId); // Log dell'ID recuperato
+      console.log("Device ID retrieved:", deviceId);
 
       const url = `http://localhost:4000/api/devices/overview?id=${deviceId}`;
       fetch(url)
@@ -44,7 +45,7 @@ export default function EditDevice() {
         .then((data) => {
           if (data.length > 0) {
             const deviceData = data[0];
-            console.log("Device data retrieved:", deviceData); // Log dei dati del dispositivo
+            console.log("Device data retrieved:", deviceData);
 
             setDevice({
               id: deviceData.id,
@@ -57,7 +58,6 @@ export default function EditDevice() {
             });
           } else {
             console.error("No device found with the provided ID:", deviceId);
-            console.error("No ID found in the URL");
           }
         })
         .catch((error) =>
@@ -66,6 +66,7 @@ export default function EditDevice() {
     }
   }, []);
 
+  // Helper function to format the date
   const formatDate = (dateString: string | null): string | null => {
     if (!dateString) return null;
     const date = new Date(dateString);
@@ -75,30 +76,15 @@ export default function EditDevice() {
     return `${year}-${month}-${day}`;
   };
 
+  // Handle the update process
   const handleUpdate = () => {
     if (!id || !device) {
       console.error("Device ID or details are missing.");
       return;
     }
 
-    // Log del serial_number prima dell'aggiornamento
-    console.log("Serial Number:", device.serial_number);
-
-    if (!device.serial_number) {
-      // Aggiunto il controllo per serial_number
-      console.error("Serial number cannot be null.");
-      alert("Il numero di serie non può essere nullo.");
-      return;
-    }
-
-    console.log("Updating device with ID:", id); // Log dell'ID usato nella PATCH
-    console.log("Device data being sent:", device); // Log dei dati del dispositivo inviati
-
-    // Log dei dati che verranno inviati nella PATCH
-    console.log("Data to be sent in PATCH:", {
-      ...device,
-      specifics: device.specifics.join(", "),
-    });
+    console.log("Updating device with ID:", id);
+    console.log("Device data being sent:", device);
 
     fetch(`http://localhost:4000/api/devices/${id}`, {
       method: "PATCH",
@@ -106,8 +92,12 @@ export default function EditDevice() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        ...device,
-        specifics: device.specifics.join(", "), // Unisci le specifiche come stringa
+        device_type_id: device.device_type, // assuming `device_type` is actually the device_type_id
+        sn: device.serial_number,
+        qr_code_string: device.qr_code,
+        specifics: device.specifics.join(", "),
+        warranty_start: device.warranty_start,
+        warranty_end: device.warranty_end,
       }),
     })
       .then((res) => {
@@ -132,6 +122,7 @@ export default function EditDevice() {
       });
   };
 
+  // Handle changes in the specifics array
   const handleSpecificChange = (index: number, value: string) => {
     if (device) {
       const updatedSpecifics = [...device.specifics];
@@ -143,13 +134,14 @@ export default function EditDevice() {
     }
   };
 
+  // Handle changes in the input fields
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (device) {
       const updatedDevice = {
         ...device,
         [e.target.name]: e.target.value,
       };
-      console.log("Updated device data:", updatedDevice); // Log per debug
+      console.log("Updated device data:", updatedDevice);
       setDevice(updatedDevice);
     }
   };
@@ -219,7 +211,7 @@ export default function EditDevice() {
                   />
                 </div>
 
-                {/* Specifiche del dispositivo */}
+                {/* Device Specifics */}
                 <div className="col-12 mb-3">
                   <label>Device Specifics</label>
                   {device.specifics.map((spec, index) => (

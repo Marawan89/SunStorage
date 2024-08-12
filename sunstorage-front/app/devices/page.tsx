@@ -42,6 +42,28 @@ export default function Devices() {
       .catch((error) => console.error("Error fetching devices:", error));
   }, []);
 
+  // Function to handle device deletion
+  const handleDelete = async (deviceId: number) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this device?");
+    if (!confirmDelete) return;
+
+    try {
+      const response = await fetch(`http://localhost:4000/api/devices/${deviceId}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        setDevices((prevDevices) =>
+          prevDevices.filter((device) => device.id !== deviceId)
+        );
+      } else {
+        console.error("Failed to delete device:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error deleting device:", error);
+    }
+  };
+
   return (
     <>
       <Navbar />
@@ -82,9 +104,7 @@ export default function Devices() {
                         <td>{device.device_type}</td>
                         <td>
                           {device.warranty_start
-                            ? new Date(
-                                device.warranty_start
-                              ).toLocaleDateString()
+                            ? new Date(device.warranty_start).toLocaleDateString()
                             : "Not available"}
                         </td>
                         <td>
@@ -92,7 +112,6 @@ export default function Devices() {
                             ? new Date(device.warranty_end).toLocaleDateString()
                             : "Not available"}
                         </td>
-                        
                         <td>
                           <a
                             href={`devices/view-device?id=${device.id}`}
@@ -102,34 +121,36 @@ export default function Devices() {
                           </a>
                         </td>
                         <td>
-                          <div>
-                            <div className="btn-group drop">
-                              <button
-                                type="button"
-                                className="btn action-btn btn-secondary dropdown-toggle"
-                                data-bs-toggle="dropdown"
-                                aria-haspopup="true"
-                                aria-expanded="false"
+                          <div className="btn-group drop">
+                            <button
+                              type="button"
+                              className="btn action-btn btn-secondary dropdown-toggle"
+                              data-bs-toggle="dropdown"
+                              aria-haspopup="true"
+                              aria-expanded="false"
+                            >
+                              Actions
+                            </button>
+                            <div
+                              className="dropdown-menu"
+                              aria-labelledby="dropdownMenuButton"
+                            >
+                              <a
+                                href={`devices/edit-device?id=${device.id}`}
+                                className="dropdown-item"
                               >
-                                Actions
-                              </button>
-                              <div
-                                className="dropdown-menu"
-                                aria-labelledby="dropdownMenuButton"
+                                Edit
+                              </a>
+                              <a className="dropdown-item" href="#">
+                                Assign
+                              </a>
+                              <a
+                                className="dropdown-item"
+                                href="#"
+                                onClick={() => handleDelete(device.id)}
                               >
-                                <a
-                                  href={`devices/edit-device?id=${device.id}`}
-                                  className="dropdown-item"
-                                >
-                                  Edit
-                                </a>
-                                <a className="dropdown-item" href="#">
-                                  Assign
-                                </a>
-                                <a className="dropdown-item" href="#">
-                                  Delete
-                                </a>
-                              </div>
+                                Delete
+                              </a>
                             </div>
                           </div>
                         </td>

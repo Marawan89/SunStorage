@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Menu from "../../parts/menu";
-import Navbar from "../../parts/navbar";
+import { useParams } from "next/navigation";
+import Menu from "../../../parts/menu";
+import Navbar from "../../../parts/navbar";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../../globals.css";
+import "../../../globals.css";
 import "./style.css";
 
 interface DeviceDetails {
@@ -18,13 +19,13 @@ interface DeviceDetails {
 }
 
 export default function ViewDevice() {
+  const params = useParams();
   const [device, setDevice] = useState<DeviceDetails | null>(null);
   const [id, setId] = useState<string | null>(null);
 
   useEffect(() => {
-   const urlParams = new URLSearchParams(window.location.search);
-   const deviceId = urlParams.get('id');
-   setId(deviceId);
+   const deviceId = params.id;
+   setId(params.id);
  
    if (deviceId) {
      const url = `http://localhost:4000/api/devices/overview?id=${deviceId}`;

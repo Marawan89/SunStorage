@@ -7,7 +7,7 @@ router.get("/:device_type_id", async (req, res) => {
   const { device_type_id } = req.params;
   try {
     const result = await pool.query(
-      "SELECT input_name FROM devicespecificsinputs WHERE device_type_id = ?",
+      "SELECT input_name, input_type, input_values, input_placeholder, input_label FROM devicespecificsinputs WHERE device_type_id = ?",
       [device_type_id]
     );
     res.json(result[0]);
@@ -18,11 +18,11 @@ router.get("/:device_type_id", async (req, res) => {
 
 // add a new input for a specific device type
 router.post("/", async (req, res) => {
-  const { device_type_id, input_name } = req.body;
+  const { device_type_id, input_name, input_values } = req.body;
   try {
     const result = await pool.query(
-      "INSERT INTO devicespecificsinputs (device_type_id, input_name) VALUES (?, ?)",
-      [device_type_id, input_name]
+      "INSERT INTO devicespecificsinputs (device_type_id, input_name, input_name, input_values) VALUES (?, ?, ?, ?)",
+      [device_type_id, input_name, input_type, input_values]
     );
     res.status(201).json({ id: result[0].insertId });
   } catch (err) {

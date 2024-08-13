@@ -77,7 +77,7 @@ export default function Devices() {
           <Menu />
           <div className="col-12 col-md-8 nav-container mt-3 mt-md-0 p-0">
             <div className="col-12 bg-content p-3 p-md-5">
-              <a href="devices/add-device" className="btn btn-primary mb-2">
+              <a href="devices/create" className="btn btn-primary mb-2">
                 Add a device
               </a>
               <div className="d-flex mb-3">
@@ -121,7 +121,7 @@ export default function Devices() {
                         </td>
                         <td>
                           <a
-                            href={`devices/view-device?id=${device.id}`}
+                            href={`devices/${device.id}/show`}
                             className="btn view-btn"
                           >
                             View
@@ -143,12 +143,12 @@ export default function Devices() {
                               aria-labelledby="dropdownMenuButton"
                             >
                               <a
-                                href={`devices/edit-device?id=${device.id}`}
+                                href={`devices/${device.id}/edit`}
                                 className="dropdown-item"
                               >
                                 Edit
                               </a>
-                              <a className="dropdown-item" href="devices/assign-device">
+                              <a className="dropdown-item" href="devices/assign">
                                 Assign
                               </a>
                               <a

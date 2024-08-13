@@ -4,7 +4,8 @@ const connection = mysql.createConnection({
    host: 'localhost',
    user: 'root',
    password: '',
-   database: 'sunstorage'
+   database: 'sunstorage',
+   timezone: 'Z'
  });
 
  module.exports = connection.promise();

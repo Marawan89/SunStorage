@@ -37,6 +37,34 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// route to read a single device specifics
+router.get('/:id/devicespecifics', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [rows] = await pool.query('SELECT * FROM devicespecifics WHERE device_id = ?', [id]);
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Device not found' });
+    }
+    res.json(rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// route to read a single device devicewarranties
+router.get('/:id/devicewarranty', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [rows] = await pool.query('SELECT * FROM devicewarranties WHERE device_id = ?', [id]);
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Device not found' });
+    }
+    res.json(rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // route to update a device by id
 router.patch('/:id', async (req, res) => {
   const { id } = req.params;

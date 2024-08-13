@@ -13,15 +13,6 @@ interface DeviceType {
   name: string;
 }
 
-interface DeviceSpecifics {
-  DISK_TYPE?: string;
-  DISK_SIZE?: string;
-  RAM_SIZE?: string;
-  PROCESSOR_TYPE?: string;
-  MODEL?: string;
-  MONITOR_INCHES?: string;
-}
-
 export default function AddDevice() {
   const [deviceTypes, setDeviceTypes] = useState<DeviceType[]>([]);
   const [serialNumber, setSerialNumber] = useState("");
@@ -29,7 +20,7 @@ export default function AddDevice() {
   const [warrantyStart, setWarrantyStart] = useState<string>("");
   const [warrantyEnd, setWarrantyEnd] = useState<string>("");
   const [hasWarranty, setHasWarranty] = useState<boolean>(false);
-  const [deviceSpecifics, setDeviceSpecifics] = useState<DeviceSpecifics>({});
+  const [deviceTypeInputs, setDeviceTypeInputs] = useState([]);
 
   // to get all device types
   useEffect(() => {
@@ -49,6 +40,26 @@ export default function AddDevice() {
     fetchDeviceTypes();
   }, []);
 
+  useEffect(() => {
+    async function fetchDeviceTypeInputs() {
+      if (selectedDeviceType){
+        try {
+          console.log('download = '+selectedDeviceType);
+          const res = await fetch("http://localhost:4000/api/devicespecificsinputs/"+selectedDeviceType);
+          if (!res.ok) {
+            throw new Error("Failed to fetch device types");
+          }
+          const data: DeviceType[] = await res.json();
+          setDeviceTypeInputs(data);
+          console.log(data);
+        } catch (error) {
+          console.error("Error fetching device types:", error);
+        }
+      }
+    }
+    fetchDeviceTypeInputs();
+  }, [selectedDeviceType]);
+
   // set dates for the warranty check
   useEffect(() => {
     const today = new Date();
@@ -63,7 +74,7 @@ export default function AddDevice() {
   }, []);
 
   // function that start when the submit button is clicked
-  async function activateLasers() {
+  async function submit() {
    // regEx to allow only letters and numbers
    const serialNumberPattern = /^[A-Za-z0-9]+$/;
 
@@ -80,35 +91,9 @@ export default function AddDevice() {
     }
 
     try {
-      // Check if all device specifics fields are filled
-      const requiredFields: string[] = [];
-      if (selectedDeviceType === "1") {
-        requiredFields.push(
-          "MODEL",
-          "DISK_TYPE",
-          "DISK_SIZE",
-          "RAM_SIZE",
-          "PROCESSOR_TYPE"
-        );
-      } else if (selectedDeviceType === "2") {
-        requiredFields.push(
-         "MODEL", 
-         "DISK_SIZE"
-      );
-      } else if (selectedDeviceType === "3") {
-        requiredFields.push(
-          "MODEL",
-          "MONITOR_INCHES",
-          "DISK_TYPE",
-          "DISK_SIZE",
-          "RAM_SIZE",
-          "PROCESSOR_TYPE"
-        );
-      }
-
-      for (const field of requiredFields) {
-        if (!(field in deviceSpecifics)) {
-          alert("Please fill " + field + " field");
+      for (const field of deviceTypeInputs) {
+        if (document.getElementById(field.input_name).value == 'Choose an option...' || document.getElementById(field.input_name).value == null || document.getElementById(field.input_name).value == '') {
+          alert("Please fill " + field.input_name + " field");
           return;
         }
       }
@@ -157,7 +142,7 @@ export default function AddDevice() {
       }
 
       // insert of device specifics
-      for (const [key, value] of Object.entries(deviceSpecifics)) {
+      for (const field of deviceTypeInputs) {
         const insertSpecific = await fetch(
           "http://localhost:4000/api/devicespecifics",
           {
@@ -168,8 +153,8 @@ export default function AddDevice() {
             },
             body: JSON.stringify({
               device_id: deviceData.id,
-              name: key,
-              value: value || null,
+              name: field.input_name,
+              value: document.getElementById(field.input_name).value || null,
             }),
           }
         );
@@ -193,19 +178,6 @@ export default function AddDevice() {
     }
   }
 
-  // handle changes in select and input fields
-  const handleChange = (
-    e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>
-  ) => {
-    const valueReal = e.target.value;
-    const { name, value } = e.target;
-    const key = name.split("[")[1].split("]")[0]; // extracts the key from the input name attribute
-    setDeviceSpecifics((prevState) => ({
-      ...prevState,
-      [key]: valueReal || null,
-    }));
-  };
-
   return (
     <>
       <Navbar />
@@ -223,6 +195,7 @@ export default function AddDevice() {
                   value={serialNumber}
                   onChange={(e) => setSerialNumber(e.target.value)}
                   placeholder="Enter serial number"
+                  required
                 />
                 <p>Device Type</p>
                 <div className="input-group">
@@ -231,10 +204,10 @@ export default function AddDevice() {
                     id="inputGroupSelect01"
                     value={selectedDeviceType}
                     onChange={(e) => setSelectedDeviceType(e.target.value)}
-                    defaultValue=""
+                    required
                   >
-                    <option value="" disabled hidden>
-                      Choose...
+                    <option>
+                      Choose an option...
                     </option>
                     {deviceTypes.map((type) => (
                       <option key={type.id} value={type.id.toString()}>
@@ -243,159 +216,44 @@ export default function AddDevice() {
                     ))}
                   </select>
                 </div>
-                {selectedDeviceType === "1" && (
-                  <>
-                    <p>Laptop Specifics:</p>
-                    <p>Model</p>
-                    <input
-                      type="text"
-                      name="devicespecifics[MODEL]"
-                      onChange={handleChange}
-                      placeholder="Enter model"
-                    />
-                    <p>Disk type</p>
-                    <select
-                      name="devicespecifics[DISK_TYPE]"
-                      onChange={handleChange}
-                      defaultValue=""
-                    >
-                      <option value="" disabled hidden>
-                        Choose Disk type
-                      </option>
-                      <option value="SSD">SSD</option>
-                      <option value="HDD">HDD</option>
-                    </select>
-                    <p>Disk Size(GB)</p>
-                    <select
-                      name="devicespecifics[DISK_SIZE]"
-                      onChange={handleChange}
-                      defaultValue=""
-                    >
-                      <option value="" disabled hidden>
-                        Choose Disk Size
-                      </option>
-                      <option value="128">128</option>
-                      <option value="256">256</option>
-                      <option value="512">512</option>
-                      <option value="1T">1T</option>
-                    </select>
-                    <p>RAM(GB)</p>
-                    <select
-                      name="devicespecifics[RAM_SIZE]"
-                      onChange={handleChange}
-                      defaultValue=""
-                    >
-                      <option value="" disabled hidden>
-                        Choose RAM Size
-                      </option>
-                      <option value="4">4</option>
-                      <option value="8">8</option>
-                      <option value="16">16</option>
-                      <option value="32">32</option>
-                      <option value="64">64</option>
-                    </select>
-                    <p>Processor type</p>
-                    <input
-                      type="text"
-                      name="devicespecifics[PROCESSOR_TYPE]"
-                      onChange={handleChange}
-                      placeholder="Enter processor type"
-                    />
-                  </>
-                )}
-                {selectedDeviceType === "2" && (
-                  <>
-                    <p>Phone Specifics:</p>
-                    <p>Model</p>
-                    <input
-                      type="text"
-                      name="devicespecifics[MODEL]"
-                      onChange={handleChange}
-                      placeholder="Enter model"
-                    />
-                    <p>Disk Size(GB)</p>
-                    <select
-                      name="devicespecifics[DISK_SIZE]"
-                      onChange={handleChange}
-                      defaultValue=""
-                    >
-                      <option value="" disabled hidden>
-                        Choose Disk Size
-                      </option>
-                      <option value="128">64</option>
-                      <option value="128">128</option>
-                      <option value="256">256</option>
-                      <option value="512">512</option>
-                    </select>
-                  </>
-                )}
-                {selectedDeviceType === "3" && (
-                  <>
-                    <p>Desktop-PC Specifics:</p>
-                    <p>Model</p>
-                    <input
-                      type="text"
-                      name="devicespecifics[MODEL]"
-                      onChange={handleChange}
-                      placeholder="Enter model"
-                    />
-                    <p>Monitor Inches</p>
-                    <input
-                      type="number"
-                      name="devicespecifics[MONITOR_INCHES]"
-                      onChange={handleChange}
-                      placeholder="Enter monitor inches"
-                    />
-                    <p>Disk type</p>
-                    <select
-                      name="devicespecifics[DISK_TYPE]"
-                      onChange={handleChange}
-                      defaultValue=""
-                    >
-                      <option value="" disabled hidden>
-                        Choose Disk type
-                      </option>
-                      <option value="SSD">SSD</option>
-                      <option value="HDD">HDD</option>
-                    </select>
-                    <p>Disk Size(GB)</p>
-                    <select
-                      name="devicespecifics[DISK_SIZE]"
-                      onChange={handleChange}
-                      defaultValue=""
-                    >
-                      <option value="" disabled hidden>
-                        Choose Disk Size
-                      </option>
-                      <option value="128">128</option>
-                      <option value="256">256</option>
-                      <option value="512">512</option>
-                      <option value="1T">1T</option>
-                    </select>
-                    <p>RAM(GB)</p>
-                    <select
-                      name="devicespecifics[RAM_SIZE]"
-                      onChange={handleChange}
-                      defaultValue=""
-                    >
-                      <option value="" disabled hidden>
-                        Choose RAM Size
-                      </option>
-                      <option value="4">4</option>
-                      <option value="8">8</option>
-                      <option value="16">16</option>
-                      <option value="32">32</option>
-                      <option value="64">64</option>
-                    </select>
-                    <p>Processor type</p>
-                    <input
-                      type="text"
-                      name="devicespecifics[PROCESSOR_TYPE]"
-                      onChange={handleChange}
-                      placeholder="Enter processor type"
-                    />
-                  </>
-                )}
+                <div>
+                  {deviceTypeInputs.map((input) => {
+                    if (input.input_type == 'select'){
+                      const options = JSON.parse(input.input_values);
+                      return (
+                        <>
+                        <p>{input.input_label}:</p>
+                        <select
+                          id={input.input_name}
+                          name={input.input_name}
+                          required
+                        >
+                          <option>
+                            Choose an option...
+                          </option>
+                          {options.map((option) => (<option value={option}>{option}</option>))}
+                        </select>
+                        </>
+                      )
+                    }
+
+                    if (input.input_type == 'text'){
+                      return (
+                        <>
+                        <p>{input.input_label}:</p>
+                        <input
+                          type="text"
+                          id={input.input_name}
+                          name={input.input_name}
+                          placeholder={input.input_placeholder}
+                          required
+                        />
+                        </>
+                      )
+                    }
+                  }
+                  )}
+                </div>
                 <p>Ha la garanzia?</p>
                 <div className="form-check form-switch">
                   <input
@@ -436,7 +294,7 @@ export default function AddDevice() {
                 <button
                   className="sbmt-btn"
                   type="button"
-                  onClick={activateLasers}
+                  onClick={submit}
                 >
                   Save and Generate Qr code
                   <FontAwesomeIcon

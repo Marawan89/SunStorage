@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2024-08-09 18:39:08
+Date: 2024-08-13 11:20:58
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -81,7 +81,7 @@ CREATE TABLE `devices` (
   PRIMARY KEY (`id`),
   KEY `device_type_id` (`device_type_id`),
   CONSTRAINT `devices_ibfk_1` FOREIGN KEY (`device_type_id`) REFERENCES `devicetypes` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for devicespecifics
@@ -93,9 +93,22 @@ CREATE TABLE `devicespecifics` (
   `name` varchar(255) DEFAULT NULL,
   `value` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `device_id` (`device_id`),
-  CONSTRAINT `devicespecifics_ibfk_1` FOREIGN KEY (`device_id`) REFERENCES `devices` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8mb4;
+  KEY `devicespecifics_ibfk_1` (`device_id`),
+  CONSTRAINT `devicespecifics_ibfk_1` FOREIGN KEY (`device_id`) REFERENCES `devices` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=79 DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Table structure for devicespecificsinputs
+-- ----------------------------
+DROP TABLE IF EXISTS `devicespecificsinputs`;
+CREATE TABLE `devicespecificsinputs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `device_type_id` int(11) NOT NULL,
+  `input_name` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `device_type_id` (`device_type_id`),
+  CONSTRAINT `devicespecificsinputs_ibfk_1` FOREIGN KEY (`device_type_id`) REFERENCES `devicetypes` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for devicetypes
@@ -117,9 +130,9 @@ CREATE TABLE `devicewarranties` (
   `start_date` date DEFAULT NULL,
   `end_date` date DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `device_id` (`device_id`),
-  CONSTRAINT `devicewarranties_ibfk_1` FOREIGN KEY (`device_id`) REFERENCES `devices` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4;
+  KEY `devicewarranties_ibfk_1` (`device_id`),
+  CONSTRAINT `devicewarranties_ibfk_1` FOREIGN KEY (`device_id`) REFERENCES `devices` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for users

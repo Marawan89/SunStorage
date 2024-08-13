@@ -44,13 +44,18 @@ export default function Devices() {
 
   // Function to handle device deletion
   const handleDelete = async (deviceId: number) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this device?");
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this device?"
+    );
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`http://localhost:4000/api/devices/${deviceId}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `http://localhost:4000/api/devices/${deviceId}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (response.ok) {
         setDevices((prevDevices) =>
@@ -104,7 +109,9 @@ export default function Devices() {
                         <td>{device.device_type}</td>
                         <td>
                           {device.warranty_start
-                            ? new Date(device.warranty_start).toLocaleDateString()
+                            ? new Date(
+                                device.warranty_start
+                              ).toLocaleDateString()
                             : "Not available"}
                         </td>
                         <td>
@@ -141,7 +148,7 @@ export default function Devices() {
                               >
                                 Edit
                               </a>
-                              <a className="dropdown-item" href="#">
+                              <a className="dropdown-item" href="devices/assign-device">
                                 Assign
                               </a>
                               <a

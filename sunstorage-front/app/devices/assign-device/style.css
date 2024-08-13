@@ -1,0 +1,118 @@
+.bg-content p {
+   font-size: 40px;
+   margin: 0;
+ }
+ 
+ .bg-content input,
+ select, textarea {
+   border: none;
+   border-radius: 10px;
+   padding: 8px;
+   width: 50%;
+   margin-bottom: 7px;
+ }
+ 
+ .add-device-data p {
+   font-size: 20px;
+ }
+ 
+ .form-btns {
+   margin-top: 50px;
+ }
+ 
+ .form-btns button {
+   display: flex;
+   align-items: center;
+   padding: 10px 30px;
+   border-radius: 10px;
+   font-size: 18px;
+   font-weight: bold;
+   cursor: pointer;
+   margin-left: 10px;
+ }
+ 
+ .cl-btn {
+   background-color: #f5f5dc;
+   color: black;
+   border: 2px solid black;
+   text-align: right;
+ }
+ .cl-btn:hover {
+   background-color: #e5e5cc;
+ }
+ 
+ .sbmt-btn {
+   background-color: black;
+   color: white;
+ }
+ .sbmt-btn:hover {
+   background-color: #333333;
+ }
+ .form-btns .btn-icon {
+   float: right;
+   margin-left: 10px;
+   width: 20px;
+ }
+ 
+ .nav-item {
+   display: flex;
+   align-items: center;
+   margin-bottom: 5px;
+   padding: 10px;
+ }
+ 
+ .nav-item a {
+   color: black;
+   text-decoration: none;
+   display: flex;
+   align-items: center;
+   width: 100%;
+ }
+ .nav-item a:hover {
+   color: rgb(51, 50, 50);
+ }
+ 
+ .spacer {
+   height: 1px;
+   width: 100%;
+   background-color: black;
+   margin-bottom: 2px;
+ }
+ 
+ .logout-btn a {
+   color: red;
+ }
+ 
+ .logout-btn a:hover {
+   color: darkred;
+ }
+ 
+ .mr-2 {
+   width: 50px;
+   margin-right: 10px;
+ }
+ 
+ @media (max-width: 767px) {
+   h1 {
+     font-size: 24px;
+   }
+ 
+   .userText p {
+     font-size: 12px;
+   }
+ 
+   .user_icon {
+     width: 20px;
+   }
+ 
+   .form-btns button {
+     font-size: 16px;
+     padding: 8px 20px;
+   }
+ 
+   .bg-content input, select, textarea{
+     width: 100%;
+     margin-bottom: 7px;
+   }
+ }
+ 

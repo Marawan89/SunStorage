@@ -1,45 +1,3 @@
-nav a h1 {
-  color: #fbdd01;
-  text-decoration: underline;
-}
-
-h1 {
-  font-weight: bold;
-  font-family: "Inter", sans-serif;
-  font-size: 48px;
-  color: #fbdd01;
-}
-
-h1 span {
-  font-weight: 100;
-  color: white;
-}
-
-.userText p {
-  margin-right: 10px;
-  color: white;
-  font-size: 20px;
-}
-
-.nav-item p {
-  font-size: 20px;
-}
-
-.user_icon {
-  color: white;
-  width: 40px;
-}
-
-.bg-side-bar {
-  background-color: #fbdd01;
-  border-radius: 30px;
-}
-
-.bg-content {
-  background-color: #fbdd01;
-  border-radius: 30px;
-}
-
 .bg-content p {
   font-size: 40px;
   margin: 0;
@@ -52,11 +10,6 @@ select, textarea {
   padding: 8px;
   width: 50%;
   margin-bottom: 7px;
-}
-
-.bg-content .description {
-  padding: 8px;
-  height: 100px;
 }
 
 .add-device-data p {

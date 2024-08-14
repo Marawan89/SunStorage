@@ -8,6 +8,11 @@ import "bootstrap/dist/js/bootstrap.bundle.min";
 import "../globals.css";
 import "./style.css";
 
+interface DeviceType {
+  id: number;
+  name: string;
+}
+
 interface DeviceOverview {
   id: number;
   serial_number: string;
@@ -17,8 +22,59 @@ interface DeviceOverview {
   warranty_end: string | null;
 }
 
+interface DeviceSpecificInput {
+   id: number;
+   input_name: string;
+   input_label: string;
+   input_type: string;
+   input_values: string | null;
+ }
+
 export default function Devices() {
   const [devices, setDevices] = useState<DeviceOverview[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [deviceTypes, setDeviceTypes] = useState<DeviceType[]>([]);
+  const [selectedDeviceType, setSelectedDeviceType] = useState<string>("");
+  const [deviceSpecificInputs, setDeviceSpecificInputs] = useState<DeviceSpecificInput[]>([]);
+
+
+  // Fetch specific inputs for the selected device type
+  useEffect(() => {
+   async function fetchDeviceSpecificInputs() {
+     if (selectedDeviceType) {
+       try {
+         const res = await fetch(`http://localhost:4000/api/devicespecificsinputs/${selectedDeviceType}`);
+         if (!res.ok) {
+           throw new Error("Failed to fetch device specific inputs");
+         }
+         const data: DeviceSpecificInput[] = await res.json();
+         setDeviceSpecificInputs(data);
+       } catch (error) {
+         console.error("Error fetching device specific inputs:", error);
+       }
+     }
+   }
+
+   fetchDeviceSpecificInputs();
+ }, [selectedDeviceType]);
+
+  // to get all device types
+  useEffect(() => {
+    async function fetchDeviceTypes() {
+      try {
+        const res = await fetch("http://localhost:4000/api/devicetypes");
+        if (!res.ok) {
+          throw new Error("Failed to fetch device types");
+        }
+        const data: DeviceType[] = await res.json();
+        setDeviceTypes(data);
+      } catch (error) {
+        console.error("Error fetching device types:", error);
+      }
+    }
+
+    fetchDeviceTypes();
+  }, []);
 
   useEffect(() => {
     const url = "http://localhost:4000/api/devices/overview";
@@ -69,6 +125,11 @@ export default function Devices() {
     }
   };
 
+  // Filter devices based on the search term
+  const filteredDevices = devices.filter((device) =>
+    device.serial_number.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <>
       <Navbar />
@@ -80,16 +141,82 @@ export default function Devices() {
               <a href="devices/create" className="btn btn-primary mb-2">
                 Add a device
               </a>
-              <div className="d-flex mb-3">
-                <input
-                  className="form-control me-2"
-                  type="search"
-                  placeholder="Search"
-                />
-                <button className="btn btn-success" type="submit">
-                  Search
-                </button>
+              <div className="filtering">
+                <div className="d-flex mb-3">
+                  <input
+                    className="form-control me-2"
+                    type="search"
+                    placeholder="Search for a Serial Number "
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <select
+                  className="custom-select"
+                  id="inputGroupSelect01"
+                  value={selectedDeviceType}
+                  onChange={(e) => setSelectedDeviceType(e.target.value)}
+                  required
+                >
+                  <option>Choose an option...</option>
+                  {deviceTypes.map((type) => (
+                    <option key={type.id} value={type.id.toString()}>
+                      {type.name}
+                    </option>
+                  ))}
+                </select>
               </div>
+
+              {/* Rendering device specific inputs based on the selected device type */}
+              <div>
+                {deviceSpecificInputs.map((input) => {
+                  if (input.input_type === 'select') {
+                    const options = JSON.parse(input.input_values || '[]');
+                    return (
+                      <div key={input.id}>
+                        <p>{input.input_label}:</p>
+                        <select id={input.input_name} name={input.input_name} required>
+                          <option>Choose an option...</option>
+                          {options.map((option, idx) => (
+                            <option key={idx} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    );
+                  } else if (input.input_type === 'text') {
+                    return (
+                      <div key={input.id}>
+                        <p>{input.input_label}:</p>
+                        <input
+                          type="text"
+                          id={input.input_name}
+                          name={input.input_name}
+                          placeholder={input.input_label}
+                          required
+                        />
+                      </div>
+                    );
+                  } else if (input.input_type === 'number') {
+                     return (
+                        <div key={input.id}>
+                           <p>{input.input_label}:</p>
+                           <input 
+                           type="number"
+                           id={input.input_name}
+                           name={input.input_name}
+                           placeholder={input.input_label}
+                           required
+                            />
+
+                        </div>
+                     )
+                  }
+                  return null;
+                })}
+              </div>
+
               <div className="table-responsive">
                 <table className="table">
                   <thead>
@@ -102,7 +229,7 @@ export default function Devices() {
                     </tr>
                   </thead>
                   <tbody className="table-group-divider">
-                    {devices.map((device, index) => (
+                    {filteredDevices.map((device, index) => (
                       <tr key={index}>
                         <th scope="row">{device.serial_number}</th>
                         <td>{device.qr_code}</td>
@@ -148,7 +275,10 @@ export default function Devices() {
                               >
                                 Edit
                               </a>
-                              <a className="dropdown-item" href="devices/assign">
+                              <a
+                                className="dropdown-item"
+                                href="devices/assign"
+                              >
                                 Assign
                               </a>
                               <a

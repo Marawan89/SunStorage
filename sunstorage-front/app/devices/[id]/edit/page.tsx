@@ -8,12 +8,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../globals.css";
 import "./style.css";
 
-
 interface DeviceType {
   id: number;
   name: string;
 }
-
 
 export default function EditDevice() {
   const params = useParams();
@@ -22,10 +20,10 @@ export default function EditDevice() {
   const [selectedDeviceType, setSelectedDeviceType] = useState<string>("");
   const [deviceData, setDeviceData] = useState([]);
   const [deviceWarrantyData, setDeviceWarrantyData] = useState([]);
+  const [hasWarranty, setHasWarranty] = useState<boolean>(false);
   const [deviceSpecificsData, setDeviceSpecificsData] = useState([]);
   const [deviceTypes, setDeviceTypes] = useState<DeviceType[]>([]);
   const [deviceTypeInputs, setDeviceTypeInputs] = useState([]);
-
 
   // Fetch the device details on component mount
   useEffect(() => {
@@ -33,58 +31,92 @@ export default function EditDevice() {
     console.log("Device ID retrieved:", idDevice);
 
     //recupero devicetypes
-    fetch(`http://localhost:4000/api/devicetypes`).then((response) => response.json()).then((data) => {
+    fetch(`http://localhost:4000/api/devicetypes`)
+      .then((response) => response.json())
+      .then((data) => {
         setDeviceTypes(data);
-    }).catch((error) => console.error("Error fetching device details:", error));
-   
+      })
+      .catch((error) => console.error("Error fetching device details:", error));
+
     //prendo dati del device
-    fetch(`http://localhost:4000/api/devices/${idDevice}`).then((response) => response.json()).then((data) => {
-      if (data){
-        setDeviceData(data);
-        
-        fetch(`http://localhost:4000/api/devicespecificsinputs/${data.device_type_id}`).then((response) => response.json()).then((data) => {
-          if (data) {
-            //const data: DeviceType[] = response.json();
-            setDeviceTypeInputs(data);
-            console.log(data);
-          } else {
-            console.error("DeviceTypeInputs -> No device inputs with the provided ID:", data.device_type_id);
-          }
-        }).catch((error) => console.error("Error fetching device specifics details:", error));
+    fetch(`http://localhost:4000/api/devices/${idDevice}`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data) {
+          setDeviceData(data);
 
+          fetch(
+            `http://localhost:4000/api/devicespecificsinputs/${data.device_type_id}`
+          )
+            .then((response) => response.json())
+            .then((data) => {
+              if (data) {
+                //const data: DeviceType[] = response.json();
+                setDeviceTypeInputs(data);
+                console.log(data);
+              } else {
+                console.error(
+                  "DeviceTypeInputs -> No device inputs with the provided ID:",
+                  data.device_type_id
+                );
+              }
+            })
+            .catch((error) =>
+              console.error("Error fetching device specifics details:", error)
+            );
+        } else {
+          console.error(
+            "Device -> No device found with the provided ID:",
+            idDevice
+          );
+        }
+      })
+      .catch((error) => console.error("Error fetching device details:", error));
 
-      }else{
-        console.error("Device -> No device found with the provided ID:", idDevice);
-      }
-    }).catch((error) => console.error("Error fetching device details:", error));
-
-    //prendo dati del device warranty
-    fetch(`http://localhost:4000/api/devices/${idDevice}/devicewarranty`).then((response) => response.json()).then((data) => {
-      if (data) {
-        setDeviceWarrantyData(data);
-      } else {
-        console.error("DeviceWarranty -> No device found with the provided ID:", idDevice);
-      }
-    }).catch((error) => console.error("Error fetching device warranty details:", error));
+    // prendo dati del device warranty
+    fetch(`http://localhost:4000/api/devices/${idDevice}/devicewarranty`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data) {
+          setDeviceWarrantyData(data);
+        } else {
+          console.error(
+            "DeviceWarranty -> No device found with the provided ID:",
+            idDevice
+          );
+        }
+      })
+      .catch((error) =>
+        console.error("Error fetching device warranty details:", error)
+      );
 
     //prendo dati del device specifics
-    fetch(`http://localhost:4000/api/devices/${idDevice}/devicespecifics`).then((response) => response.json()).then((data) => {
-      if (data) {
-        setDeviceSpecificsData(data);
-      } else {
-        console.error("DeviceWarranty -> No device found with the provided ID:", idDevice);
-      }
-    }).catch((error) => console.error("Error fetching device specifics details:", error));
-
-        
+    fetch(`http://localhost:4000/api/devices/${idDevice}/devicespecifics`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data) {
+          setDeviceSpecificsData(data);
+        } else {
+          console.error(
+            "DeviceWarranty -> No device found with the provided ID:",
+            idDevice
+          );
+        }
+      })
+      .catch((error) =>
+        console.error("Error fetching device specifics details:", error)
+      );
   }, []);
 
   useEffect(() => {
     async function fetchDeviceTypeInputs() {
-      if (selectedDeviceType){
+      if (selectedDeviceType) {
         try {
-          console.log('download = '+selectedDeviceType);
-          const res = await fetch("http://localhost:4000/api/devicespecificsinputs/"+selectedDeviceType);
+          console.log("download = " + selectedDeviceType);
+          const res = await fetch(
+            "http://localhost:4000/api/devicespecificsinputs/" +
+              selectedDeviceType
+          );
           if (!res.ok) {
             throw new Error("Failed to fetch device types");
           }
@@ -101,16 +133,21 @@ export default function EditDevice() {
 
   async function submit() {
     // regEx to allow only letters and numbers
-   const serialNumberPattern = /^[A-Za-z0-9]+$/;
-   const serialNumber = document.getElementById('sn');
-   // check if the serial number field is blank, less than 10 characters or contains special characters
-   if (!serialNumber || serialNumber.length < 10 || !serialNumberPattern.test(serialNumber)) {
-     alert("Serial Number must be at least 10 characters long and contain only letters and numbers.");
-     return;
-   }
+    const serialNumberPattern = /^[A-Za-z0-9]+$/;
+    const serialNumber = document.getElementById("sn");
+    // check if the serial number field is blank, less than 10 characters or contains special characters
+    if (
+      !serialNumber ||
+      serialNumber.length < 10 ||
+      !serialNumberPattern.test(serialNumber)
+    ) {
+      alert(
+        "Serial Number must be at least 10 characters long and contain only letters and numbers."
+      );
+      return;
+    }
 
-
-return;
+    return; // perchè un return qua?
     // check if the device type is selected
     if (!selectedDeviceType) {
       alert("Please select a device type.");
@@ -119,7 +156,12 @@ return;
 
     try {
       for (const field of deviceTypeInputs) {
-        if (document.getElementById(field.input_name).value == 'Choose an option...' || document.getElementById(field.input_name).value == null || document.getElementById(field.input_name).value == '') {
+        if (
+          document.getElementById(field.input_name).value ==
+            "Choose an option..." ||
+          document.getElementById(field.input_name).value == null ||
+          document.getElementById(field.input_name).value == ""
+        ) {
           alert("Please fill " + field.input_name + " field");
           return;
         }
@@ -313,97 +355,140 @@ return;
                   <select
                     className="form-control"
                     id="inputGroupSelect01"
-                    onChange={(e) => {setSelectedDeviceType(e.target.value)}}
+                    onChange={(e) => {
+                      setSelectedDeviceType(e.target.value);
+                    }}
                     required
                   >
-                    <option>
-                      Choose an option...
-                    </option>
+                    <option>Choose an option...</option>
                     {deviceTypes.map((type) => {
-                      if (type.id == deviceData.device_type_id){
+                      if (type.id == deviceData.device_type_id) {
                         return (
                           <option key={type.id} value={type.id} selected>
                             {type.name}
                           </option>
-                        )  
-                      }else{
+                        );
+                      } else {
                         return (
                           <option key={type.id} value={type.id}>
                             {type.name}
                           </option>
-                        )
+                        );
                       }
-                    }
-                    )}
+                    })}
                   </select>
                 </div>
-                <div className="col-12 mb-3">
-                  <label>Warranty Start</label>
+                <div>
+                <p>Ha la garanzia?</p>
+                <div className="form-check form-switch">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    id="flexSwitchCheckDefault"
+                    checked={hasWarranty}
+                    onChange={(e) => setHasWarranty(e.target.checked)}
+                  />
+                </div>
+                </div>
+                <div>
+                {hasWarranty && (
+                  <>
+                     <label>Warranty Start</label>
                   <input
                     type="date"
                     name="warranty_start"
                     className="form-control"
-                    value={String(deviceWarrantyData.start_date).substr(0, 10) || ""}
+                    value={
+                      String(deviceWarrantyData.start_date).substr(0, 10) || ""
+                    }
                     // onChange={handleChange}
                   />
-                </div>
-                <div className="col-12 mb-3">
                   <label>Warranty End</label>
                   <input
                     type="date"
                     name="warranty_end"
                     className="form-control"
-                    value={String(deviceWarrantyData.end_date).substr(0, 10) || ""}
+                    value={
+                      String(deviceWarrantyData.end_date).substr(0, 10) || ""
+                    }
                     // onChange={handleChange}
                   />
+                  </>
+                )}
                 </div>
+                {/* <div className="col-12 mb-3">
+                  <label>Warranty Start</label>
+                  <input
+                    type="date"
+                    name="warranty_start"
+                    className="form-control"
+                    value={
+                      String(deviceWarrantyData.start_date).substr(0, 10) || ""
+                    }
+                    // onChange={handleChange}
+                  />
+                </div> */}
+                {/* <div className="col-12 mb-3">
+                  <label>Warranty End</label>
+                  <input
+                    type="date"
+                    name="warranty_end"
+                    className="form-control"
+                    value={
+                      String(deviceWarrantyData.end_date).substr(0, 10) || ""
+                    }
+                    // onChange={handleChange}
+                  />
+                </div> */}
 
-                
                 <div>
                   {deviceTypeInputs.map((input) => {
-                    if (input.input_type == 'select'){
+                    if (input.input_type == "select") {
                       const options = JSON.parse(input.input_values);
-                      const foundItem = deviceSpecificsData.find(item => item.name === input.input_name);
+                      const foundItem = deviceSpecificsData.find(
+                        (item) => item.name === input.input_name
+                      );
                       const value = foundItem ? foundItem.value : null;
                       return (
                         <>
-                        <p>{input.input_label}:</p>
-                        <select
-                          id={input.input_name}
-                          name={input.input_name}
-                          className="form-control"
-                          value={value}
-                          required
-                        >
-                          <option>
-                            Choose an option...
-                          </option>
-                          {options.map((option) => (<option value={option}>{option}</option>))}
-                        </select>
+                          <p>{input.input_label}:</p>
+                          <select
+                            id={input.input_name}
+                            name={input.input_name}
+                            className="form-control"
+                            value={value}
+                            required
+                          >
+                            <option>Choose an option...</option>
+                            {options.map((option) => (
+                              <option value={option}>{option}</option>
+                            ))}
+                          </select>
                         </>
-                      )
+                      );
                     }
 
-                    if (input.input_type == 'text'){
-                      const foundItem = deviceSpecificsData.find(item => item.name === input.input_name);
+                    if (input.input_type == "text") {
+                      const foundItem = deviceSpecificsData.find(
+                        (item) => item.name === input.input_name
+                      );
                       const value = foundItem ? foundItem.value : null;
                       return (
                         <>
-                        <p>{input.input_label}:</p>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id={input.input_name}
-                          name={input.input_name}
-                          placeholder={input.input_placeholder}
-                          value={value}
-                          required
-                        />
+                          <p>{input.input_label}:</p>
+                          <input
+                            type="text"
+                            className="form-control"
+                            id={input.input_name}
+                            name={input.input_name}
+                            placeholder={input.input_placeholder}
+                            value={value}
+                            required
+                          />
                         </>
-                      )
+                      );
                     }
-                  }
-                  )}
+                  })}
                 </div>
 
                 <div className="col-12 mt-3">

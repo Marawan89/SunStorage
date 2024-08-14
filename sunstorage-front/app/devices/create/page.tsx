@@ -250,7 +250,20 @@ export default function AddDevice() {
                         />
                         </>
                       )
-                    }
+                    } else if (input.input_type === "number") {
+                     return (
+                       <div key={input.id}>
+                         <p>{input.input_label}:</p>
+                         <input
+                           type="number"
+                           id={input.input_name}
+                           name={input.input_name}
+                           placeholder={input.input_label}
+                           required
+                         />
+                       </div>
+                     );
+                   }
                   }
                   )}
                 </div>

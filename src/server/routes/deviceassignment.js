@@ -4,10 +4,10 @@ const pool = require('../../../db');
 
 // Create a new device assignment
 router.post('/', async (req, res) => {
-  const { device_id, user_id, assign_datetime } = req.body;
+  const { device_id, user_id } = req.body;
   try {
-    const [result] = await pool.query('INSERT INTO deviceassignments (device_id, user_id, assign_datetime) VALUES (?, ?, ?)', [device_id, user_id, assign_datetime]);
-    res.status(201).json({ id: result.insertId, device_id, user_id, assign_datetime });
+    const [result] = await pool.query('INSERT INTO deviceassignments (device_id, user_id, assign_datetime) VALUES (?, ?, NOW())', [device_id, user_id]);
+    res.status(201).json({ id: result.insertId, device_id, user_id });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

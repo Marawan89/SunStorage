@@ -7,7 +7,7 @@ router.post('/', async (req, res) => {
    const { department_id, name, surname, email } = req.body;
    try { 
      // Insert the new user
-     const [result] = await pool.query('INSERT INTO users (department_id, name, surname, email) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [department_id, name, surname, email]);
+     const [result] = await pool.query('INSERT INTO users (department_id, name, surname, email) VALUES (?, ?, ?, ?)', [department_id, name, surname, email]);
      res.status(201).json({ id: result.insertId, department_id, name, surname, email });
    } catch (error) {
      res.status(400).json({ error: error.message });

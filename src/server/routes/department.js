@@ -37,6 +37,20 @@ router.get("/", async (req, res) => {
   }
 });
 
+// route to read all users of a department
+router.get("/:id/users", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [rows] = await pool.query(
+      "SELECT * FROM users WHERE department_id = ?",
+      [id]
+    );
+    res.json(rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // route to read a single department by id
 router.get("/:id", async (req, res) => {
   const { id } = req.params;

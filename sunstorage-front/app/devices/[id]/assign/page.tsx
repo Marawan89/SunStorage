@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCancel, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import Menu from "../../../parts/menu";
@@ -13,9 +14,24 @@ interface Department {
   name: string;
 }
 
+interface User {
+  id: number;
+  name: string;
+}
+
 export default function AssignDevice() {
+   const params = useParams();
+
+  const idDevice = params.id;
+   
   const [departments, setDepartments] = useState<Department[]>([]);
   const [selectedDepartment, setSelectedDepartment] = useState<string>("");
+  const [users, setUsers] = useState<User[]>([]);
+  const [selectedUser, setSelectedUser] = useState<string>("");
+
+  const [newUserName, setNewUserName] = useState("");
+  const [newUserSurname, setNewUserSurname] = useState("");
+  const [newUserEmail, setNewUserEmail] = useState("");
 
   // to get all departments
   useEffect(() => {
@@ -35,11 +51,95 @@ export default function AssignDevice() {
     fetchDepartments();
   }, []);
 
+  useEffect(() => {
+    async function fetchUser() {
+      console.log(selectedDepartment);
+      try {
+        const res = await fetch(
+          "http://localhost:4000/api/departments/" +
+            selectedDepartment +
+            "/users"
+        );
+        if (!res.ok) {
+          throw new Error("Failed to fetch users");
+        }
+        const data: User[] = await res.json();
+        setUsers(data);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    }
+    fetchUser();
+  }, [selectedDepartment]);
+
+  const assignDevice = async (userid: number ) => {
+   fetch("http://localhost:4000/api/deviceassignments", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        device_id: idDevice,
+        user_id: userid,
+      }),
+    }).then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to crearte user");
+      }
+      console.log("device assigned successfuly")
+    })
+  }
+
+  const submit = async () => {
+    if (selectedDepartment == "" || selectedUser == "") {
+      alert("pls select a department and a user");
+      return;
+    }
+
+    var user_id = null;
+
+    if (selectedUser == "-1") {
+      console.log("aggiungo utente");
+      console.log(newUserName, newUserSurname, newUserEmail);
+      if (newUserName != "" && newUserSurname != "" && newUserEmail != "") {
+        console.log(newUserName, newUserSurname, newUserEmail);
+        fetch("http://localhost:4000/api/users", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            department_id: selectedDepartment,
+            name: newUserName,
+            surname: newUserSurname,
+            email: newUserEmail,
+          }),
+        }).then((res) => {
+          if (!res.ok) {
+            throw new Error("Failed to crearte user");
+          }
+          return res.json();
+        }).then((data) => {
+         if (data.error) {
+            alert("errore durante creazione utente")
+         } else{
+            assignDevice(data.id)
+         }
+        }) ;
+      } else {
+        alert("pls fill name, surname and email");
+        return;
+      }
+    } else {
+      assignDevice(selectedUser)
+    }
+  };
+
   // check if the department is selected
-//   if (!selectedDepartment) {
-//     alert("Please select a department");
-//     return;
-//   }
+  //   if (!selectedDepartment) {
+  //     alert("Please select a department");
+  //     return;
+  //   }
 
   return (
     <>
@@ -53,29 +153,66 @@ export default function AssignDevice() {
               <div className="spacer"></div>
               <div className="add-device-data">
                 <p>Fill the fields with the new owner data</p>
-                <p>Name</p>
-                <input type="text" />
-                <p>Surname</p>
-                <input type="text" />
-                <p>Email</p>
-                <input type="text" />
-                <p>Department</p>
-                <div className="input-group">
-                  <select
-                    className="custom-select"
-                    id="inputGroupSelect01"
-                    value={selectedDepartment}
-                    onChange={(e) => setSelectedDepartment(e.target.value)}
-                    required
-                  >
-                    <option>Choose an option...</option>
-                    {departments.map((type) => (
-                      <option key={type.id} value={type.id.toString()}>
-                        {type.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <form>
+                  <p>Department</p>
+                  <div className="input-group">
+                    <select
+                      className="custom-select"
+                      id="inputGroupSelect01"
+                      value={selectedDepartment}
+                      onChange={(e) => setSelectedDepartment(e.target.value)}
+                      required
+                    >
+                      <option>Choose an option...</option>
+                      {departments.map((type) => (
+                        <option key={type.id} value={type.id.toString()}>
+                          {type.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  {selectedDepartment && (
+                    <>
+                      <p>Users </p>
+                      <div className="input-group">
+                        <select
+                          className="custom-select"
+                          id="inputGroupSelect01"
+                          value={selectedUser}
+                          onChange={(e) => setSelectedUser(e.target.value)}
+                          required
+                        >
+                          <option>Choose an option...</option>
+                          {users.map((type) => (
+                            <option key={type.id} value={type.id.toString()}>
+                              {type.name}
+                            </option>
+                          ))}
+                          <option value="-1">Add new user....</option>
+                        </select>
+                      </div>
+                    </>
+                  )}
+                  {selectedUser == "-1" && (
+                    <>
+                      <p>Name</p>
+                      <input
+                        type="text"
+                        onChange={(e) => setNewUserName(e.target.value)}
+                      />
+                      <p>Surname</p>
+                      <input
+                        type="text"
+                        onChange={(e) => setNewUserSurname(e.target.value)}
+                      />
+                      <p>Email</p>
+                      <input
+                        type="text"
+                        onChange={(e) => setNewUserEmail(e.target.value)}
+                      />
+                    </>
+                  )}
+                </form>
                 <div className="form-btns d-flex flex-md-row justify-content-end align-items-center">
                   <button className="cl-btn" type="reset">
                     Cancel
@@ -84,7 +221,7 @@ export default function AssignDevice() {
                       icon={faCancel}
                     ></FontAwesomeIcon>
                   </button>
-                  <button className="sbmt-btn" type="button">
+                  <button className="sbmt-btn" type="button" onClick={submit}>
                     Save and assign device
                     <FontAwesomeIcon
                       className="btn-icon"

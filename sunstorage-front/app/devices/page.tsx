@@ -137,7 +137,7 @@ export default function Devices() {
         <div className="row">
           <Menu />
           <div className="col-12 col-md-8 nav-container mt-3 mt-md-0 p-0">
-            <div className="col-12 bg-content p-3 p-md-5">
+            <div className="col-12 bg-content p-md-5">
               <a href="devices/create" className="btn btn-primary mb-2">
                 Add a device
               </a>
@@ -216,13 +216,11 @@ export default function Devices() {
                   return null;
                 })}
               </div>
-
               <div className="table-responsive">
                 <table className="table">
                   <thead>
                     <tr>
                       <th scope="col">Serial Number</th>
-                      <th scope="col">Qr Code</th>
                       <th scope="col">Device Type</th>
                       <th scope="col">Warranty Start</th>
                       <th scope="col">Warranty End</th>
@@ -232,7 +230,6 @@ export default function Devices() {
                     {filteredDevices.map((device, index) => (
                       <tr key={index}>
                         <th scope="row">{device.serial_number}</th>
-                        <td>{device.qr_code}</td>
                         <td>{device.device_type}</td>
                         <td>
                           {device.warranty_start
@@ -277,9 +274,9 @@ export default function Devices() {
                               </a>
                               <a
                                 className="dropdown-item"
-                                href="devices/assign"
+                                href={`devices/${device.id}/actions`}
                               >
-                                Assign
+                                More
                               </a>
                               <a
                                 className="dropdown-item"

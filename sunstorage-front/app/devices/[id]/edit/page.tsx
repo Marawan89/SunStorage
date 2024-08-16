@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams } from "next/navigation";
 import Menu from "../../../parts/menu";
 import Navbar from "../../../parts/navbar";
@@ -13,320 +13,312 @@ interface DeviceType {
   name: string;
 }
 
+interface DeviceSpecific {
+  name: string;
+  value: string | null;
+}
+
+interface Device {
+  id: number;
+  sn: string;
+  device_type_id: string;
+}
+
+interface DeviceWarranty {
+  start_date: string;
+  end_date: string;
+}
+
 export default function EditDevice() {
   const params = useParams();
-  // const [device, setDevice] = useState<DeviceDetails | null>(null);
-
-  const [selectedDeviceType, setSelectedDeviceType] = useState<string>("");
-  const [deviceData, setDeviceData] = useState([]);
-  const [deviceWarrantyData, setDeviceWarrantyData] = useState([]);
   const [hasWarranty, setHasWarranty] = useState<boolean>(false);
-  const [deviceSpecificsData, setDeviceSpecificsData] = useState([]);
+  const [deviceData, setDeviceData] = useState<Device | null>(null);
+  const [serialNumber, setSerialNumber] = useState<string>("");
+  const [qrCode, setQrCode] = useState<string>("");
+  const [selectedDeviceType, setSelectedDeviceType] = useState<string>("");
+  const [deviceWarrantyStart, setDeviceWarrantyStart] = useState<string | null>(null);
+  const [deviceWarrantyEnd, setDeviceWarrantyEnd] = useState<string | null>(null);
+  const [deviceWarrantyData, setDeviceWarrantyData] = useState<DeviceWarranty | null>(null);
+  const [deviceSpecificsData, setDeviceSpecificsData] = useState<DeviceSpecific[]>([]);
   const [deviceTypes, setDeviceTypes] = useState<DeviceType[]>([]);
-  const [deviceTypeInputs, setDeviceTypeInputs] = useState([]);
+  const [deviceTypeInputs, setDeviceTypeInputs] = useState<any[]>([]);
+  const [deviceTypeInputsValues, setDeviceTypeInputsValues] = useState<{ fieldName: string; fieldValue: string | null; fieldId: integer | null }[]>([]);
+  const [deviceTypeInputsValuesInitial, setDeviceTypeInputsValuesInitial] = useState<{ fieldName: string; fieldValue: string | null; fieldId: integer | null }[]>([]);
 
-  // Fetch the device details on component mount
-  useEffect(() => {
-    const idDevice = params.id;
-    console.log("Device ID retrieved:", idDevice);
+  const idDevice = params.id;
 
-    //recupero devicetypes
-    fetch(`http://localhost:4000/api/devicetypes`)
-      .then((response) => response.json())
-      .then((data) => {
-        setDeviceTypes(data);
-      })
-      .catch((error) => console.error("Error fetching device details:", error));
-
-    //prendo dati del device
-    fetch(`http://localhost:4000/api/devices/${idDevice}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data) {
-          setDeviceData(data);
-
-          fetch(
-            `http://localhost:4000/api/devicespecificsinputs/${data.device_type_id}`
-          )
-            .then((response) => response.json())
-            .then((data) => {
-              if (data) {
-                //const data: DeviceType[] = response.json();
-                setDeviceTypeInputs(data);
-                console.log(data);
-              } else {
-                console.error(
-                  "DeviceTypeInputs -> No device inputs with the provided ID:",
-                  data.device_type_id
-                );
-              }
-            })
-            .catch((error) =>
-              console.error("Error fetching device specifics details:", error)
-            );
-        } else {
-          console.error(
-            "Device -> No device found with the provided ID:",
-            idDevice
-          );
-        }
-      })
-      .catch((error) => console.error("Error fetching device details:", error));
-
-    // prendo dati del device warranty
-    fetch(`http://localhost:4000/api/devices/${idDevice}/devicewarranty`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data) {
-          setDeviceWarrantyData(data);
-        } else {
-          console.error(
-            "DeviceWarranty -> No device found with the provided ID:",
-            idDevice
-          );
-        }
-      })
-      .catch((error) =>
-        console.error("Error fetching device warranty details:", error)
-      );
-
-    //prendo dati del device specifics
-    fetch(`http://localhost:4000/api/devices/${idDevice}/devicespecifics`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data) {
-          setDeviceSpecificsData(data);
-        } else {
-          console.error(
-            "DeviceWarranty -> No device found with the provided ID:",
-            idDevice
-          );
-        }
-      })
-      .catch((error) =>
-        console.error("Error fetching device specifics details:", error)
-      );
+  const fetchDeviceTypes = useCallback(async () => {
+    try {
+      const response = await fetch("http://localhost:4000/api/devicetypes");
+      const data = await response.json();
+      setDeviceTypes(data);
+    } catch (error) {
+      console.error("Error fetching device types:", error);
+    }
   }, []);
 
-  useEffect(() => {
-    async function fetchDeviceTypeInputs() {
-      if (selectedDeviceType) {
-        try {
-          console.log("download = " + selectedDeviceType);
-          const res = await fetch(
-            "http://localhost:4000/api/devicespecificsinputs/" +
-              selectedDeviceType
-          );
-          if (!res.ok) {
-            throw new Error("Failed to fetch device types");
-          }
-          const data: DeviceType[] = await res.json();
-          setDeviceTypeInputs(data);
-          console.log(data);
-        } catch (error) {
-          console.error("Error fetching device types:", error);
-        }
+  const fetchDeviceData = useCallback(async () => {
+    try {
+      const response = await fetch(`http://localhost:4000/api/devices/${idDevice}`);
+      const data: Device = await response.json();
+      setDeviceData(data);
+      setSerialNumber(data.sn);
+      setQrCode(data.qr_code_string)
+      setSelectedDeviceType(data.device_type_id);
+      fetchDeviceSpecifics(data.device_type_id, (deviceTypeInputsValuesInitial.length == 0 ? true : false));
+    } catch (error) {
+      console.error("Error fetching device details:", error);
+    }
+  }, [idDevice]);
+
+  const fetchDeviceSpecifics = useCallback(async (deviceTypeId: string, updateInitial: boolean) => {
+    try {
+      const response = await fetch(`http://localhost:4000/api/devices/${idDevice}/devicespecifics`);
+      const data = await response.json();
+      setDeviceSpecificsData(data);
+
+      const inputResponse = await fetch(`http://localhost:4000/api/devicespecificsinputs/${deviceTypeId}`);
+      const inputs = await inputResponse.json();
+      setDeviceTypeInputs(inputs);
+
+      const fields = inputs.map((input: any) => {
+        const foundItem = data.find((item: any) => item.name === input.input_name);
+        return { fieldName: input.input_name, fieldValue: foundItem ? foundItem.value : null, fieldId: foundItem ? foundItem.id : null };
+      });
+      setDeviceTypeInputsValues(fields);
+      if (updateInitial){
+        setDeviceTypeInputsValuesInitial(fields);
       }
+    } catch (error) {
+      console.error("Error fetching device specifics or inputs:", error);
     }
-    fetchDeviceTypeInputs();
-  }, [selectedDeviceType]);
+  }, [idDevice]);
 
-  async function submit() {
-    // regEx to allow only letters and numbers
-    const serialNumberPattern = /^[A-Za-z0-9]+$/;
-    const serialNumber = document.getElementById("sn");
-    // check if the serial number field is blank, less than 10 characters or contains special characters
-    if (
-      !serialNumber ||
-      serialNumber.length < 10 ||
-      !serialNumberPattern.test(serialNumber)
-    ) {
-      alert(
-        "Serial Number must be at least 10 characters long and contain only letters and numbers."
-      );
-      return;
+  const fetchDeviceWarranty = useCallback(async () => {
+    try {
+      const response = await fetch(`http://localhost:4000/api/devices/${idDevice}/devicewarranty`);
+      const data: DeviceWarranty = await response.json();
+      setDeviceWarrantyData(data);
+      setHasWarranty((data.error ? false : true));
+      setDeviceWarrantyStart(data.start_date?.substr(0, 10) || null);
+      setDeviceWarrantyEnd(data.end_date?.substr(0, 10) || null);
+    } catch (error) {
+      console.error("Error fetching device warranty:", error);
     }
+  }, [idDevice]);
 
-    return; // perchè un return qua?
-    // check if the device type is selected
-    if (!selectedDeviceType) {
-      alert("Please select a device type.");
-      return;
+  useEffect(() => {
+    fetchDeviceTypes();
+    fetchDeviceData();
+    fetchDeviceWarranty();
+  }, [fetchDeviceTypes, fetchDeviceData, fetchDeviceWarranty]);
+
+  useEffect(() => {
+    if (selectedDeviceType) {
+      fetchDeviceSpecifics(selectedDeviceType, (deviceTypeInputsValuesInitial.length == 0 ? true : false));
     }
+  }, [selectedDeviceType, fetchDeviceSpecifics]);
+
+  const handleInputChange = useCallback((inputName: string, value: string) => {
+    setDeviceTypeInputsValues((prevValues) =>
+      prevValues.map((item) => item.fieldName === inputName ? { ...item, fieldValue: value } : item)
+    );
+  }, []);
+
+  const submit = useCallback(async () => {
+    console.log('INIT SUBMIT', { serialNumber, selectedDeviceType, deviceWarrantyStart, deviceWarrantyEnd, deviceTypeInputsValues, deviceTypeInputsValuesInitial });
+
+    // Validation
+    if (!validateInput()) return;
 
     try {
-      for (const field of deviceTypeInputs) {
-        if (
-          document.getElementById(field.input_name).value ==
-            "Choose an option..." ||
-          document.getElementById(field.input_name).value == null ||
-          document.getElementById(field.input_name).value == ""
-        ) {
-          alert("Please fill " + field.input_name + " field");
-          return;
-        }
-      }
-
-      // insert new device
-      const deviceRes = await fetch("http://localhost:4000/api/devices", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          device_type_id: parseInt(selectedDeviceType),
-          sn: serialNumber,
-          qr_code_string: `CIAO_QR_CAZZ_${Math.floor(Math.random() * 1000000)}`,
-        }),
-      });
-
-      if (!deviceRes.ok) {
-        const errorData = await deviceRes.json();
-        throw new Error(errorData.error || "Failed to create device");
-      }
-
-      const deviceData = await deviceRes.json();
-
-      // insert new device warranty or NULL if no warranty
-      const warrantyRes = await fetch(
-        "http://localhost:4000/api/devicewarranties",
-        {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            device_id: deviceData.id,
-            start_date: hasWarranty ? warrantyStart : null,
-            end_date: hasWarranty ? warrantyEnd : null,
-          }),
-        }
-      );
-
-      if (!warrantyRes.ok) {
-        const errorData = await warrantyRes.json();
-        throw new Error(errorData.error || "Failed to create device warranty");
-      }
-
-      // insert of device specifics
-      for (const field of deviceTypeInputs) {
-        const insertSpecific = await fetch(
-          "http://localhost:4000/api/devicespecifics",
-          {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              device_id: deviceData.id,
-              name: field.input_name,
-              value: document.getElementById(field.input_name).value || null,
-            }),
-          }
-        );
-        if (!insertSpecific.ok) {
-          const errorData = await insertSpecific.json();
-          throw new Error(
-            errorData.error || "Failed to create device specific"
-          );
-        }
-      }
-
-      // after successful insertion redirect to devices page
-      alert("Device added successfully!");
-      window.location.href = "/devices";
+      await updateDeviceData();
+      await handleDeviceSpecifics();
+      await handleWarranty();
+      console.log('SUBMISSION COMPLETE');
     } catch (error) {
-      if (error instanceof Error) {
-        alert("Error adding device: " + error.message);
-      } else {
-        alert("Unknown error adding device");
-      }
+      console.error("Error during submit process:", error);
+      alert("An error occurred during submission. Please try again. " + error);
+    }
+  }, [serialNumber, hasWarranty, selectedDeviceType, deviceWarrantyStart, deviceWarrantyEnd, deviceTypeInputsValues, deviceTypeInputsValuesInitial, idDevice, qrCode]);
+
+const validateInput = () => {
+  const serialNumberPattern = /^[A-Za-z0-9]{10,}$/;
+  if (!serialNumberPattern.test(serialNumber)) {
+    alert("Serial Number must be at least 10 characters long and contain only letters and numbers.");
+    return false;
+  }
+  if (!selectedDeviceType) {
+    alert("Please select a device type.");
+    return false;
+  }
+  return true;
+};
+
+const updateDeviceData = async () => {
+  const res = await fetchWithErrorHandling(`http://localhost:4000/api/devices/${idDevice}`, {
+    method: "PATCH",
+    body: JSON.stringify({
+      device_type_id: selectedDeviceType,
+      sn: serialNumber,
+      qr_code_string: qrCode,
+    }),
+  });
+  console.log('Device update result:', res);
+  setDeviceTypeInputsValuesInitial(deviceTypeInputsValues);
+};
+
+const updateDeviceSpecifics = async (deviceSpecificsId: number, deviceSpecificsName: string, deviceSpecificsValue: string) => {
+  const res = await fetchWithErrorHandling(`http://localhost:4000/api/devicespecifics/${deviceSpecificsId}`, {
+    method: "PATCH",
+    body: JSON.stringify({
+      device_id: idDevice,
+      name: deviceSpecificsName,
+      value: deviceSpecificsValue,
+    }),
+  });
+  console.log(`Updated device specific: ${deviceSpecificsName}`, res);
+  return res;
+};
+
+const createDeviceSpecifics = async (deviceSpecificsName: string, deviceSpecificsValue: string) => {
+  const res = await fetchWithErrorHandling(`http://localhost:4000/api/devicespecifics`, {
+    method: "POST",
+    body: JSON.stringify({
+      device_id: idDevice,
+      name: deviceSpecificsName,
+      value: deviceSpecificsValue,
+    }),
+  });
+  console.log(`Created device specific: ${deviceSpecificsName}`, res);
+  setDeviceTypeInputsValues((prevValues) =>
+    prevValues.map((item) => item.fieldName === deviceSpecificsName ? { ...item, fieldId: res.id } : item)
+  );
+  setDeviceTypeInputsValuesInitial((prevValues) =>
+    prevValues.map((item) => item.fieldName === deviceSpecificsName ? { ...item, fieldId: res.id } : item)
+  );
+  return res;
+};
+
+const deleteDeviceSpecifics = async (deviceSpecificsId: number) => {
+  const res = await fetchWithErrorHandling(`http://localhost:4000/api/devicespecifics/${deviceSpecificsId}`, {
+    method: "DELETE",
+  });
+  console.log(`Deleted device specific with ID: ${deviceSpecificsId}`, res);
+  return res;
+};
+
+const handleDeviceSpecifics = async () => {
+  const fieldsToMaintain = [];
+  for (const field of deviceTypeInputsValues) {
+    const existingField = deviceTypeInputsValuesInitial.find(item => item.fieldName === field.fieldName);
+    if (existingField && field.fieldId != null) {
+      await updateDeviceSpecifics(field.fieldId, field.fieldName, field.fieldValue);
+    } else {
+      await createDeviceSpecifics(field.fieldName, field.fieldValue);
+    }
+    fieldsToMaintain.push(field.fieldName);
+  }
+
+  for (const field of deviceTypeInputsValuesInitial) {
+    if (!fieldsToMaintain.includes(field.fieldName)) {
+      await deleteDeviceSpecifics(field.fieldId);
     }
   }
-  // // Helper function to format the date
-  // const formatDate = (dateString: string | null): string | null => {
-  //   if (!dateString) return null;
-  //   const date = new Date(dateString);
-  //   const year = date.getFullYear();
-  //   const month = String(date.getMonth() + 1).padStart(2, "0");
-  //   const day = String(date.getDate()).padStart(2, "0");
-  //   return `${year}-${month}-${day}`;
-  // };
+};
 
-  // // Handle the update process
-  // const handleUpdate = () => {
-  //   if (!id || !device) {
-  //     console.error("Device ID or details are missing.");
-  //     return;
-  //   }
+const handleWarranty = async () => {
+  try {
+    let warrantyRes;
+    try {
+      warrantyRes = await fetchWithErrorHandling(`http://localhost:4000/api/devices/${idDevice}/devicewarranty`);
+    } catch (error) {
+      if (error.message === "Device not found" || error.message.includes("404")) {
+        console.log("No warranty found for this device");
+        warrantyRes = null;
+      } else {
+        throw error; // Rethrow if it's a different error
+      }
+    }
 
-  //   console.log("Updating device with ID:", id);
-  //   console.log("Device data being sent:", device);
+    if (!warrantyRes) {
+      // Non esiste una garanzia
+      if (hasWarranty) {
+        console.log("Creating new warranty");
+        return createWarranty();
+      } else {
+        console.log("No warranty to create");
+        return;
+      }
+    }
 
-  //   fetch(`http://localhost:4000/api/devices/${id}`, {
-  //     method: "PATCH",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({
-  //       device_type_id: device.device_type, // assuming `device_type` is actually the device_type_id
-  //       sn: device.serial_number,
-  //       qr_code_string: device.qr_code,
-  //       specifics: device.specifics.join(", "),
-  //       warranty_start: device.warranty_start,
-  //       warranty_end: device.warranty_end,
-  //     }),
-  //   })
-  //     .then((res) => {
-  //       if (!res.ok) {
-  //         return res.json().then((err) => {
-  //           throw new Error(err.error || "Unknown error");
-  //         });
-  //       }
-  //       return res.json();
-  //     })
-  //     .then((data) => {
-  //       if (data.error) {
-  //         console.error("Error updating device:", data.error);
-  //         alert("Errore durante l'aggiornamento del dispositivo.");
-  //       } else {
-  //         window.location.href = "/devices";
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.error("Errore durante la richiesta PATCH:", error);
-  //       alert("Errore durante l'aggiornamento del dispositivo.");
-  //     });
-  // };
+    // Esiste una garanzia
+    if (hasWarranty) {
+      console.log("Updating existing warranty");
+      return updateWarranty(warrantyRes.id);
+    } else {
+      console.log("Deleting existing warranty");
+      return deleteWarranty(warrantyRes.id);
+    }
+  } catch (error) {
+    console.error("Error handling warranty:", error);
+    throw error;
+  }
+};
 
-  // // Handle changes in the specifics array
-  // const handleSpecificChange = (index: number, value: string) => {
-  //   if (device) {
-  //     const updatedSpecifics = [...device.specifics];
-  //     updatedSpecifics[index] = value;
-  //     setDevice({
-  //       ...device,
-  //       specifics: updatedSpecifics,
-  //     });
-  //   }
-  // };
+const createWarranty = () => fetchWithErrorHandling(`http://localhost:4000/api/devicewarranties`, {
+  method: "POST",
+  body: JSON.stringify({
+    device_id: idDevice,
+    start_date: deviceWarrantyStart,
+    end_date: deviceWarrantyEnd,
+  }),
+});
 
-  // // Handle changes in the input fields
-  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   if (device) {
-  //     const updatedDevice = {
-  //       ...device,
-  //       [e.target.name]: e.target.value,
-  //     };
-  //     console.log("Updated device data:", updatedDevice);
-  //     setDevice(updatedDevice);
-  //   }
-  // };
+const updateWarranty = (id) => fetchWithErrorHandling(`http://localhost:4000/api/devicewarranties/${id}`, {
+  method: "PATCH",
+  body: JSON.stringify({
+    device_id: idDevice,
+    start_date: deviceWarrantyStart,
+    end_date: deviceWarrantyEnd,
+  }),
+});
 
-  if (!deviceData && !deviceSpecificsData && !deviceWarrantyData) {
+const deleteWarranty = (id) => fetchWithErrorHandling(`http://localhost:4000/api/devicewarranties/${id}`, {
+  method: "DELETE",
+});
+
+const fetchWithErrorHandling = async (url, options = {}) => {
+  const defaultOptions = {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  const res = await fetch(url, { ...defaultOptions, ...options });
+  if (!res.ok) {
+    let errorMessage;
+    try {
+      const errorData = await res.json();
+      errorMessage = errorData.error || "Unknown error";
+    } catch (e) {
+      errorMessage = `Failed to parse error response: ${res.statusText}`;
+    }
+    throw new Error(errorMessage);
+  }
+  const text = await res.text();
+  if (!text) {
+    return null; // Return null for empty responses
+  }
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    console.warn("Response is not JSON:", text);
+    return text; // Return the raw text if it's not JSON
+  }
+};
+
+
+  if (!deviceData || !deviceSpecificsData || !deviceWarrantyData || deviceTypeInputsValues.length === 0) {
     return <div>Loading...</div>;
   }
 
@@ -346,8 +338,8 @@ export default function EditDevice() {
                     type="text"
                     name="serial_number"
                     className="form-control"
-                    value={deviceData.sn}
-                    // onChange={handleChange}
+                    value={serialNumber}
+                    onChange={(e) => setSerialNumber(e.target.value)}
                   />
                 </div>
                 <div className="col-12 mb-3">
@@ -355,31 +347,20 @@ export default function EditDevice() {
                   <select
                     className="form-control"
                     id="inputGroupSelect01"
-                    onChange={(e) => {
-                      setSelectedDeviceType(e.target.value);
-                    }}
+                    onChange={(e) => setSelectedDeviceType(e.target.value)}
+                    value={selectedDeviceType}
                     required
                   >
-                    <option>Choose an option...</option>
-                    {deviceTypes.map((type) => {
-                      if (type.id == deviceData.device_type_id) {
-                        return (
-                          <option key={type.id} value={type.id} selected>
-                            {type.name}
-                          </option>
-                        );
-                      } else {
-                        return (
-                          <option key={type.id} value={type.id}>
-                            {type.name}
-                          </option>
-                        );
-                      }
-                    })}
+                    <option value="">Choose an option...</option>
+                    {deviceTypes.map((type) => (
+                      <option key={type.id} value={type.id}>
+                        {type.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
-                <div>
                 <p>Ha la garanzia?</p>
+                <div className="col-12 mb-3">
                 <div className="form-check form-switch">
                   <input
                     className="form-check-input"
@@ -389,112 +370,71 @@ export default function EditDevice() {
                     onChange={(e) => setHasWarranty(e.target.checked)}
                   />
                 </div>
-                </div>
-                <div>
                 {hasWarranty && (
                   <>
-                     <label>Warranty Start</label>
-                  <input
-                    type="date"
-                    name="warranty_start"
-                    className="form-control"
-                    value={
-                      String(deviceWarrantyData.start_date).substr(0, 10) || ""
-                    }
-                    // onChange={handleChange}
-                  />
-                  <label>Warranty End</label>
-                  <input
-                    type="date"
-                    name="warranty_end"
-                    className="form-control"
-                    value={
-                      String(deviceWarrantyData.end_date).substr(0, 10) || ""
-                    }
-                    // onChange={handleChange}
-                  />
+                    <p>Warranty Start</p>
+                    <input
+                      type="date"
+                      name="warranty_start"
+                      className="form-control"
+                      value={deviceWarrantyStart || ""}
+                      onChange={(e) => setDeviceWarrantyStart(e.target.value)}
+                    />
+                    <p>Warranty End</p>
+                    <input
+                      type="date"
+                      name="warranty_end"
+                      className="form-control"
+                      value={deviceWarrantyEnd || ""}
+                      onChange={(e) => setDeviceWarrantyEnd(e.target.value)}
+                      min={deviceWarrantyStart || ""}
+                    />
                   </>
                 )}
                 </div>
-                {/* <div className="col-12 mb-3">
-                  <label>Warranty Start</label>
-                  <input
-                    type="date"
-                    name="warranty_start"
-                    className="form-control"
-                    value={
-                      String(deviceWarrantyData.start_date).substr(0, 10) || ""
-                    }
-                    // onChange={handleChange}
-                  />
-                </div> */}
-                {/* <div className="col-12 mb-3">
-                  <label>Warranty End</label>
-                  <input
-                    type="date"
-                    name="warranty_end"
-                    className="form-control"
-                    value={
-                      String(deviceWarrantyData.end_date).substr(0, 10) || ""
-                    }
-                    // onChange={handleChange}
-                  />
-                </div> */}
-
                 <div>
                   {deviceTypeInputs.map((input) => {
-                    if (input.input_type == "select") {
-                      const options = JSON.parse(input.input_values);
-                      const foundItem = deviceSpecificsData.find(
-                        (item) => item.name === input.input_name
-                      );
-                      const value = foundItem ? foundItem.value : null;
-                      return (
-                        <>
-                          <p>{input.input_label}:</p>
-                          <select
-                            id={input.input_name}
-                            name={input.input_name}
-                            className="form-control"
-                            value={value}
-                            required
-                          >
-                            <option>Choose an option...</option>
-                            {options.map((option) => (
-                              <option value={option}>{option}</option>
-                            ))}
-                          </select>
-                        </>
-                      );
-                    }
+                    const foundItem = deviceTypeInputsValues.find(item => item.fieldName === input.input_name);
+                    const value = foundItem ? foundItem.fieldValue : "";
 
-                    if (input.input_type == "text") {
-                      const foundItem = deviceSpecificsData.find(
-                        (item) => item.name === input.input_name
-                      );
-                      const value = foundItem ? foundItem.value : null;
-                      return (
-                        <>
-                          <p>{input.input_label}:</p>
-                          <input
-                            type="text"
-                            className="form-control"
-                            id={input.input_name}
-                            name={input.input_name}
-                            placeholder={input.input_placeholder}
-                            value={value}
-                            required
-                          />
-                        </>
-                      );
-                    }
+                    return input.input_type === 'select' ? (
+                      <div key={input.input_name}>
+                        <p>{input.input_label}:</p>
+                        <select
+                          name={input.input_name}
+                          className="form-control"
+                          value={value || ""}
+                          onChange={(e) => handleInputChange(input.input_name, e.target.value)}
+                          required
+                        >
+                          <option value="">Choose an option...</option>
+                          {JSON.parse(input.input_values).map((option: string) => (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    ) : (
+                      <div key={input.input_name}>
+                        <p>{input.input_label}:</p>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id={input.input_name}
+                          name={input.input_name}
+                          placeholder={input.input_placeholder}
+                          value={value || ""}
+                          onChange={(e) => handleInputChange(input.input_name, e.target.value)}
+                        />
+                      </div>
+                    );
                   })}
                 </div>
-
-                <div className="col-12 mt-3">
+                <div className="col-12 mt-4">
                   <button
-                    type="submit"
-                    className="btn btn-success"
+                    type="button"
+                    className="btn btn-primary"
                     onClick={submit}
                   >
                     Save

@@ -2,13 +2,45 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCancel, faArrowRight } from "@fortawesome/free-solid-svg-icons";
-import Menu from "../../parts/menu";
-import Navbar from "../../parts/navbar";
+import Menu from "../../../parts/menu";
+import Navbar from "../../../parts/navbar";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../../globals.css";
+import "../../../globals.css";
 import "./style.css";
 
+interface Department {
+  id: number;
+  name: string;
+}
+
 export default function AssignDevice() {
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [selectedDepartment, setSelectedDepartment] = useState<string>("");
+
+  // to get all departments
+  useEffect(() => {
+    async function fetchDepartments() {
+      try {
+        const res = await fetch("http://localhost:4000/api/departments");
+        if (!res.ok) {
+          throw new Error("Failed to fetch departments");
+        }
+        const data: Department[] = await res.json();
+        setDepartments(data);
+      } catch (error) {
+        console.error("Error fetching department:", error);
+      }
+    }
+
+    fetchDepartments();
+  }, []);
+
+  // check if the department is selected
+//   if (!selectedDepartment) {
+//     alert("Please select a department");
+//     return;
+//   }
+
   return (
     <>
       <Navbar />
@@ -20,24 +52,6 @@ export default function AssignDevice() {
               <p>Assign Device</p>
               <div className="spacer"></div>
               <div className="add-device-data">
-                <p>Is it used?</p>{" "}
-                {/* se si fa vedere gli input per salvare i dati del vecchio proprietario */}
-                <div className="form-check form-switch">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    id="flexSwitchCheckDefault"
-                  />
-                </div>
-                <p>Fill the fields with the old owner data</p>
-                <p>Name</p>
-                <input type="text" />
-                <p>Surname</p>
-                <input type="text" />
-                <p>Email</p>
-                <input type="text" />
-                <p>Department</p>
-                <select name="" id=""></select>
                 <p>Fill the fields with the new owner data</p>
                 <p>Name</p>
                 <input type="text" />
@@ -46,7 +60,22 @@ export default function AssignDevice() {
                 <p>Email</p>
                 <input type="text" />
                 <p>Department</p>
-                <select name="" id=""></select>
+                <div className="input-group">
+                  <select
+                    className="custom-select"
+                    id="inputGroupSelect01"
+                    value={selectedDepartment}
+                    onChange={(e) => setSelectedDepartment(e.target.value)}
+                    required
+                  >
+                    <option>Choose an option...</option>
+                    {departments.map((type) => (
+                      <option key={type.id} value={type.id.toString()}>
+                        {type.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
                 <div className="form-btns d-flex flex-md-row justify-content-end align-items-center">
                   <button className="cl-btn" type="reset">
                     Cancel

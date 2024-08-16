@@ -4,7 +4,9 @@ import {
   faRightFromBracket,
   faLaptop,
   faUsers,
-  faComputer
+  faComputer,
+  faUserPlus,
+  faHouse
 } from "@fortawesome/free-solid-svg-icons";
 import {} from "@fortawesome/free-regular-svg-icons";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -18,10 +20,24 @@ export default function Menu() {
     <div className="col-12 col-md-4 justify-content-center">
       <div className="col-12 col-md-11 bg-side-bar">
         <div className="d-flex flex-column align-items-start p-2">
+        <button className="nav-item btn p-0 mb-2">
+            <a href="/" className="d-flex align-items-center">
+              <FontAwesomeIcon icon={faHouse} className="menuIcons mr-2" />
+              <p className="mb-0">Dashboard</p>
+            </a>
+          </button>
+          <div className="spacer"></div>
           <button className="nav-item btn p-0 mb-2">
             <a href="/devices" className="d-flex align-items-center">
               <FontAwesomeIcon icon={faLaptop} className="menuIcons mr-2" />
               <p className="mb-0">Devices</p>
+            </a>
+          </button>
+          <div className="spacer"></div>
+          <button className="nav-item btn p-0 mb-2">
+            <a href="/assigned-devices" className="d-flex align-items-center">
+              <FontAwesomeIcon icon={faUserPlus} className="menuIcons mr-2" />
+              <p className="mb-0">Assigned Devices</p>
             </a>
           </button>
           <div className="spacer"></div>

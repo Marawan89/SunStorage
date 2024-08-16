@@ -24,41 +24,44 @@ export default function ViewDevice() {
   const [id, setId] = useState<string | null>(null);
 
   useEffect(() => {
-   const deviceId = params.id;
-   setId(params.id);
- 
-   if (deviceId) {
-     const url = `http://localhost:4000/api/devices/overview?id=${deviceId}`;
-     fetch(url)
-       .then((response) => response.json())
-       .then((data) => {
-         if (data.length > 0) {
-           const deviceData = data[0];
-           setDevice({
-             id: deviceData.id,
-             serial_number: deviceData.sn,
-             qr_code: deviceData.qr_code_string,
-             device_type: deviceData.device_type,
-             warranty_start: deviceData.start_date,
-             warranty_end: deviceData.end_date,
-             specifics: deviceData.specifics,
-           });
-         } else {
-           console.error("No device found:", data);
-         }
-       })
-       .catch((error) => console.error("Error fetching device details:", error));
-   }
- }, []);
- 
+    const deviceId = params.id;
+    setId(params.id);
+
+    if (deviceId) {
+      const url = `http://localhost:4000/api/devices/overview?id=${deviceId}`;
+      fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.length > 0) {
+            const deviceData = data[0];
+            setDevice({
+              id: deviceData.id,
+              serial_number: deviceData.sn,
+              qr_code: deviceData.qr_code_string,
+              device_type: deviceData.device_type,
+              warranty_start: deviceData.start_date,
+              warranty_end: deviceData.end_date,
+              specifics: deviceData.specifics,
+            });
+          } else {
+            console.error("No device found:", data);
+          }
+        })
+        .catch((error) =>
+          console.error("Error fetching device details:", error)
+        );
+    }
+  }, []);
 
   if (!device) {
     return <div>Loading...</div>;
   }
 
-  const specificsList = device.specifics
-    .split(", ")
-    .map((spec, index) => <li key={index} className="list-group-item">{spec}</li>);
+  const specificsList = device.specifics.split(", ").map((spec, index) => (
+    <li key={index} className="list-group-item">
+      {spec}
+    </li>
+  ));
 
   return (
     <>
@@ -79,15 +82,22 @@ export default function ViewDevice() {
                 {device.warranty_start && device.warranty_end ? (
                   <>
                     <li className="list-group-item">
-                      Warranty Start Date: {new Date(device.warranty_start).toLocaleDateString()}
+                      Warranty Start Date:{" "}
+                      {new Date(device.warranty_start).toLocaleDateString()}
                     </li>
                     <li className="list-group-item">
-                      Warranty End Date: {new Date(device.warranty_end).toLocaleDateString()}
+                      Warranty End Date:{" "}
+                      {new Date(device.warranty_end).toLocaleDateString()}
                     </li>
                   </>
                 ) : (
                   <li className="list-group-item">Warranty not available</li>
                 )}
+                <li className="list-group-item">
+                  <img
+                    src={`https://quickchart.io/qr?text=${device.qr_code}&size=200px&dark=000000&light=FFFFFF&ecLevel=M&margin=4`}
+                  />
+                </li>
               </ul>
             </div>
           </div>

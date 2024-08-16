@@ -108,7 +108,7 @@ export default function AddDevice() {
         body: JSON.stringify({
           device_type_id: parseInt(selectedDeviceType),
           sn: serialNumber,
-          qr_code_string: `CIAO_QR_CAZZ_${Math.floor(Math.random() * 1000000)}`,
+          qr_code_string: `SunStorage_DeviceNumber${Math.floor(Math.random() * 1000000)}`,
         }),
       });
 

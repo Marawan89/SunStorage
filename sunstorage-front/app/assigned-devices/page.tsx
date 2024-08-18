@@ -8,8 +8,40 @@ import "bootstrap/dist/js/bootstrap.bundle.min";
 import "../globals.css";
 import "./style.css";
 
+interface AssignedDeviceOverview {
+   user_name: string;
+   surname: string;
+   email: string;
+   department_name: string;
+   sn: string;
+}
 
-export default function Devices() {
+export default function AssignedDevices() {
+   const [assignedDevices, setAssignedDevices] = useState<AssignedDeviceOverview[]>([]);
+   const [searchTerm, setSearchTerm] = useState<string>("");
+
+   useEffect(() => {
+     async function fetchAssignedDevices() {
+       try {
+         const res = await fetch("http://localhost:4000/api/devices/assigned-overview");
+         if (!res.ok) {
+           throw new Error("Failed to fetch assigned devices overview");
+         }
+         const data: AssignedDeviceOverview[] = await res.json();
+         setAssignedDevices(data);
+       } catch (error) {
+         console.error("Error fetching assigned devices overview:", error);
+       }
+     }
+ 
+     fetchAssignedDevices();
+   }, []);
+
+   // Filter devices based on the search term
+   const filteredDevices = assignedDevices.filter((device) =>
+     device.email.toLowerCase().includes(searchTerm.toLowerCase())
+   );
+
   return (
     <>
       <Navbar />
@@ -23,16 +55,13 @@ export default function Devices() {
                   <input
                     className="form-control me-2"
                     type="search"
-                    placeholder="Search for an email "
-                  //   value={searchTerm}
-                  //   onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Search for an email"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
               </div>
 
-              {/* Rendering device specific inputs based on the selected device type */}
-              <div>
-              </div>
               <div className="table-responsive">
                 <table className="table">
                   <thead>
@@ -45,6 +74,38 @@ export default function Devices() {
                     </tr>
                   </thead>
                   <tbody className="table-group-divider">
+                  {filteredDevices.map((device, index) => (
+                      <tr key={index}>
+                        <th>{device.user_name}</th>
+                        <td>{device.surname}</td>
+                        <td>{device.email}</td>
+                        <td>{device.department_name}</td>
+                        <td>{device.sn}</td>
+                        <td>
+                          <a className="btn view-btn">View</a>
+                        </td>
+                        <td>
+                          <div className="btn-group drop">
+                            <button
+                              type="button"
+                              className="btn action-btn btn-secondary dropdown-toggle"
+                              data-bs-toggle="dropdown"
+                              aria-haspopup="true"
+                              aria-expanded="false"
+                            >
+                              Actions
+                            </button>
+                            <div
+                              className="dropdown-menu"
+                              aria-labelledby="dropdownMenuButton"
+                            >
+                              <a className="dropdown-item">Edit</a>
+                              <a className="dropdown-item">More</a>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>

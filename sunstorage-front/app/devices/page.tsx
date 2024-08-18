@@ -76,6 +76,7 @@ export default function Devices() {
     fetchDeviceTypes();
   }, []);
 
+  // route to get all devices overview
   useEffect(() => {
     const url = "http://localhost:4000/api/devices/overview";
     fetch(url)

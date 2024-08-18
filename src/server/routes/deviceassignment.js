@@ -66,4 +66,15 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// route to check if a device is assigned
+router.get('/check/:device_id', async (req, res) => {
+  const { device_id } = req.params;
+  try {
+    const [rows] = await pool.query('SELECT * FROM deviceassignments WHERE device_id = ?', [device_id]);
+    res.json(rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;

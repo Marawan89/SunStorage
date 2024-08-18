@@ -5,6 +5,9 @@ import {} from "@fortawesome/free-regular-svg-icons";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../globals.css";
 import "./style.css";
+import { config } from '@fortawesome/fontawesome-svg-core';
+config.autoAddCss = false;
+
 
 export default function Navbar() {
   return (

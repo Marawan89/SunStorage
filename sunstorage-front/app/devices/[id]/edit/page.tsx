@@ -141,7 +141,7 @@ export default function EditDevice() {
       alert("An error occurred during submission. Please try again. " + error);
     }
     alert("Device edited successfully")
-    window.location.href = "/devices"; // redirecting to the /device-types page
+    window.location.href = "/devices";
   }, [serialNumber, hasWarranty, selectedDeviceType, deviceWarrantyStart, deviceWarrantyEnd, deviceTypeInputsValues, deviceTypeInputsValuesInitial, idDevice, qrCode]);
 
 const validateInput = () => {

@@ -4,37 +4,40 @@ const pool = require("../../../db");
 
 // query to get all device specifics
 router.get("/", async (req, res) => {
-  try {
-    const deviceId = req.query.id;
-    let query = `
+   try {
+     const deviceId = req.query.id;
+     let query = `
       SELECT
-            devices.id,
-            devices.sn,
-            devices.qr_code_string,
-            devicetypes.name AS device_type,
-            devicewarranties.start_date AS start_date,
-            devicewarranties.end_date AS end_date,
-            GROUP_CONCAT(CONCAT(devicespecifics.name, ': ', devicespecifics.value) SEPARATOR ', ') AS specifics
-      FROM
-            devices
-      INNER JOIN devicetypes ON devices.device_type_id = devicetypes.id
-      LEFT JOIN devicewarranties ON devices.id = devicewarranties.device_id
-      LEFT JOIN devicespecifics ON devices.id = devicespecifics.device_id
-    `;
-
-    // where there is an id to pass add to the query WHERE
-    if (deviceId) {
-      query += ` WHERE devices.id = ?`;
-    }
-
-    query += ` GROUP BY devices.id, devices.sn, devices.qr_code_string, devicetypes.name, devicewarranties.start_date, devicewarranties.end_date;`;
-
-    const [rows] = await pool.query(query, [deviceId]);
-    res.json(rows);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+          devices.id,
+          devices.sn,
+          devices.qr_code_string,
+          devicetypes.name AS device_type,
+          devicewarranties.start_date AS start_date,
+          devicewarranties.end_date AS end_date,
+          GROUP_CONCAT(DISTINCT CONCAT(devicespecificsinputs.input_label, ': ', devicespecifics.value) SEPARATOR ', ') AS specifics
+       FROM
+          devices
+       INNER JOIN devicetypes ON devices.device_type_id = devicetypes.id
+       LEFT JOIN devicewarranties ON devices.id = devicewarranties.device_id
+       LEFT JOIN devicespecifics ON devices.id = devicespecifics.device_id
+       LEFT JOIN devicespecificsinputs ON devicespecifics.name = devicespecificsinputs.input_name
+     `;
+ 
+     // Conditionally add WHERE clause if deviceId is present
+     if (deviceId) {
+       query += ` WHERE devices.id = ?`;
+     }
+ 
+     // Add the GROUP BY clause
+     query += ` GROUP BY devices.id, devices.sn, devices.qr_code_string, devicetypes.name, devicewarranties.start_date, devicewarranties.end_date;`;
+ 
+     // Execute the query
+     const [rows] = await pool.query(query, deviceId ? [deviceId] : []);
+     res.json(rows);
+   } catch (error) {
+     res.status(500).json({ error: error.message });
+   }
+ });
 
 // route to update a device by id
 router.patch("/:id", async (req, res) => {

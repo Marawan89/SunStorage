@@ -140,6 +140,8 @@ export default function EditDevice() {
       console.error("Error during submit process:", error);
       alert("An error occurred during submission. Please try again. " + error);
     }
+    alert("Device edited successfully")
+    window.location.href = "/devices"; // redirecting to the /device-types page
   }, [serialNumber, hasWarranty, selectedDeviceType, deviceWarrantyStart, deviceWarrantyEnd, deviceTypeInputsValues, deviceTypeInputsValuesInitial, idDevice, qrCode]);
 
 const validateInput = () => {

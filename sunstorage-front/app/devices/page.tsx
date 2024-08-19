@@ -20,6 +20,7 @@ interface DeviceOverview {
   device_type: string;
   warranty_start: string | null;
   warranty_end: string | null;
+  status: string;
 }
 
 interface DeviceSpecificInput {
@@ -90,6 +91,7 @@ export default function Devices() {
             device_type: device.device_type,
             warranty_start: device.start_date,
             warranty_end: device.end_date,
+            status: device.status,
           }));
           setDevices(mappedData);
         } else {
@@ -98,6 +100,18 @@ export default function Devices() {
       })
       .catch((error) => console.error("Error fetching devices:", error));
   }, []);
+
+  // Function to check if warranty is active
+  const isWarrantyActive = (start_date: string | null, end_date: string | null) => {
+   if (!start_date || !end_date) {
+     return "Not available";
+   }
+
+   const currentDate = new Date();
+   const warrantyEndDate = new Date(end_date);
+
+   return warrantyEndDate >= currentDate ? "Valid" : "Expired";
+ };
 
   // Function to handle device deletion
   const handleDelete = async (deviceId: number) => {
@@ -223,8 +237,8 @@ export default function Devices() {
                     <tr>
                       <th scope="col">Serial Number</th>
                       <th scope="col">Device Type</th>
-                      <th scope="col">Warranty Start</th>
-                      <th scope="col">Warranty End</th>
+                      <th scope="col">Warranty</th>
+                      <th scope="col">Status</th>
                     </tr>
                   </thead>
                   <tbody className="table-group-divider">
@@ -233,16 +247,10 @@ export default function Devices() {
                         <th scope="row">{device.serial_number}</th>
                         <td>{device.device_type}</td>
                         <td>
-                          {device.warranty_start
-                            ? new Date(
-                                device.warranty_start
-                              ).toLocaleDateString()
-                            : "Not available"}
+                          {isWarrantyActive(device.warranty_start, device.warranty_end)}
                         </td>
                         <td>
-                          {device.warranty_end
-                            ? new Date(device.warranty_end).toLocaleDateString()
-                            : "Not available"}
+                           {device.status}
                         </td>
                         <td>
                           <a

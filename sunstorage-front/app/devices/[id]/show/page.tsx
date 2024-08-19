@@ -15,7 +15,12 @@ interface DeviceDetails {
   device_type: string;
   warranty_start: string | null;
   warranty_end: string | null;
+  status: string;
   specifics: string;
+  user_name: string;
+  surname: string;
+  email: string;
+  department_name: string;
 }
 
 export default function ViewDevice() {
@@ -42,6 +47,11 @@ export default function ViewDevice() {
               warranty_start: deviceData.start_date,
               warranty_end: deviceData.end_date,
               specifics: deviceData.specifics,
+              status: deviceData.status,
+              name: deviceData.user_name,
+              surname: deviceData.surname,
+              email: deviceData.email,
+              department_name: deviceData.department_name,
             });
           } else {
             console.error("No device found:", data);
@@ -72,12 +82,13 @@ export default function ViewDevice() {
           <div className="col-12 col-md-8 nav-container mt-3 mt-md-0 p-0">
             <div className="col-12 bg-content p-3 p-md-5">
               <div className="d-flex justify-content-between align-items-center">
-                <h3 className="sn">S/N:{device.serial_number}</h3>
+                <h3 className="sn">S/N: {device.serial_number}</h3>
               </div>
               <ul className="list-group">
-                <li className="list-group-item active">
+                <li className="list-group-item disabled">
                   {device.device_type} specifics:
                 </li>
+                <li className="list-group-item"> Status: {device.status}</li>
                 {specificsList}
                 {device.warranty_start && device.warranty_end ? (
                   <>
@@ -98,6 +109,19 @@ export default function ViewDevice() {
                     src={`https://quickchart.io/qr?text=${device.qr_code}&size=200px&dark=000000&light=FFFFFF&ecLevel=M&margin=4`}
                   />
                 </li>
+                {device.status === "assigned" && (
+                  <>
+                    <li className="list-group-item">
+                      Name owner: {device.user_name} {device.surname}
+                    </li>
+                    <li className="list-group-item">
+                      Email owner: {device.email}
+                    </li>
+                    <li className="list-group-item">
+                      Owner department: {device.department_name}
+                    </li>
+                  </>
+                )}
               </ul>
             </div>
           </div>

@@ -24,7 +24,6 @@ const assignedDeviceOverviewRoutes = require(path + "assignedDeviceOverview");
 
 // use routes
 app.use("/api/devices/overview", devicesOverviewRoutes);
-app.use("/api/devices/assigned-overview", assignedDeviceOverviewRoutes);
 
 app.use("/api/devices", deviceRoutes);
 app.use("/api/users", userRoutes);

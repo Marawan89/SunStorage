@@ -4,40 +4,61 @@ const pool = require("../../../db");
 
 // query to get all device specifics
 router.get("/", async (req, res) => {
-   try {
-     const deviceId = req.query.id;
-     let query = `
+  try {
+    const deviceId = req.query.id;
+    let query = `
       SELECT
-          devices.id,
-          devices.sn,
-          devices.qr_code_string,
-          devicetypes.name AS device_type,
-          devicewarranties.start_date AS start_date,
-          devicewarranties.end_date AS end_date,
-          GROUP_CONCAT(DISTINCT CONCAT(devicespecificsinputs.input_label, ': ', devicespecifics.value) SEPARATOR ', ') AS specifics
-       FROM
-          devices
-       INNER JOIN devicetypes ON devices.device_type_id = devicetypes.id
-       LEFT JOIN devicewarranties ON devices.id = devicewarranties.device_id
-       LEFT JOIN devicespecifics ON devices.id = devicespecifics.device_id
-       LEFT JOIN devicespecificsinputs ON devicespecifics.name = devicespecificsinputs.input_name
+         devices.id,
+         devices.sn,
+         devices.qr_code_string,
+         devices.status,
+         devicetypes.name AS device_type,
+         devicewarranties.start_date AS start_date,
+         devicewarranties.end_date AS end_date,
+         GROUP_CONCAT(
+            DISTINCT CONCAT(
+               devicespecificsinputs.input_label,
+               ': ',
+               devicespecifics.
+            VALUE
+
+            ) SEPARATOR ', '
+         ) AS specifics,
+         users.name AS user_name,
+         users.surname,
+         users.email,
+         departments.name AS department_name
+      FROM
+	      devices
+      INNER JOIN devicetypes ON devices.device_type_id = devicetypes.id
+      LEFT JOIN devicewarranties ON devices.id = devicewarranties.device_id
+      LEFT JOIN devicespecifics ON devices.id = devicespecifics.device_id
+      LEFT JOIN devicespecificsinputs ON devicespecifics.name = devicespecificsinputs.input_name
+      LEFT JOIN deviceassignments ON devices.id = deviceassignments.device_id
+      LEFT JOIN users ON deviceassignments.user_id = users.id
+      LEFT JOIN departments ON users.department_id = departments.id
+      ` + (deviceId ? 'WHERE devices.id = ?' : '') + `
+      GROUP BY
+         devices.id,
+         devices.sn,
+         devices.qr_code_string,
+         devices.status,
+         devicetypes.name,
+         devicewarranties.start_date,
+         devicewarranties.end_date,
+         users.name,
+         users.surname,
+         users.email,
+         departments.name;
      `;
- 
-     // Conditionally add WHERE clause if deviceId is present
-     if (deviceId) {
-       query += ` WHERE devices.id = ?`;
-     }
- 
-     // Add the GROUP BY clause
-     query += ` GROUP BY devices.id, devices.sn, devices.qr_code_string, devicetypes.name, devicewarranties.start_date, devicewarranties.end_date;`;
- 
-     // Execute the query
-     const [rows] = await pool.query(query, deviceId ? [deviceId] : []);
-     res.json(rows);
-   } catch (error) {
-     res.status(500).json({ error: error.message });
-   }
- });
+
+    // Execute the query
+    const [rows] = await pool.query(query, deviceId ? [deviceId] : []);
+    res.json(rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 // route to update a device by id
 router.patch("/:id", async (req, res) => {
@@ -48,6 +69,7 @@ router.patch("/:id", async (req, res) => {
     device_type,
     warranty_start,
     warranty_end,
+    status,
     specifics,
   } = req.body;
 
@@ -59,7 +81,7 @@ router.patch("/:id", async (req, res) => {
   try {
     // query to update devices table
     const [result] = await pool.query(
-      "UPDATE devices SET sn = ?, qr_code_string = ?, device_type_id = ?, start_date = ?, end_date = ? WHERE id = ?",
+      "UPDATE devices SET sn = ?, qr_code_string = ?, device_type_id = ?, status = ?, start_date = ?, end_date = ? WHERE id = ?",
       [serial_number, qr_code, device_type, warranty_start, warranty_end, id]
     );
 

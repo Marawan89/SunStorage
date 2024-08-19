@@ -5,7 +5,6 @@ import {
   faLaptop,
   faUsers,
   faComputer,
-  faUserPlus,
   faHouse
 } from "@fortawesome/free-solid-svg-icons";
 import {} from "@fortawesome/free-regular-svg-icons";
@@ -31,13 +30,6 @@ export default function Menu() {
             <a href="/devices" className="d-flex align-items-center">
               <FontAwesomeIcon icon={faLaptop} className="menuIcons mr-2" />
               <p className="mb-0">Devices</p>
-            </a>
-          </button>
-          <div className="spacer"></div>
-          <button className="nav-item btn p-0 mb-2">
-            <a href="/assigned-devices" className="d-flex align-items-center">
-              <FontAwesomeIcon icon={faUserPlus} className="menuIcons mr-2" />
-              <p className="mb-0">Assigned Devices</p>
             </a>
           </button>
           <div className="spacer"></div>

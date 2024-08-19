@@ -99,28 +99,28 @@ export default function Actions() {
 
   // Funzione per cambiare un dispostivo in riparazione (status)
   const repairDevice = async () => {
-   try {
-     const response = await fetch(
-       `http://localhost:4000/api/devices/${idDevice}/status`,
-       {
-         method: "PATCH",
-         headers: {
-           "Content-Type": "application/json",
-         },
-         body: JSON.stringify({ status: "under repair" }),
-       }
-     );
+    try {
+      const response = await fetch(
+        `http://localhost:4000/api/devices/${idDevice}/status`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status: "under repair" }),
+        }
+      );
 
-     if (response.ok) {
-       alert("Device sent to repair successfully!");
-       window.location.href = "/devices";
-     } else {
-       console.error("Errore nell'invio del dispositivo in riparazione");
-     }
-   } catch (error) {
-     console.error("Errore nell'invio del dispositivo in riparazione:", error);
-   }
- };
+      if (response.ok) {
+        alert("Device sent to repair successfully!");
+        window.location.href = "/devices";
+      } else {
+        console.error("Errore nell'invio del dispositivo in riparazione");
+      }
+    } catch (error) {
+      console.error("Errore nell'invio del dispositivo in riparazione:", error);
+    }
+  };
 
   // to view the page only after control
   if (isLoading) {
@@ -140,6 +140,11 @@ export default function Actions() {
                   Assegna (status: assigned)
                 </a>
               )}
+              {isAssigned && (
+                <a className="p-3 btn btn-secondary" href={`assign`}>
+                  Change owner (status: assigned)
+                </a>
+              )}
               <button className="p-3 btn btn-primary" onClick={unassignDevice}>
                 Rientra (status: free)
               </button>
@@ -149,6 +154,9 @@ export default function Actions() {
               <button className="p-3 btn btn-danger" onClick={dismissDevice}>
                 Dismetti (status: dismissed)
               </button>
+              <a href={`show`} className="btn btn-light">
+                View Device
+              </a>
             </div>
           </div>
         </div>

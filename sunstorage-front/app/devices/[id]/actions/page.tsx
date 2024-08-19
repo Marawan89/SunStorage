@@ -107,18 +107,18 @@ export default function Actions() {
          headers: {
            "Content-Type": "application/json",
          },
-         body: JSON.stringify({ status: "dismissed" }),
+         body: JSON.stringify({ status: "under repair" }),
        }
      );
 
      if (response.ok) {
-       alert("Device dismissed successfully!");
+       alert("Device sent to repair successfully!");
        window.location.href = "/devices";
      } else {
-       console.error("Errore nella dismissione del dispositivo");
+       console.error("Errore nell'invio del dispositivo in riparazione");
      }
    } catch (error) {
-     console.error("Errore nella dismissione del dispositivo:", error);
+     console.error("Errore nell'invio del dispositivo in riparazione:", error);
    }
  };
 
@@ -143,7 +143,7 @@ export default function Actions() {
               <button className="p-3 btn btn-primary" onClick={unassignDevice}>
                 Rientra (status: free)
               </button>
-              <button className="p-3 btn btn-success">
+              <button className="p-3 btn btn-success" onClick={repairDevice}>
                 Manda in riparazione (status: under repair)
               </button>
               <button className="p-3 btn btn-danger" onClick={dismissDevice}>

@@ -4,14 +4,40 @@ const pool = require('../../../db');
 
 // Create a new device assignment
 router.post('/', async (req, res) => {
-  const { device_id, user_id } = req.body;
-  try {
-    const [result] = await pool.query('INSERT INTO deviceassignments (device_id, user_id, assign_datetime) VALUES (?, ?, NOW())', [device_id, user_id]);
-    res.status(201).json({ id: result.insertId, device_id, user_id });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
+   const { device_id, user_id } = req.body;
+   try {
+     // start transition
+     await pool.query('START TRANSACTION');
+     
+     // insert new assignment la nuova assegnazione
+     const [result] = await pool.query(
+       'INSERT INTO deviceassignments (device_id, user_id, assign_datetime) VALUES (?, ?, NOW())',
+       [device_id, user_id]
+     );
+     
+     // update devices status to assigned when assigned
+     const [updateResult] = await pool.query(
+       'UPDATE devices SET status = ? WHERE id = ?',
+       ['assigned', device_id]
+     );
+ 
+     if (updateResult.affectedRows === 0) {
+       // Se l'aggiornamento non ha avuto successo, fai il rollback della transazione
+       await pool.query('ROLLBACK');
+       return res.status(404).json({ error: 'Device not found or state update failed' });
+     }
+     
+     // Conferma la transazione
+     await pool.query('COMMIT');
+ 
+     res.status(201).json({ id: result.insertId, device_id, user_id });
+   } catch (error) {
+     // Rollback della transazione in caso di errore
+     await pool.query('ROLLBACK');
+     res.status(400).json({ error: error.message });
+   }
+ });
+ 
 
 // Read all device assignments
 router.get('/', async (req, res) => {

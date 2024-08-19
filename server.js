@@ -20,7 +20,6 @@ const deviceWarrantyRoutes = require(path + "devicewarranty");
 const userRoutes = require(path + "user");
 const devicesOverviewRoutes = require(path + "devicesOverview");
 const deviceSpecificsInputsRoutes = require(path + "devicespecificsinputs");
-const assignedDeviceOverviewRoutes = require(path + "assignedDeviceOverview");
 
 // use routes
 app.use("/api/devices/overview", devicesOverviewRoutes);

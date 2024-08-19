@@ -135,7 +135,7 @@ export default function AssignDevice() {
     }
 
     alert("Device assigned successfully")
-    window.location.href = "/assigned-devices";
+    window.location.href = "/devices";
   };
 
   // check if the department is selected

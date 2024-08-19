@@ -10,67 +10,64 @@ import "./style.css";
 export default function Actions() {
   const params = useParams();
   const idDevice = params.id;
-  const [isAssigned, setIsAssigned] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [deviceStatus, setDeviceStatus] = useState("");
   const [assignmentId, setAssignmentId] = useState(null);
 
-  // Funzione per controllare se il dispositivo è assegnato
+
+   // Funzione per ottenere lo stato del dispositivo
   useEffect(() => {
-    const checkIfAssigned = async () => {
-      try {
-        console.log(`Fetching /api/deviceassignments/check/${idDevice}`);
-        const response = await fetch(
-          `http://localhost:4000/api/deviceassignments/check/${idDevice}`
-        );
-        const data = await response.json();
-        console.log("Data received:", data);
+   const fetchDeviceStatus = async () => {
+     try {
+       const response = await fetch(
+         `http://localhost:4000/api/devices/${idDevice}`
+       );
+       const data = await response.json();
+       setDeviceStatus(data.status); // Imposta lo stato del dispositivo
 
-        if (data.length > 0) {
-          setIsAssigned(true);
-          setAssignmentId(data[0].id);
-        } else {
-          setIsAssigned(false);
-          setAssignmentId(null);
-        }
-      } catch (error) {
-        console.error(
-          "Errore nel controllo dell'assegnazione del dispositivo:",
-          error
-        );
-      } finally {
-        setIsLoading(false);
-      }
-    };
+       // Verifica se il dispositivo è assegnato e ottieni l'ID dell'assegnazione
+       const assignmentResponse = await fetch(
+         `http://localhost:4000/api/deviceassignments/check/${idDevice}`
+       );
+       const assignmentData = await assignmentResponse.json();
+       if (assignmentData.length > 0) {
+         setAssignmentId(assignmentData[0].id); // Imposta l'ID dell'assegnazione
+       }
+     } catch (error) {
+       console.error("Errore nel recupero dello stato del dispositivo:", error);
+     } finally {
+       setIsLoading(false);
+     }
+   };
 
-    checkIfAssigned();
-  }, [idDevice]);
+   fetchDeviceStatus(); // Ottieni lo stato del dispositivo
+ }, [idDevice]);
+
 
   // Funzione per deassegnare il dispositivo
   const unassignDevice = async () => {
-    if (assignmentId) {
-      try {
-        const response = await fetch(
-          `http://localhost:4000/api/deviceassignments/${assignmentId}`,
-          {
-            method: "DELETE",
-          }
-        );
+   if (assignmentId) {
+     try {
+       const response = await fetch(
+         `http://localhost:4000/api/deviceassignments/${assignmentId}`,
+         {
+           method: "DELETE",
+         }
+       );
 
-        if (response.ok) {
-          setIsAssigned(false);
-          setAssignmentId(null);
-        } else {
-          console.error("Errore nella deassegnazione del dispositivo");
-        }
-      } catch (error) {
-        console.error("Errore nella deassegnazione del dispositivo:", error);
-      }
-    } else {
-      console.error("Assignment ID non impostato.");
-    }
-    alert("Device deassigned successfuly!");
-    window.location.href = "/devices";
-  };
+       if (response.ok) {
+         alert("Device deassigned successfully!");
+         window.location.href = "/devices";
+       } else {
+         console.error("Errore nella deassegnazione del dispositivo");
+       }
+     } catch (error) {
+       console.error("Errore nella deassegnazione del dispositivo:", error);
+     }
+   } else {
+     console.error("Assignment ID non trovato.");
+   }
+ };
 
   // Funzione per dismettere il dispositivo
   const dismissDevice = async () => {
@@ -122,6 +119,16 @@ export default function Actions() {
     }
   };
 
+    // Funzione per assegnare il dispositivo
+    const assignDevice = async () => {
+      window.location.href = `/devices/${idDevice}/assign`;
+    };
+  
+    // Funzione per cambiare il proprietario del dispositivo
+    const changeOwner = async () => {
+      window.location.href = `/devices/${idDevice}/assign`;
+    };
+
   // to view the page only after control
   if (isLoading) {
     return <div>Loading...</div>;
@@ -134,26 +141,58 @@ export default function Actions() {
         <div className="col-12 d-flex justify-content-center align-items-center">
           <div className="col-12 col-md-6">
             <div className="box d-flex flex-column justify-content-center align-items-center">
-              {/* Mostra il pulsante "Assegna" solo se il dispositivo non è assegnato */}
-              {!isAssigned && (
-                <a className="p-3 btn btn-info" href={`assign`}>
-                  Assegna (status: assigned)
-                </a>
+            {deviceStatus === "free" && (
+                <>
+                  <button className="p-3 btn btn-info" onClick={assignDevice}>
+                    Assegna (status: assigned)
+                  </button>
+                  <button className="p-3 btn btn-success" onClick={repairDevice}>
+                    Manda in riparazione (status: under repair)
+                  </button>
+                  <button className="p-3 btn btn-danger" onClick={dismissDevice}>
+                    Dismetti (status: dismissed)
+                  </button>
+                </>
               )}
-              {isAssigned && (
-                <a className="p-3 btn btn-secondary" href={`assign`}>
-                  Change owner (status: assigned)
-                </a>
+              {deviceStatus === "assigned" && (
+                <>
+                  <button className="p-3 btn btn-secondary" onClick={changeOwner}>
+                    Change owner (status: assigned)
+                  </button>
+                  <button className="p-3 btn btn-primary" onClick={unassignDevice}>
+                    Rientra (status: free)
+                  </button>
+                  <button className="p-3 btn btn-success" onClick={repairDevice}>
+                    Manda in riparazione (status: under repair)
+                  </button>
+                  <button className="p-3 btn btn-danger" onClick={dismissDevice}>
+                    Dismetti (status: dismissed)
+                  </button>
+                </>
               )}
-              <button className="p-3 btn btn-primary" onClick={unassignDevice}>
-                Rientra (status: free)
-              </button>
-              <button className="p-3 btn btn-success" onClick={repairDevice}>
-                Manda in riparazione (status: under repair)
-              </button>
-              <button className="p-3 btn btn-danger" onClick={dismissDevice}>
-                Dismetti (status: dismissed)
-              </button>
+              {deviceStatus === "under repair" && (
+                <>
+                  <button className="p-3 btn btn-info" onClick={assignDevice}>
+                    Assegna (status: assigned)
+                  </button>
+                  <button className="p-3 btn btn-primary" onClick={unassignDevice}>
+                    Rientra (status: free)
+                  </button>
+                  <button className="p-3 btn btn-danger" onClick={dismissDevice}>
+                    Dismetti (status: dismissed)
+                  </button>
+                </>
+              )}
+              {deviceStatus === "dismissed" && (
+                <>
+                  <button className="p-3 btn btn-success" onClick={repairDevice}>
+                    Manda in riparazione (status: under repair)
+                  </button>
+                  <button className="p-3 btn btn-primary" onClick={unassignDevice}>
+                    Rientra (status: free)
+                  </button>
+                </>
+              )}
               <a href={`show`} className="btn btn-light">
                 View Device
               </a>

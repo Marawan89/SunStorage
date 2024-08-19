@@ -78,19 +78,47 @@ router.patch('/:id', async (req, res) => {
   }
 });
 
-// Delete a device assignment by id
+// Delete a device assignment by id and update device status to 'free'
 router.delete('/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const [result] = await pool.query('DELETE FROM deviceassignments WHERE id = ?', [id]);
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ error: 'Device assignment not found' });
-    }
-    res.status(204).send();
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+   const { id } = req.params;
+   try {
+     // Inizia la transazione
+     await pool.query('START TRANSACTION');
+ 
+     // Recupera il device_id dell'assegnazione che verrà eliminata
+     const [assignment] = await pool.query('SELECT device_id FROM deviceassignments WHERE id = ?', [id]);
+ 
+     if (assignment.length === 0) {
+       await pool.query('ROLLBACK');
+       return res.status(404).json({ error: 'Device assignment not found' });
+     }
+ 
+     const deviceId = assignment[0].device_id;
+ 
+     // Elimina l'assegnazione
+     const [result] = await pool.query('DELETE FROM deviceassignments WHERE id = ?', [id]);
+     if (result.affectedRows === 0) {
+       await pool.query('ROLLBACK');
+       return res.status(404).json({ error: 'Device assignment not found' });
+     }
+ 
+     // Aggiorna lo stato del dispositivo a 'free'
+     const [updateResult] = await pool.query('UPDATE devices SET status = ? WHERE id = ?', ['free', deviceId]);
+     if (updateResult.affectedRows === 0) {
+       await pool.query('ROLLBACK');
+       return res.status(404).json({ error: 'Device not found or state update failed' });
+     }
+ 
+     // Conferma la transazione
+     await pool.query('COMMIT');
+     res.status(204).send();
+   } catch (error) {
+     // Rollback della transazione in caso di errore
+     await pool.query('ROLLBACK');
+     res.status(500).json({ error: error.message });
+   }
+ });
+ 
 
 // route to check if a device is assigned
 router.get('/check/:device_id', async (req, res) => {

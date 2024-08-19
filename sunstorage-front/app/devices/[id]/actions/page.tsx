@@ -10,10 +10,9 @@ import "./style.css";
 export default function Actions() {
   const params = useParams();
   const idDevice = params.id;
-
-  // Stato per tenere traccia dell'assegnazione del dispositivo
   const [isAssigned, setIsAssigned] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [assignmentId, setAssignmentId] = useState(null);
 
   // Funzione per controllare se il dispositivo è assegnato
   useEffect(() => {
@@ -28,6 +27,10 @@ export default function Actions() {
 
         if (data.length > 0) {
           setIsAssigned(true);
+          setAssignmentId(data[0].id);
+        } else {
+         setIsAssigned(false);
+         setAssignmentId(null);
         }
       } catch (error) {
         console.error(
@@ -41,6 +44,34 @@ export default function Actions() {
 
     checkIfAssigned();
   }, [idDevice]);
+
+  // Funzione per deassegnare il dispositivo
+  const unassignDevice = async () => {
+   if (assignmentId) {
+     try {
+       const response = await fetch(
+         `http://localhost:4000/api/deviceassignments/${assignmentId}`,
+         {
+           method: "DELETE",
+         }
+       );
+
+       if (response.ok) {
+         setIsAssigned(false);
+         setAssignmentId(null);
+       } else {
+         console.error("Errore nella deassegnazione del dispositivo");
+       }
+     } catch (error) {
+       console.error("Errore nella deassegnazione del dispositivo:", error);
+     }
+   } else {
+     console.error("Assignment ID non impostato.");
+   }
+   alert("Device deassigned successfuly!")
+   window.location.href = "/devices";
+
+ };
 
   // to view the page only after assignment control
   if (isLoading) {
@@ -60,9 +91,15 @@ export default function Actions() {
                   Assegna (status: assigned)
                 </a>
               )}
-              <button className="p-3 btn btn-primary">Rientra (status: free)</button>
-              <button className="p-3 btn btn-success">Manda in riparazione (status: under repair)</button>
-              <button className="p-3 btn btn-danger">Dismetti (status: dismissed)</button>
+              <button className="p-3 btn btn-primary" onClick={unassignDevice}>
+                Rientra (status: free)
+              </button>
+              <button className="p-3 btn btn-success">
+                Manda in riparazione (status: under repair)
+              </button>
+              <button className="p-3 btn btn-danger">
+                Dismetti (status: dismissed)
+              </button>
             </div>
           </div>
         </div>

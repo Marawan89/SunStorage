@@ -29,8 +29,8 @@ export default function Actions() {
           setIsAssigned(true);
           setAssignmentId(data[0].id);
         } else {
-         setIsAssigned(false);
-         setAssignmentId(null);
+          setIsAssigned(false);
+          setAssignmentId(null);
         }
       } catch (error) {
         console.error(
@@ -47,33 +47,82 @@ export default function Actions() {
 
   // Funzione per deassegnare il dispositivo
   const unassignDevice = async () => {
-   if (assignmentId) {
-     try {
-       const response = await fetch(
-         `http://localhost:4000/api/deviceassignments/${assignmentId}`,
-         {
-           method: "DELETE",
-         }
-       );
+    if (assignmentId) {
+      try {
+        const response = await fetch(
+          `http://localhost:4000/api/deviceassignments/${assignmentId}`,
+          {
+            method: "DELETE",
+          }
+        );
 
-       if (response.ok) {
-         setIsAssigned(false);
-         setAssignmentId(null);
-       } else {
-         console.error("Errore nella deassegnazione del dispositivo");
+        if (response.ok) {
+          setIsAssigned(false);
+          setAssignmentId(null);
+        } else {
+          console.error("Errore nella deassegnazione del dispositivo");
+        }
+      } catch (error) {
+        console.error("Errore nella deassegnazione del dispositivo:", error);
+      }
+    } else {
+      console.error("Assignment ID non impostato.");
+    }
+    alert("Device deassigned successfuly!");
+    window.location.href = "/devices";
+  };
+
+  // Funzione per dismettere il dispositivo
+  const dismissDevice = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:4000/api/devices/${idDevice}/status`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status: "dismissed" }),
+        }
+      );
+
+      if (response.ok) {
+        alert("Device dismissed successfully!");
+        window.location.href = "/devices";
+      } else {
+        console.error("Errore nella dismissione del dispositivo");
+      }
+    } catch (error) {
+      console.error("Errore nella dismissione del dispositivo:", error);
+    }
+  };
+
+  // Funzione per cambiare un dispostivo in riparazione (status)
+  const repairDevice = async () => {
+   try {
+     const response = await fetch(
+       `http://localhost:4000/api/devices/${idDevice}/status`,
+       {
+         method: "PATCH",
+         headers: {
+           "Content-Type": "application/json",
+         },
+         body: JSON.stringify({ status: "dismissed" }),
        }
-     } catch (error) {
-       console.error("Errore nella deassegnazione del dispositivo:", error);
-     }
-   } else {
-     console.error("Assignment ID non impostato.");
-   }
-   alert("Device deassigned successfuly!")
-   window.location.href = "/devices";
+     );
 
+     if (response.ok) {
+       alert("Device dismissed successfully!");
+       window.location.href = "/devices";
+     } else {
+       console.error("Errore nella dismissione del dispositivo");
+     }
+   } catch (error) {
+     console.error("Errore nella dismissione del dispositivo:", error);
+   }
  };
 
-  // to view the page only after assignment control
+  // to view the page only after control
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -97,7 +146,7 @@ export default function Actions() {
               <button className="p-3 btn btn-success">
                 Manda in riparazione (status: under repair)
               </button>
-              <button className="p-3 btn btn-danger">
+              <button className="p-3 btn btn-danger" onClick={dismissDevice}>
                 Dismetti (status: dismissed)
               </button>
             </div>

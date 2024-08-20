@@ -13,9 +13,9 @@ export default function Navbar() {
   return (
     <nav className="navbar navbar-expand-lg p-4">
       <div className="container">
-        <h1 className="logo">
+        <a href="/" className="logo">
           Sun<span>Storage</span>
-        </h1>
+        </a>
         <div className="d-flex justify-content-end align-items-center">
           <div className="userText d-flex align-items-center">
             <p className="mb-0 me-2">Ciao, Marawan</p>

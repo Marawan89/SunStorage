@@ -9,6 +9,7 @@ nav a .logo {
   font-family: "Inter", sans-serif;
   font-size: 48px;
   color: #fbdd01;
+  text-decoration: none;
 }
 
 .logo span {

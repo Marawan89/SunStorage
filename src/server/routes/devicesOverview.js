@@ -5,7 +5,7 @@ const pool = require("../../../db");
 // query to get all device specifics
 router.get("/", async (req, res) => {
   try {
-    const deviceId = req.query.id;
+    const deviceQr = req.query.qr;
     let query = `
       SELECT
          devices.id,
@@ -37,7 +37,7 @@ router.get("/", async (req, res) => {
       LEFT JOIN deviceassignments ON devices.id = deviceassignments.device_id
       LEFT JOIN users ON deviceassignments.user_id = users.id
       LEFT JOIN departments ON users.department_id = departments.id
-      ` + (deviceId ? 'WHERE devices.id = ?' : '') + `
+      ` + (deviceQr ? 'WHERE devices.id = ? or devices.qr_code_string = ?' : '') + `
       GROUP BY
          devices.id,
          devices.sn,
@@ -49,11 +49,13 @@ router.get("/", async (req, res) => {
          users.name,
          users.surname,
          users.email,
-         departments.name;
+         departments.name
+      ORDER BY
+         assign_datetime desc
      `;
 
     // Execute the query
-    const [rows] = await pool.query(query, deviceId ? [deviceId] : []);
+    const [rows] = await pool.query(query, deviceQr ? [deviceQr, deviceQr] : []);
     res.json(rows);
   } catch (error) {
     res.status(500).json({ error: error.message });

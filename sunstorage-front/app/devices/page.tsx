@@ -283,9 +283,9 @@ export default function Devices() {
                               </a>
                               <a
                                 className="dropdown-item"
-                                href={`devices/${device.id}/actions`}
+                                href={`devices/${device.id}/status`}
                               >
-                                More
+                                Status
                               </a>
                               <a
                                 className="dropdown-item"

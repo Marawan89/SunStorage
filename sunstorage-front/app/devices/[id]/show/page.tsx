@@ -33,7 +33,7 @@ export default function ViewDevice() {
     setId(params.id);
 
     if (deviceId) {
-      const url = `http://localhost:4000/api/devices/overview?id=${deviceId}`;
+      const url = `http://localhost:4000/api/devices/overview?qr=${deviceId}`;
       fetch(url)
         .then((response) => response.json())
         .then((data) => {
@@ -48,7 +48,7 @@ export default function ViewDevice() {
               warranty_end: deviceData.end_date,
               specifics: deviceData.specifics,
               status: deviceData.status,
-              name: deviceData.user_name,
+              user_name: deviceData.user_name,
               surname: deviceData.surname,
               email: deviceData.email,
               department_name: deviceData.department_name,
@@ -106,7 +106,7 @@ export default function ViewDevice() {
                 )}
                 <li className="list-group-item">
                   <img
-                    src={`https://quickchart.io/qr?text=${device.qr_code}&size=200px&dark=000000&light=FFFFFF&ecLevel=M&margin=4`}
+                    src={`https://quickchart.io/qr?text=http://192.168.16.119:3000/devices/qr/${device.qr_code}/&size=200px&dark=000000&light=FFFFFF&ecLevel=M&margin=4`}
                   />
                 </li>
                 {device.status === "assigned" && (

@@ -205,12 +205,6 @@ export default function ViewDeviceWithActions() {
               ) : (
                 <li className="list-group-item">Warranty not available</li>
               )}
-              <li className="list-group-item">
-                <img
-                  src={`https://quickchart.io/qr?text=http://192.168.16.119:3000/devices/qr/${device.qr_code}/&size=200px&dark=000000&light=FFFFFF&ecLevel=M&margin=4`}
-                  alt="QR Code"
-                />
-              </li>
               {device.status === "assigned" && (
                 <>
                   <li className="list-group-item">

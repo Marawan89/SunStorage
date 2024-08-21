@@ -7,73 +7,85 @@ import Navbar from "../../../parts/navbar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../globals.css";
 import "./style.css";
+const formatDate = require('../../../../dateFormatter');
 
-interface DeviceDetails {
-  id: number;
-  serial_number: string;
-  qr_code: string;
-  device_type: string;
-  warranty_start: string | null;
-  warranty_end: string | null;
-  status: string;
-  specifics: string;
-  user_name: string;
-  surname: string;
-  email: string;
-  department_name: string;
-  device_logs: string;
+interface Device {
+   sn: string;
+   device_type_name: string;
+   status: string;
+   qr_code_string: string;
+}
+
+interface DeviceAssignment {
+   name: string;
+   surname: string;
+   department_name: string;
+   email: string;
+}
+
+interface DeviceSpecific {
+   name: string;
+   value: string;
+   input_label: string;
+}
+
+interface DeviceWarranty {
+   start_date: string;
+   end_date: string;
+}
+
+interface DeviceLog {
+   log_type: string;
+   additional_notes: string;
+   event_datetime: string;
 }
 
 export default function ViewDevice() {
-  const params = useParams();
-  const [device, setDevice] = useState<DeviceDetails | null>(null);
-  const [id, setId] = useState<string | null>(null);
+  const params = useParams(); //parametro get della route
+  
+  const [device, setDevice] = useState<Device|null>(null);
+  const [deviceSpecifics, setDeviceSpecifics] = useState<DeviceSpecific[]>([]);
+  const [deviceAssignments, setDeviceAssignments] = useState<DeviceAssignment[]>([]);
+  const [deviceLogs, setDeviceLogs] = useState<DeviceLog[]>([]);
+  const [deviceWarranty, setDeviceWarranty] = useState<DeviceWarranty | null>(null);
 
   useEffect(() => {
     const deviceId = params.id;
-    setId(params.id);
 
-    if (deviceId) {
-      const url = `http://localhost:4000/api/devices/overview?qr=${deviceId}`;
-      fetch(url)
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.length > 0) {
-            const deviceData = data[0];
-            setDevice({
-              id: deviceData.id,
-              serial_number: deviceData.sn,
-              qr_code: deviceData.qr_code_string,
-              device_type: deviceData.device_type,
-              warranty_start: deviceData.start_date,
-              warranty_end: deviceData.end_date,
-              specifics: deviceData.specifics,
-              status: deviceData.status,
-              user_name: deviceData.user_name,
-              surname: deviceData.surname,
-              email: deviceData.email,
-              department_name: deviceData.department_name,
-              device_logs: deviceData.device_logs,
-            });
-          } else {
-            console.error("No device found:", data);
-          }
-        })
-        .catch((error) =>
-          console.error("Error fetching device details:", error)
-        );
-    }
+    fetch(`http://localhost:4000/api/devices/${deviceId}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setDevice(data);
+      });
+
+    fetch(`http://localhost:4000/api/devices/${deviceId}/devicespecifics`)
+      .then((response) => response.json())
+      .then((data) => {
+        setDeviceSpecifics(data);
+      });
+
+    fetch(`http://localhost:4000/api/devices/${deviceId}/assignments`)
+      .then((response) => response.json())
+      .then((data) => {
+        setDeviceAssignments(data);
+      });
+
+    fetch(`http://localhost:4000/api/devices/${deviceId}/logs`)
+      .then((response) => response.json())
+      .then((data) => {
+        setDeviceLogs(data);
+      });
+
+    fetch(`http://localhost:4000/api/devices/${deviceId}/devicewarranty`)
+      .then((response) => response.json())
+      .then((data) => {
+         setDeviceWarranty(data);
+      });
   }, []);
 
-  if (!device) {
-    return <div>Loading...</div>;
-  }
-
-  const specificsList = device.specifics.split(", ").map((spec, index) => (
-    <li key={index} className="list-group-item">
-      {spec}
-    </li>
-  ));
+    if (!device || deviceAssignments.length == 0 || deviceSpecifics.length == 0 || !deviceWarranty || deviceLogs.length == 0) {
+      return <div>Loading...</div>;
+    }
 
   return (
     <>
@@ -84,23 +96,27 @@ export default function ViewDevice() {
           <div className="col-12 col-md-8 nav-container mt-3 mt-md-0 p-0">
             <div className="col-12 bg-content p-3 p-md-5">
               <div className="d-flex justify-content-between align-items-center">
-                <h3 className="sn">S/N: {device.serial_number}</h3>
+                <h3 className="sn">S/N: {device.sn}</h3>
               </div>
               <ul className="list-group">
                 <li className="list-group-item disabled">
-                  {device.device_type} specifics:
+                  {device.device_type_name} specifics:
                 </li>
                 <li className="list-group-item"> Status: {device.status}</li>
-                {specificsList}
-                {device.warranty_start && device.warranty_end ? (
+                {deviceSpecifics.map((devicespecific, index) => (
+                    <li key={index} className="list-group-item">
+                    {devicespecific.input_label} : {devicespecific.value} 
+                  </li>
+                  ))}
+                {deviceWarranty.start_date && deviceWarranty.end_date ? (
                   <>
                     <li className="list-group-item">
                       Warranty Start Date:{" "}
-                      {new Date(device.warranty_start).toLocaleDateString()}
+                      {new Date(deviceWarranty.start_date).toLocaleDateString()}
                     </li>
                     <li className="list-group-item">
                       Warranty End Date:{" "}
-                      {new Date(device.warranty_end).toLocaleDateString()}
+                      {new Date(deviceWarranty.end_date).toLocaleDateString()}
                     </li>
                   </>
                 ) : (
@@ -108,31 +124,31 @@ export default function ViewDevice() {
                 )}
                 <li className="list-group-item">
                   <img
-                    src={`https://quickchart.io/qr?text=http://192.168.16.119:3000/devices/qr/${device.qr_code}/&size=200px&dark=000000&light=FFFFFF&ecLevel=M&margin=4`}
+                    src={`https://quickchart.io/qr?text=http://192.168.16.119:3000/devices/qr/${device.qr_code_string}/&size=200px&dark=000000&light=FFFFFF&ecLevel=M&margin=4`}
                   />
                 </li>
                 {device.status === "assigned" && (
                   <>
                     <li className="list-group-item">
-                      Name owner: {device.user_name} {device.surname}
+                      Name owner: {deviceAssignments[0].name} {deviceAssignments[0].surname}
                     </li>
                     <li className="list-group-item">
-                      Email owner: {device.email}
+                      Email owner: {deviceAssignments[0].email}
                     </li>
                     <li className="list-group-item">
-                      Owner department: {device.department_name}
+                      Owner department: {deviceAssignments[0].department_name}
                     </li>
                   </>
                 )}
               <li className="list-group-item">
                 <h5>Device Logs:</h5>
-                <ul className="list-group">
-                  {device.device_logs.split("; ").map((log, index) => (
-                    <li key={index} className="list-group-item">
-                    {log}
+                {deviceLogs.map((devicelog, index) => {
+                  return (
+                  <li key={index} className="list-group-item">
+                    [{formatDate(devicelog.event_datetime)}] {devicelog.log_type}: {devicelog.additional_notes} 
                   </li>
-                  ))}
-                </ul>
+                  );
+                })}
               </li>
               </ul>  
             </div>

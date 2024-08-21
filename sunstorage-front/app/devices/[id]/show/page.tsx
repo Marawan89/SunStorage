@@ -14,6 +14,10 @@ interface Device {
    device_type_name: string;
    status: string;
    qr_code_string: string;
+   devicespecifics: DeviceSpecific[];
+   devicewarranty: DeviceWarranty;
+   devicelogs: DeviceLog[];
+   deviceassignments: DeviceAssignment[];
 }
 
 interface DeviceAssignment {
@@ -42,48 +46,18 @@ interface DeviceLog {
 
 export default function ViewDevice() {
   const params = useParams(); //parametro get della route
-  
   const [device, setDevice] = useState<Device|null>(null);
-  const [deviceSpecifics, setDeviceSpecifics] = useState<DeviceSpecific[]>([]);
-  const [deviceAssignments, setDeviceAssignments] = useState<DeviceAssignment[]>([]);
-  const [deviceLogs, setDeviceLogs] = useState<DeviceLog[]>([]);
-  const [deviceWarranty, setDeviceWarranty] = useState<DeviceWarranty | null>(null);
 
   useEffect(() => {
     const deviceId = params.id;
-
-    fetch(`http://localhost:4000/api/devices/${deviceId}`)
+    fetch(`http://localhost:4000/api/devices/${deviceId}/details`)
       .then((response) => response.json())
       .then((data) => {
         setDevice(data);
       });
-
-    fetch(`http://localhost:4000/api/devices/${deviceId}/devicespecifics`)
-      .then((response) => response.json())
-      .then((data) => {
-        setDeviceSpecifics(data);
-      });
-
-    fetch(`http://localhost:4000/api/devices/${deviceId}/assignments`)
-      .then((response) => response.json())
-      .then((data) => {
-        setDeviceAssignments(data);
-      });
-
-    fetch(`http://localhost:4000/api/devices/${deviceId}/logs`)
-      .then((response) => response.json())
-      .then((data) => {
-        setDeviceLogs(data);
-      });
-
-    fetch(`http://localhost:4000/api/devices/${deviceId}/devicewarranty`)
-      .then((response) => response.json())
-      .then((data) => {
-         setDeviceWarranty(data);
-      });
   }, []);
 
-    if (!device || deviceAssignments.length == 0 || deviceSpecifics.length == 0 || !deviceWarranty || deviceLogs.length == 0) {
+    if (!device) {
       return <div>Loading...</div>;
     }
 
@@ -103,20 +77,20 @@ export default function ViewDevice() {
                   {device.device_type_name} specifics:
                 </li>
                 <li className="list-group-item"> Status: {device.status}</li>
-                {deviceSpecifics.map((devicespecific, index) => (
+                {device.devicespecifics.map((devicespecific, index) => (
                     <li key={index} className="list-group-item">
                     {devicespecific.input_label} : {devicespecific.value} 
                   </li>
                   ))}
-                {deviceWarranty.start_date && deviceWarranty.end_date ? (
+                {device.devicewarranty.start_date && device.devicewarranty.end_date ? (
                   <>
                     <li className="list-group-item">
                       Warranty Start Date:{" "}
-                      {new Date(deviceWarranty.start_date).toLocaleDateString()}
+                      {new Date(device.devicewarranty.start_date).toLocaleDateString()}
                     </li>
                     <li className="list-group-item">
                       Warranty End Date:{" "}
-                      {new Date(deviceWarranty.end_date).toLocaleDateString()}
+                      {new Date(device.devicewarranty.end_date).toLocaleDateString()}
                     </li>
                   </>
                 ) : (
@@ -130,19 +104,19 @@ export default function ViewDevice() {
                 {device.status === "assigned" && (
                   <>
                     <li className="list-group-item">
-                      Name owner: {deviceAssignments[0].name} {deviceAssignments[0].surname}
+                      Name owner: {device.deviceassignments[0].name} {device.deviceassignments[0].surname}
                     </li>
                     <li className="list-group-item">
-                      Email owner: {deviceAssignments[0].email}
+                      Email owner: {device.deviceassignments[0].email}
                     </li>
                     <li className="list-group-item">
-                      Owner department: {deviceAssignments[0].department_name}
+                      Owner department: {device.deviceassignments[0].department_name}
                     </li>
                   </>
                 )}
               <li className="list-group-item">
                 <h5>Device Logs:</h5>
-                {deviceLogs.map((devicelog, index) => {
+                {device.devicelogs.map((devicelog, index) => {
                   return (
                   <li key={index} className="list-group-item">
                     [{formatDate(devicelog.event_datetime)}] {devicelog.log_type}: {devicelog.additional_notes} 

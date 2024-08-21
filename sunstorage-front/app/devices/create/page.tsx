@@ -7,6 +7,7 @@ import Navbar from "../../parts/navbar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../globals.css";
 import "./style.css";
+import apiendpoint from "../../../../apiendpoint";
 
 interface DeviceType {
   id: number;
@@ -26,7 +27,7 @@ export default function AddDevice() {
   useEffect(() => {
     async function fetchDeviceTypes() {
       try {
-        const res = await fetch("http://localhost:4000/api/devicetypes");
+        const res = await fetch(`${apiendpoint}api/devicetypes`);
         if (!res.ok) {
           throw new Error("Failed to fetch device types");
         }
@@ -45,7 +46,7 @@ export default function AddDevice() {
       if (selectedDeviceType){
         try {
           console.log('download = '+selectedDeviceType);
-          const res = await fetch("http://localhost:4000/api/devicespecificsinputs/"+selectedDeviceType);
+          const res = await fetch(`${apiendpoint}api/devicespecificsinputs/`+selectedDeviceType);
           if (!res.ok) {
             throw new Error("Failed to fetch device types");
           }
@@ -99,7 +100,7 @@ export default function AddDevice() {
       }
 
       // insert new device
-      const deviceRes = await fetch("http://localhost:4000/api/devices", {
+      const deviceRes = await fetch(`${apiendpoint}api/devices`, {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -121,7 +122,7 @@ export default function AddDevice() {
 
       // insert new device warranty or NULL if no warranty
       const warrantyRes = await fetch(
-        "http://localhost:4000/api/devicewarranties",
+        `${apiendpoint}api/devicewarranties`,
         {
           method: "POST",
           headers: {
@@ -144,7 +145,7 @@ export default function AddDevice() {
       // insert of device specifics
       for (const field of deviceTypeInputs) {
         const insertSpecific = await fetch(
-          "http://localhost:4000/api/devicespecifics",
+          `${apiendpoint}api/devicespecifics`,
           {
             method: "POST",
             headers: {
@@ -258,6 +259,7 @@ export default function AddDevice() {
                            type="number"
                            id={input.input_name}
                            name={input.input_name}
+                           min={10}
                            placeholder={input.input_label}
                            required
                          />

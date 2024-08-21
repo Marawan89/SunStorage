@@ -6,6 +6,7 @@ import Navbar from "../../parts/navbar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../globals.css";
 import "./style.css";
+import apiendpoint from "../../../../apiendpoint";
 
 export default function CreateDepartment() {
    
@@ -26,7 +27,7 @@ export default function CreateDepartment() {
         return;
       }
 
-      const resAdd = await fetch("http://localhost:4000/api/departments", {
+      const resAdd = await fetch(`${apiendpoint}api/devices/departments`, {
         method: "POST",
         headers: {
           Accept: "application/json",

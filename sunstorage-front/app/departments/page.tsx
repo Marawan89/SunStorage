@@ -6,6 +6,7 @@ import Menu  from "../parts/menu";
 import Navbar from "../parts/navbar";
 import "../globals.css";
 import "./style.css";
+const apiendpoint = require('../../../apiendpoint');
 
 interface Department {
    id: number;
@@ -17,32 +18,12 @@ export default function Departments() {
   const [departments, setDepartments] = useState<Department[]>([]);
 
   useEffect(() => {
-     fetch('http://localhost:4000/api/departments')
+     fetch(`${apiendpoint}api/departments/`)
       .then((res) => res.json())
       .then((data) => {
         setDepartments(data)
       })
   }, []);
-
-  // method to handle the deletion of a department from the db
-  const handleDelete = (id: number) => {
-   if (window.confirm("Sei sicuro di eliminare il reparto?")) {
-     fetch(`http://localhost:4000/api/departments/${id}`, {
-       method: 'DELETE',
-     })
-       .then((res) => {
-         if (res.status === 204) {
-           setDepartments(departments.filter(department => department.id !== id));
-         } else {
-           alert("Errore durante l'eliminazione del reparto.");
-         }
-       })
-       .catch((error) => {
-         console.error("Errore:", error);
-         alert("Errore durante l'eliminazione del reparto.");
-       });
-   }
- };
 
   if (!departments) {
     return "loading...";
@@ -73,7 +54,6 @@ export default function Departments() {
                         <td scope="row">{department.name}</td>
                         <td>
                           <a className="btn btn-primary m-1" href={`/departments/update?id=${department.id}`}>Edit</a>
-                          <button className="btn btn-danger m-1" onClick={() => handleDelete(department.id)}>Delete</button>
                         </td>
                       </tr>
                     ))}

@@ -6,6 +6,7 @@ import Menu  from "../parts/menu";
 import Navbar from "../parts/navbar";
 import "../globals.css";
 import "./style.css";
+import apiendpoint from "../../../apiendpoint";
 
 interface Devicetypes {
    id: number;
@@ -16,32 +17,12 @@ export default function Devicetypes() {
   const [devicetypes, setDeviceTypes] = useState<Devicetypes[]>([]);
 
   useEffect(() => {
-     fetch('http://localhost:4000/api/devicetypes')
+     fetch(`${apiendpoint}api/devicetypes`)
       .then((res) => res.json())
       .then((data) => {
         setDeviceTypes(data)
       })
   }, []);
-
-  // method to handle the deletion of a devicetypes from the db
-  const handleDelete = (id: number) => {
-   if (window.confirm("Sei sicuro di eliminare il tipo di device?")) {
-     fetch(`http://localhost:4000/api/devicetypes/${id}`, {
-       method: 'DELETE',
-     })
-       .then((res) => {
-         if (res.status === 204) {
-           setDeviceTypes(devicetypes.filter(devicetypes => devicetypes.id !== id));
-         } else {
-           alert("Errore durante l'eliminazione del tipo di device.");
-         }
-       })
-       .catch((error) => {
-         console.error("Errore:", error);
-         alert("Errore durante l'eliminazione del tipo di device.");
-       });
-   }
- };
 
   if (!devicetypes) {
     return "loading...";
@@ -72,7 +53,6 @@ export default function Devicetypes() {
                         <td scope="row">{devicetypes.name}</td>
                         <td>
                           <a className="btn btn-primary m-1" href={`/device-types/update?id=${devicetypes.id}`}>Edit</a>
-                          <button className="btn btn-danger m-1" onClick={() => handleDelete(devicetypes.id)}>Delete</button>
                         </td>
                       </tr>
                     ))}

@@ -7,6 +7,7 @@ import Navbar from "../../../parts/navbar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../globals.css";
 import "./style.css";
+import apiendpoint from "../../../../../apiendpoint";
 
 interface DeviceType {
   id: number;
@@ -49,7 +50,7 @@ export default function EditDevice() {
 
   const fetchDeviceTypes = useCallback(async () => {
     try {
-      const response = await fetch("http://localhost:4000/api/devicetypes");
+      const response = await fetch(`${apiendpoint}api/devicetypes`);
       const data = await response.json();
       setDeviceTypes(data);
     } catch (error) {
@@ -59,7 +60,7 @@ export default function EditDevice() {
 
   const fetchDeviceData = useCallback(async () => {
     try {
-      const response = await fetch(`http://localhost:4000/api/devices/${idDevice}`);
+      const response = await fetch(`${apiendpoint}api/devices/${idDevice}`);
       const data: Device = await response.json();
       setDeviceData(data);
       setSerialNumber(data.sn);
@@ -73,11 +74,11 @@ export default function EditDevice() {
 
   const fetchDeviceSpecifics = useCallback(async (deviceTypeId: string, updateInitial: boolean) => {
     try {
-      const response = await fetch(`http://localhost:4000/api/devices/${idDevice}/devicespecifics`);
+      const response = await fetch(`${apiendpoint}api/devices/${idDevice}/devicespecifics`);
       const data = await response.json();
       setDeviceSpecificsData(data);
 
-      const inputResponse = await fetch(`http://localhost:4000/api/devicespecificsinputs/${deviceTypeId}`);
+      const inputResponse = await fetch(`${apiendpoint}api/devicespecificsinputs/${deviceTypeId}`);
       const inputs = await inputResponse.json();
       setDeviceTypeInputs(inputs);
 
@@ -96,7 +97,7 @@ export default function EditDevice() {
 
   const fetchDeviceWarranty = useCallback(async () => {
     try {
-      const response = await fetch(`http://localhost:4000/api/devices/${idDevice}/devicewarranty`);
+      const response = await fetch(`${apiendpoint}api/devices/${idDevice}/devicewarranty`);
       const data: DeviceWarranty = await response.json();
       setDeviceWarrantyData(data);
       setHasWarranty((data.error ? false : true));
@@ -158,7 +159,7 @@ const validateInput = () => {
 };
 
 const updateDeviceData = async () => {
-  const res = await fetchWithErrorHandling(`http://localhost:4000/api/devices/${idDevice}`, {
+  const res = await fetchWithErrorHandling(`${apiendpoint}api/devices/${idDevice}`, {
     method: "PATCH",
     body: JSON.stringify({
       device_type_id: selectedDeviceType,
@@ -171,7 +172,7 @@ const updateDeviceData = async () => {
 };
 
 const updateDeviceSpecifics = async (deviceSpecificsId: number, deviceSpecificsName: string, deviceSpecificsValue: string) => {
-  const res = await fetchWithErrorHandling(`http://localhost:4000/api/devicespecifics/${deviceSpecificsId}`, {
+  const res = await fetchWithErrorHandling(`${apiendpoint}api/devicespecifics/${deviceSpecificsId}`, {
     method: "PATCH",
     body: JSON.stringify({
       device_id: idDevice,
@@ -184,7 +185,7 @@ const updateDeviceSpecifics = async (deviceSpecificsId: number, deviceSpecificsN
 };
 
 const createDeviceSpecifics = async (deviceSpecificsName: string, deviceSpecificsValue: string) => {
-  const res = await fetchWithErrorHandling(`http://localhost:4000/api/devicespecifics`, {
+  const res = await fetchWithErrorHandling(`${apiendpoint}api/devicespecifics`, {
     method: "POST",
     body: JSON.stringify({
       device_id: idDevice,
@@ -203,7 +204,7 @@ const createDeviceSpecifics = async (deviceSpecificsName: string, deviceSpecific
 };
 
 const deleteDeviceSpecifics = async (deviceSpecificsId: number) => {
-  const res = await fetchWithErrorHandling(`http://localhost:4000/api/devicespecifics/${deviceSpecificsId}`, {
+  const res = await fetchWithErrorHandling(`${apiendpoint}api/devicespecifics/${deviceSpecificsId}`, {
     method: "DELETE",
   });
   console.log(`Deleted device specific with ID: ${deviceSpecificsId}`, res);
@@ -233,7 +234,7 @@ const handleWarranty = async () => {
   try {
     let warrantyRes;
     try {
-      warrantyRes = await fetchWithErrorHandling(`http://localhost:4000/api/devices/${idDevice}/devicewarranty`);
+      warrantyRes = await fetchWithErrorHandling(`${apiendpoint}api/devices/${idDevice}/devicewarranty`);
     } catch (error) {
       if (error.message === "Device not found" || error.message.includes("404")) {
         console.log("No warranty found for this device");
@@ -268,7 +269,7 @@ const handleWarranty = async () => {
   }
 };
 
-const createWarranty = () => fetchWithErrorHandling(`http://localhost:4000/api/devicewarranties`, {
+const createWarranty = () => fetchWithErrorHandling(`${apiendpoint}api/devicewarranties`, {
   method: "POST",
   body: JSON.stringify({
     device_id: idDevice,
@@ -277,7 +278,7 @@ const createWarranty = () => fetchWithErrorHandling(`http://localhost:4000/api/d
   }),
 });
 
-const updateWarranty = (id) => fetchWithErrorHandling(`http://localhost:4000/api/devicewarranties/${id}`, {
+const updateWarranty = (id) => fetchWithErrorHandling(`${apiendpoint}api/devicewarranties/${id}`, {
   method: "PATCH",
   body: JSON.stringify({
     device_id: idDevice,
@@ -286,7 +287,7 @@ const updateWarranty = (id) => fetchWithErrorHandling(`http://localhost:4000/api
   }),
 });
 
-const deleteWarranty = (id) => fetchWithErrorHandling(`http://localhost:4000/api/devicewarranties/${id}`, {
+const deleteWarranty = (id) => fetchWithErrorHandling(`${apiendpoint}api/devicewarranties/${id}`, {
   method: "DELETE",
 });
 

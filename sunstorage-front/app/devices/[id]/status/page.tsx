@@ -6,6 +6,7 @@ import Navbar from "../../../parts/navbar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../globals.css";
 import "./style.css";
+import apiendpoint from "../../../../../apiendpoint";
 
 export default function Actions() {
   const params = useParams();
@@ -19,14 +20,14 @@ export default function Actions() {
     const fetchDeviceStatus = async () => {
       try {
         const response = await fetch(
-          `http://localhost:4000/api/devices/${idDevice}`
+          `${apiendpoint}api/devices/${idDevice}`
         );
         const data = await response.json();
         setDeviceStatus(data.status); // Imposta lo stato del dispositivo
 
         // Verifica se il dispositivo è assegnato e ottieni l'ID dell'assegnazione
         const assignmentResponse = await fetch(
-          `http://localhost:4000/api/deviceassignments/check/${idDevice}`
+          `${apiendpoint}api/deviceassignments/check/${idDevice}`
         );
         const assignmentData = await assignmentResponse.json();
         if (assignmentData.length > 0) {
@@ -49,7 +50,7 @@ export default function Actions() {
   const dismissDevice = async () => {
     try {
       const response = await fetch(
-        `http://localhost:4000/api/devices/${idDevice}/status`,
+        `${apiendpoint}api/devices/${idDevice}/status`,
         {
           method: "PATCH",
           headers: {
@@ -77,7 +78,7 @@ export default function Actions() {
   const freeDevice = async () => {
     try {
       const response = await fetch(
-        `http://localhost:4000/api/devices/${idDevice}/status`,
+        `${apiendpoint}api/devices/${idDevice}/status`,
         {
           method: "PATCH",
           headers: {
@@ -102,7 +103,7 @@ export default function Actions() {
   const repairDevice = async () => {
     try {
       const response = await fetch(
-        `http://localhost:4000/api/devices/${idDevice}/status`,
+        `${apiendpoint}api/devices/${idDevice}/status`,
         {
           method: "PATCH",
           headers: {
@@ -207,9 +208,6 @@ export default function Actions() {
                   </button>
                 </>
               )}
-              <a href={`show`} className="btn btn-light">
-                View Device
-              </a>
             </div>
           </div>
         </div>

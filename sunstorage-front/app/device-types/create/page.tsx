@@ -6,6 +6,7 @@ import Navbar from "../../parts/navbar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../globals.css";
 import "./style.css";
+import apiendpoint from "../../../../apiendpoint";
 
 export default function CreateDeviceTypes() {
 
@@ -26,7 +27,7 @@ export default function CreateDeviceTypes() {
         return;
       }
 
-      const resAdd = await fetch("http://localhost:4000/api/devicetypes", {
+      const resAdd = await fetch(`${apiendpoint}api/devicetypes`, {
         method: "POST",
         headers: {
           Accept: "application/json",

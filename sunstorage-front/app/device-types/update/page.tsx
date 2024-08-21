@@ -5,6 +5,7 @@ import Menu from "../../parts/menu";
 import Navbar from "../../parts/navbar";
 import "../../globals.css";
 import "./style.css";
+import apiendpoint from "../../../../apiendpoint";
 
 export default function UpdateDeviceType() {
    const [name, setName] = useState("");
@@ -16,7 +17,7 @@ export default function UpdateDeviceType() {
       setId(devicetypesId);
   
       if (devicetypesId) {
-        fetch(`http://localhost:4000/api/devicetypes/${devicetypesId}`)
+        fetch(`${apiendpoint}api/devicetypes/${devicetypesId}`)
           .then((res) => res.json())
           .then((data) => {
             setName(data.name);
@@ -26,7 +27,7 @@ export default function UpdateDeviceType() {
 
     const handleUpdate = () => {
       if (id) {
-        fetch(`http://localhost:4000/api/devicetypes/${id}`, {
+        fetch(`${apiendpoint}api/devicetypes/${id}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
@@ -38,6 +39,7 @@ export default function UpdateDeviceType() {
             if (data.error) {
               alert("Errore durante l'aggiornamento del tipo di device.");
             } else {
+              alert("Device type aggiornato con successo")
               window.location.href = '/device-types';
             }
           })

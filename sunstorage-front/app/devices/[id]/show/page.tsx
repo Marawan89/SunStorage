@@ -7,6 +7,7 @@ import Navbar from "../../../parts/navbar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../globals.css";
 import "./style.css";
+import apiendpoint from "../../../../../apiendpoint";
 const formatDate = require('../../../../dateFormatter');
 
 interface Device {
@@ -50,7 +51,7 @@ export default function ViewDevice() {
 
   useEffect(() => {
     const deviceId = params.id;
-    fetch(`http://localhost:4000/api/devices/${deviceId}/details`)
+    fetch(`${apiendpoint}api/devices/${deviceId}/details`)
       .then((response) => response.json())
       .then((data) => {
         setDevice(data);

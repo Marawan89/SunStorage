@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Navbar from "../../../parts/navbar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../globals.css";
+import apiendpoint from "../../../../../apiendpoint";
 // import "./style.css";
 
 interface DeviceDetails {
@@ -37,7 +38,7 @@ export default function ViewDeviceWithActions() {
 
         // Fetch device details
         const response = await fetch(
-          `http://localhost:4000/api/devices/overview?qr=${deviceId}`
+          `${apiendpoint}api/devices/overview?qr=${deviceId}`
         );
         const data = await response.json();
         if (data.length > 0) {
@@ -63,7 +64,7 @@ export default function ViewDeviceWithActions() {
 
         // Fetch assignment data
         const assignmentResponse = await fetch(
-          `http://localhost:4000/api/deviceassignments/check/${device.id}`
+          `${apiendpoint}api/deviceassignments/check/${device.id}`
         );
         const assignmentData = await assignmentResponse.json();
         if (assignmentData.length > 0) {
@@ -93,7 +94,7 @@ export default function ViewDeviceWithActions() {
   const dismissDevice = async () => {
     try {
       const response = await fetch(
-        `http://localhost:4000/api/devices/${device.id}/status`,
+        `${apiendpoint}api/devices/${device.id}/status`,
         {
           method: "PATCH",
           headers: {
@@ -121,7 +122,7 @@ export default function ViewDeviceWithActions() {
   const freeDevice = async () => {
     try {
       const response = await fetch(
-        `http://localhost:4000/api/devices/${device.id}/status`,
+        `${apiendpoint}api/devices/${device.id}/status`,
         {
           method: "PATCH",
           headers: {
@@ -145,7 +146,7 @@ export default function ViewDeviceWithActions() {
   const repairDevice = async () => {
     try {
       const response = await fetch(
-        `http://localhost:4000/api/devices/${device.id}/status`,
+        `${apiendpoint}api/devices/${device.id}/status`,
         {
           method: "PATCH",
           headers: {
@@ -168,11 +169,6 @@ export default function ViewDeviceWithActions() {
 
   // Funzione per assegnare il dispositivo
   const assignDevice = async () => {
-    window.location.href = `/devices/${device.id}/assign`;
-  };
-
-  // Funzione per cambiare il proprietario del dispositivo
-  const changeOwner = async () => {
     window.location.href = `/devices/${device.id}/assign`;
   };
 
@@ -242,12 +238,6 @@ export default function ViewDeviceWithActions() {
               )}
               {deviceStatus === "assigned" && (
                 <>
-                  <button
-                    className="p-3 btn btn-secondary"
-                    onClick={changeOwner}
-                  >
-                    Change owner (status: assigned)
-                  </button>
                   <button className="p-3 btn btn-primary" onClick={freeDevice}>
                     Rientra (status: free)
                   </button>

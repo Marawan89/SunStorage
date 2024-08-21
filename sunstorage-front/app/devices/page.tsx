@@ -7,6 +7,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import "../globals.css";
 import "./style.css";
+const apiendpoint = require('../../../apiendpoint');
 
 interface Device{
    id: number;
@@ -60,7 +61,7 @@ export default function Devices() {
 
   // Route per ottenere una panoramica di tutti i dispositivi
   function fetchDevices() {
-   fetch(`http://localhost:4000/api/devices/details`)
+   fetch(`${apiendpoint}api/devices/details`)
      .then((response) => response.json())
      .then((data) => {
       setFilterDeviceTypeOptions(uniqueValues(data, 'device_type_name'));
@@ -143,7 +144,7 @@ export default function Devices() {
 
     try {
       const response = await fetch(
-        `http://localhost:4000/api/devices/${deviceId}`,
+        `${apiendpoint}api/devices/${deviceId}`,
         {
           method: "DELETE",
         }
@@ -159,6 +160,7 @@ export default function Devices() {
     } catch (error) {
       console.error("Error deleting device:", error);
     }
+    alert("device deleted successfuly")
   };
 
  const filteredDevices = devices.filter((device) =>
@@ -232,7 +234,7 @@ export default function Devices() {
                         <th scope="row">{device.sn}</th>
                         <td>{device.device_type_name}</td>
                         <td>
-                          {isWarrantyActive(device.devicewarranty.start_date, device.devicewarranty.end_date)}
+                          {isWarrantyActive(device.devicewarranty?.start_date, device.devicewarranty?.end_date)}
                         </td>
                         <td>
                            {device.status}
@@ -284,14 +286,12 @@ export default function Devices() {
                         </td>
                       </tr>
                     )) : (
-                     <tr>
-                        <th scope="row">3</th>
-                        <td >No devices found</td>
-                        <td>@twitter</td>
-                     </tr>
+                     <div>
+                        <p >No record found</p>
+                     </div>
                     )}
                   </tbody>
-                </table>
+                </table> 
               </div>
             </div>
           </div>

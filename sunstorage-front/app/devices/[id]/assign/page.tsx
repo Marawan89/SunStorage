@@ -8,6 +8,7 @@ import Navbar from "../../../parts/navbar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../globals.css";
 import "./style.css";
+import apiendpoint from "../../../../../apiendpoint";
 
 interface Department {
   id: number;
@@ -37,7 +38,7 @@ export default function AssignDevice() {
   useEffect(() => {
     async function fetchDepartments() {
       try {
-        const res = await fetch("http://localhost:4000/api/departments");
+        const res = await fetch(`${apiendpoint}api/departments`);
         if (!res.ok) {
           throw new Error("Failed to fetch departments");
         }
@@ -56,7 +57,7 @@ export default function AssignDevice() {
       console.log(selectedDepartment);
       try {
         const res = await fetch(
-          "http://localhost:4000/api/departments/" +
+          `${apiendpoint}api/departments/` +
             selectedDepartment +
             "/users"
         );
@@ -73,7 +74,7 @@ export default function AssignDevice() {
   }, [selectedDepartment]);
 
   const assignDevice = async (userid: number ) => {
-   fetch("http://localhost:4000/api/deviceassignments", {
+   fetch(`${apiendpoint}api/deviceassignments`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -103,7 +104,7 @@ export default function AssignDevice() {
       console.log(newUserName, newUserSurname, newUserEmail);
       if (newUserName != "" && newUserSurname != "" && newUserEmail != "") {
         console.log(newUserName, newUserSurname, newUserEmail);
-        fetch("http://localhost:4000/api/users", {
+        fetch(`${apiendpoint}api/users`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

@@ -6,6 +6,7 @@ import Navbar from "../../parts/navbar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../globals.css";
 import "./style.css";
+import apiendpoint from "../../../../apiendpoint";
 
 export default function UpdateDepartment() {
    const [name, setName] = useState("");
@@ -17,7 +18,7 @@ export default function UpdateDepartment() {
       setId(departmentId);
   
       if (departmentId) {
-        fetch(`http://localhost:4000/api/departments/${departmentId}`)
+        fetch(`${apiendpoint}api/departments/${departmentId}`)
           .then((res) => res.json())
           .then((data) => {
             setName(data.name);
@@ -27,7 +28,7 @@ export default function UpdateDepartment() {
 
     const handleUpdate = () => {
       if (id) {
-        fetch(`http://localhost:4000/api/departments/${id}`, {
+        fetch(`${apiendpoint}api/departments/${id}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
@@ -39,6 +40,7 @@ export default function UpdateDepartment() {
             if (data.error) {
               alert("Errore durante l'aggiornamento del reparto.");
             } else {
+              alert("Reparto aggiornato con successo")
               window.location.href = '/departments';
             }
           })

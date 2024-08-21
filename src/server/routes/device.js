@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../../../db");
+const writeLog = require('../../../logger');
 
 // route to create a new device
 router.post("/", async (req, res) => {
@@ -10,6 +11,7 @@ router.post("/", async (req, res) => {
       "INSERT INTO devices (device_type_id, sn, qr_code_string) VALUES (?, ?, ?)",
       [device_type_id, sn, qr_code_string]
     );
+    await writeLog(result.insertId, 'DEVICE', 'Device creato');
     res
       .status(201)
       .json({ id: result.insertId, device_type_id, sn, qr_code_string });
@@ -120,6 +122,7 @@ router.patch("/:id/status", async (req, res) => {
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: "Device not found" });
     }
+    await writeLog(id, 'DEVICE', 'Passato in status: '+ status);
     res.status(200).json({ id, status });
   } catch (error) {
     res.status(500).json({ error: error.message });

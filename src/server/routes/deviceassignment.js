@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../../../db');
+const writeLog = require('../../../logger');
 
 // Create a new device assignment
 router.post('/', async (req, res) => {
@@ -8,6 +9,13 @@ router.post('/', async (req, res) => {
    try {
      // start transition
      await pool.query('START TRANSACTION');
+     
+     const [resultSel] = await pool.query(
+      'SELECT users.name, departments.name as department_name FROM users INNER JOIN departments ON departments.id = users.department_id WHERE users.id = ?',
+      [user_id]
+     );
+     
+     await writeLog(device_id, 'DEVICE', 'Assegnato a '+resultSel[0].name + ' del dipartimento '+resultSel[0].department_name);
      
      // insert new assignment la nuova assegnazione
      const [result] = await pool.query(

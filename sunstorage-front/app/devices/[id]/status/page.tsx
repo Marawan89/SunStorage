@@ -128,11 +128,6 @@ export default function Actions() {
     window.location.href = `/devices/${idDevice}/assign`;
   };
 
-  // Funzione per cambiare il proprietario del dispositivo
-  const changeOwner = async () => {
-    window.location.href = `/devices/${idDevice}/assign`;
-  };
-
   // to view the page only after control
   if (isLoading) {
     return <div>Loading...</div>;
@@ -166,12 +161,6 @@ export default function Actions() {
               )}
               {deviceStatus === "assigned" && (
                 <>
-                  <button
-                    className="p-3 btn btn-secondary"
-                    onClick={changeOwner}
-                  >
-                    Change owner (status: assigned)
-                  </button>
                   <button className="p-3 btn btn-primary" onClick={freeDevice}>
                     Rientra (status: free)
                   </button>

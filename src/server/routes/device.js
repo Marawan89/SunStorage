@@ -30,6 +30,68 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/details", async (req, res) => {
+   var devices = []; 
+   try {
+     const [rowsDevices] = await pool.query(
+       "SELECT devices.*, devicetypes.name as device_type_name FROM devices INNER JOIN devicetypes ON devicetypes.id = devices.device_type_id");
+     if (rowsDevices.affectedRows === 0) {
+       return res.status(404).json({ error: "Devices not found" });
+     }
+     
+     for (var i=0; i<rowsDevices.length; i++){
+      var rowDevice = rowsDevices[i];
+      var device = {
+         ...rowDevice,
+         devicespecifics: null,
+         devicewarranty: null,
+         devicelogs: null,
+         deviceassignments: null,
+      };
+ 
+      const [rowsSpecifics] = await pool.query(
+         "SELECT devicespecifics.name, devicespecifics.value, devicespecificsinputs.input_label FROM devicespecifics INNER JOIN devicespecificsinputs ON devicespecifics.name = devicespecificsinputs.input_name WHERE device_id = ?",
+         [rowDevice.id]
+      );
+      if (rowsSpecifics.length !== 0) {
+         device.devicespecifics = rowsSpecifics;
+      }
+   
+      const [rowsWarranties] = await pool.query(
+         "SELECT * FROM devicewarranties WHERE device_id = ?",
+         [rowDevice.id]
+      );
+      if (rowsWarranties.length !== 0) {
+         device.devicewarranty = rowsWarranties[0];
+      }
+   
+      const [rowsLogs] = await pool.query(
+         "SELECT * FROM devicelogs WHERE device_id = ?",
+         [rowDevice.id]
+      );
+      if (rowsLogs.length !== 0) {
+         device.devicelogs = rowsLogs;
+      }
+   
+      const [rowsAssignments] = await pool.query(
+         "SELECT deviceassignments.*, users.*, departments.name as department_name FROM deviceassignments INNER JOIN users ON deviceassignments.user_id = users.id INNER JOIN departments ON departments.id = users.department_id WHERE device_id = ? ORDER BY deviceassignments.assign_datetime DESC",
+         [rowDevice.id]
+      );
+      if (rowsAssignments.length !== 0) {
+         device.deviceassignments = rowsAssignments;
+      }
+
+      devices.push(device);
+     }
+     
+ 
+     res.json(devices);
+
+   } catch (error) {
+     res.status(500).json({ error: error.message });
+   }
+ });
+
 // route to read a single device by id
 router.get("/:id", async (req, res) => {
   const { id } = req.params;

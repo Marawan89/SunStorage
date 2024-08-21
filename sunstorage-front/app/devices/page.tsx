@@ -8,98 +8,119 @@ import "bootstrap/dist/js/bootstrap.bundle.min";
 import "../globals.css";
 import "./style.css";
 
-interface DeviceType {
-  id: number;
-  name: string;
-}
-
-interface DeviceOverview {
-  id: number;
-  serial_number: string;
-  qr_code: string;
-  device_type: string;
-  warranty_start: string | null;
-  warranty_end: string | null;
-  status: string;
-}
-
-interface DeviceSpecificInput {
+interface Device{
    id: number;
-   input_name: string;
+   sn: string;
+   device_type_name: string;
+   status: string;
+   qr_code_string: string;
+   show: boolean;
+   devicespecifics: DeviceSpecific[];
+   devicewarranty: DeviceWarranty;
+   devicelogs: DeviceLog[];
+   deviceassignments: DeviceAssignment[];
+}
+
+interface DeviceAssignment {
+   name: string;
+   surname: string;
+   department_name: string;
+   email: string;
+}
+
+interface DeviceSpecific {
+   name: string;
+   value: string;
    input_label: string;
-   input_type: string;
-   input_values: string | null;
- }
+}
+
+interface DeviceWarranty {
+   start_date: string;
+   end_date: string;
+}
+
+interface DeviceLog {
+   log_type: string;
+   additional_notes: string;
+   event_datetime: string;
+}
 
 export default function Devices() {
-  const [devices, setDevices] = useState<DeviceOverview[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [deviceTypes, setDeviceTypes] = useState<DeviceType[]>([]);
-  const [selectedDeviceType, setSelectedDeviceType] = useState<string>("");
-  const [deviceSpecificInputs, setDeviceSpecificInputs] = useState<DeviceSpecificInput[]>([]);
+  const [devices, setDevices] = useState<Device[]>();
+  const [deviceTypeFilter, setDeviceTypeFilter] = useState<string>("");
+  const [filterDeviceTypeOptions, setFilterDeviceTypeOptions] = useState<string[]>([]);
+  const [deviceStatusFilter, setDeviceStatusFilter] = useState<string>("");
+  const [filterDeviceStatusOption, setFilterDeviceStatusOption] = useState<string[]>([]);
+  const [deviceWarrantyFilter, setDeviceWarrantyFilter] = useState<string>("");
+ 
+  function uniqueValues<T>(array: Array<T>, key: keyof T): string[] {
+   return Array.from(new Set(array.map(item => item[key] as string)));
+  }
 
+  // Route per ottenere una panoramica di tutti i dispositivi
+  function fetchDevices() {
+   fetch(`http://localhost:4000/api/devices/details`)
+     .then((response) => response.json())
+     .then((data) => {
+      setFilterDeviceTypeOptions(uniqueValues(data, 'device_type_name'));
+      setFilterDeviceStatusOption(uniqueValues(data, 'status'));
+       const updatedDevices = data.map((item: Device) => ({
+         ...item,
+         show: true,
+       }));
+       setDevices(updatedDevices);
+     });
+ }
 
-  // Fetch specific inputs for the selected device type
-  useEffect(() => {
-   async function fetchDeviceSpecificInputs() {
-     if (selectedDeviceType) {
-       try {
-         const res = await fetch(`http://localhost:4000/api/devicespecificsinputs/${selectedDeviceType}`);
-         if (!res.ok) {
-           throw new Error("Failed to fetch device specific inputs");
-         }
-         const data: DeviceSpecificInput[] = await res.json();
-         setDeviceSpecificInputs(data);
-       } catch (error) {
-         console.error("Error fetching device specific inputs:", error);
+ useEffect(() => {
+   if (!devices) {
+     fetchDevices();
+   } else {
+      let updatedDevices = devices.map((item: Device) => ({
+         ...item,
+         show: true, 
+       }));
+   
+       // Applica il filtro per deviceTypeFilter
+       if (deviceTypeFilter !== "") {
+         updatedDevices = updatedDevices.map((item: Device) => ({
+           ...item,
+           show: item.show && item.device_type_name.toLowerCase() === deviceTypeFilter.toLowerCase(),
+         }));
        }
-     }
+   
+       // Applica il filtro per deviceStatusFilter
+       if (deviceStatusFilter !== "") {
+         updatedDevices = updatedDevices.map((item: Device) => ({
+           ...item,
+           show: item.show && item.status.toLowerCase() === deviceStatusFilter.toLowerCase(),
+         }));
+       }
+
+       // Applica il filtro per deviceWarrantyFilter
+       if (deviceWarrantyFilter !== "") {
+         updatedDevices = updatedDevices.map((item: Device) => ({
+           ...item,
+           show: item.show && isWarrantyActive(item.devicewarranty.start_date, item.devicewarranty.end_date).toLowerCase() === deviceWarrantyFilter.toLowerCase(),
+         }));
+       }
+       
+       // Applica il filtro per deviceWarrantyFilter
+      //  if (deviceWarrantyFilter !== "") {
+      //    updatedDevices = updatedDevices.map((item: Device) => ({
+      //      ...item,
+      //      show: item.show && item.devicewarranty === deviceWarrantyFilter.toLowerCase(),
+      //    }));
+      //  }
+   
+       setDevices(updatedDevices);
    }
+ }, [deviceTypeFilter, deviceStatusFilter, deviceWarrantyFilter]);
 
-   fetchDeviceSpecificInputs();
- }, [selectedDeviceType]);
-
-  // to get all device types
-  useEffect(() => {
-    async function fetchDeviceTypes() {
-      try {
-        const res = await fetch("http://localhost:4000/api/devicetypes");
-        if (!res.ok) {
-          throw new Error("Failed to fetch device types");
-        }
-        const data: DeviceType[] = await res.json();
-        setDeviceTypes(data);
-      } catch (error) {
-        console.error("Error fetching device types:", error);
-      }
-    }
-
-    fetchDeviceTypes();
-  }, []);
-
-  // route to get all devices overview
-  useEffect(() => {
-    const url = "http://localhost:4000/api/devices/overview";
-    fetch(url)
-      .then((response) => response.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          const mappedData = data.map((device) => ({
-            id: device.id,
-            serial_number: device.sn,
-            qr_code: device.qr_code_string,
-            device_type: device.device_type,
-            warranty_start: device.start_date,
-            warranty_end: device.end_date,
-            status: device.status,
-          }));
-          setDevices(mappedData);
-        } else {
-          console.error("Data is not an array:", data);
-        }
-      })
-      .catch((error) => console.error("Error fetching devices:", error));
-  }, []);
+  if (!devices) {
+   return <div>Loading...</div>;
+  }
 
   // Function to check if warranty is active
   const isWarrantyActive = (start_date: string | null, end_date: string | null) => {
@@ -130,7 +151,7 @@ export default function Devices() {
 
       if (response.ok) {
         setDevices((prevDevices) =>
-          prevDevices.filter((device) => device.id !== deviceId)
+          prevDevices?.filter((device) => device.id !== deviceId)
         );
       } else {
         console.error("Failed to delete device:", response.statusText);
@@ -140,10 +161,9 @@ export default function Devices() {
     }
   };
 
-  // Filter devices based on the search term
-  const filteredDevices = devices.filter((device) =>
-    device.serial_number.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+ const filteredDevices = devices.filter((device) =>
+   device.sn.toLowerCase().includes(searchTerm.toLowerCase())
+ );
 
   return (
     <>
@@ -166,70 +186,35 @@ export default function Devices() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
-                <select
-                  className="custom-select"
-                  id="inputGroupSelect01"
-                  value={selectedDeviceType}
-                  onChange={(e) => setSelectedDeviceType(e.target.value)}
-                  required
-                >
-                  <option>Choose an option...</option>
-                  {deviceTypes.map((type) => (
-                    <option key={type.id} value={type.id.toString()}>
-                      {type.name}
-                    </option>
-                  ))}
-                </select>
               </div>
-
-              {/* Rendering device specific inputs based on the selected device type */}
-              <div>
-                {deviceSpecificInputs.map((input) => {
-                  if (input.input_type === 'select') {
-                    const options = JSON.parse(input.input_values || '[]');
-                    return (
-                      <div key={input.id}>
-                        <p>{input.input_label}:</p>
-                        <select id={input.input_name} name={input.input_name} required>
-                          <option>Choose an option...</option>
-                          {options.map((option, idx) => (
-                            <option key={idx} value={option}>
-                              {option}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    );
-                  } else if (input.input_type === 'text') {
-                    return (
-                      <div key={input.id}>
-                        <p>{input.input_label}:</p>
-                        <input
-                          type="text"
-                          id={input.input_name}
-                          name={input.input_name}
-                          placeholder={input.input_label}
-                          required
-                        />
-                      </div>
-                    );
-                  } else if (input.input_type === 'number') {
-                     return (
-                        <div key={input.id}>
-                           <p>{input.input_label}:</p>
-                           <input 
-                           type="number"
-                           id={input.input_name}
-                           name={input.input_name}
-                           placeholder={input.input_label}
-                           required
-                            />
-
-                        </div>
-                     )
-                  }
-                  return null;
-                })}
+              <div className="row my-2">
+               <div className="col-12">
+                  Filters:
+               </div>
+               <div className="col-4">
+                  <select className="form-control" onChange={(e) => setDeviceTypeFilter(e.target.value)}>
+                     <option value="">Device Type...</option>
+                     {filterDeviceTypeOptions.map((item) => (
+                        <option value={item}>{item}</option>
+                     ))}
+                  </select>
+               </div>
+               <div className="col-4">
+                  <select className="form-control" onChange={(e) => setDeviceStatusFilter(e.target.value)}>
+                     <option value="">Device Status...</option>
+                     {filterDeviceStatusOption.map((item) => (
+                        <option value={item}>{item}</option>
+                     ))}
+                  </select>
+               </div>
+               <div className="col-4">
+                  <select className="form-control" onChange={(e) => setDeviceWarrantyFilter(e.target.value)}>
+                     <option value="">Warranty Status...</option>
+                     <option value="Valid">Valid</option>
+                     <option value="Expired">Expired</option>
+                     <option value="Not available">Not available</option>
+                  </select>
+               </div>
               </div>
               <div className="table-responsive">
                 <table className="table">
@@ -242,12 +227,12 @@ export default function Devices() {
                     </tr>
                   </thead>
                   <tbody className="table-group-divider">
-                    {filteredDevices.map((device, index) => (
+                  {filteredDevices.filter((device) => device.show === true).length > 0 ? filteredDevices.filter((device) => device.show === true).map((device, index) => (
                       <tr key={index}>
-                        <th scope="row">{device.serial_number}</th>
-                        <td>{device.device_type}</td>
+                        <th scope="row">{device.sn}</th>
+                        <td>{device.device_type_name}</td>
                         <td>
-                          {isWarrantyActive(device.warranty_start, device.warranty_end)}
+                          {isWarrantyActive(device.devicewarranty.start_date, device.devicewarranty.end_date)}
                         </td>
                         <td>
                            {device.status}
@@ -298,7 +283,13 @@ export default function Devices() {
                           </div>
                         </td>
                       </tr>
-                    ))}
+                    )) : (
+                     <tr>
+                        <th scope="row">3</th>
+                        <td >No devices found</td>
+                        <td>@twitter</td>
+                     </tr>
+                    )}
                   </tbody>
                 </table>
               </div>

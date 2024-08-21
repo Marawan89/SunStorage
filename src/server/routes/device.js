@@ -11,7 +11,7 @@ router.post("/", async (req, res) => {
       "INSERT INTO devices (device_type_id, sn, qr_code_string) VALUES (?, ?, ?)",
       [device_type_id, sn, qr_code_string]
     );
-    await writeLog(result.insertId, 'DEVICE', 'Device creato');
+    await writeLog(result.insertId, 'DEVICE_CREATION', 'Device creato');
     res
       .status(201)
       .json({ id: result.insertId, device_type_id, sn, qr_code_string });
@@ -78,6 +78,23 @@ router.get("/:id/devicewarranty", async (req, res) => {
   }
 });
 
+// route to read a single device specifics
+router.get("/:id/logs", async (req, res) => {
+   const { id } = req.params;
+   try {
+     const [rows] = await pool.query(
+       "SELECT * FROM devicelogs WHERE device_id = ?",
+       [id]
+     );
+     if (rows.length === 0) {
+       return res.status(404).json({ error: "Device not found" });
+     }
+     res.json(rows);
+   } catch (error) {
+     res.status(500).json({ error: error.message });
+   }
+ });
+
 // route to update a device by id
 router.patch("/:id", async (req, res) => {
   const { id } = req.params;
@@ -122,7 +139,7 @@ router.patch("/:id/status", async (req, res) => {
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: "Device not found" });
     }
-    await writeLog(id, 'DEVICE', 'Passato in status: '+ status);
+    await writeLog(id, 'DEVICE_STATUS', 'Passato in status: '+ status);
     res.status(200).json({ id, status });
   } catch (error) {
     res.status(500).json({ error: error.message });

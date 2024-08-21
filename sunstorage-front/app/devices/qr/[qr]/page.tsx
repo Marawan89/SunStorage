@@ -37,7 +37,7 @@ export default function ViewDeviceWithActions() {
 
         // Fetch device details
         const response = await fetch(
-          `http://192.168.16.119:4000/api/devices/overview?qr=${deviceId}`
+          `http://localhost:4000/api/devices/overview?qr=${deviceId}`
         );
         const data = await response.json();
         if (data.length > 0) {
@@ -63,7 +63,7 @@ export default function ViewDeviceWithActions() {
 
         // Fetch assignment data
         const assignmentResponse = await fetch(
-          `http://192.168.16.119:4000/api/deviceassignments/check/${device.id}`
+          `http://localhost:4000/api/deviceassignments/check/${device.id}`
         );
         const assignmentData = await assignmentResponse.json();
         if (assignmentData.length > 0) {
@@ -93,7 +93,7 @@ export default function ViewDeviceWithActions() {
   const dismissDevice = async () => {
     try {
       const response = await fetch(
-        `http://192.168.16.119:4000/api/devices/${device.id}/status`,
+        `http://localhost:4000/api/devices/${device.id}/status`,
         {
           method: "PATCH",
           headers: {
@@ -121,7 +121,7 @@ export default function ViewDeviceWithActions() {
   const freeDevice = async () => {
     try {
       const response = await fetch(
-        `http://192.168.16.119:4000/api/devices/${device.id}/status`,
+        `http://localhost:4000/api/devices/${device.id}/status`,
         {
           method: "PATCH",
           headers: {
@@ -145,7 +145,7 @@ export default function ViewDeviceWithActions() {
   const repairDevice = async () => {
     try {
       const response = await fetch(
-        `http://192.168.16.119:4000/api/devices/${device.id}/status`,
+        `http://localhost:4000/api/devices/${device.id}/status`,
         {
           method: "PATCH",
           headers: {

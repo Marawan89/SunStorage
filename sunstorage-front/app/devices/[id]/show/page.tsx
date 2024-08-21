@@ -21,6 +21,7 @@ interface DeviceDetails {
   surname: string;
   email: string;
   department_name: string;
+  device_logs: string;
 }
 
 export default function ViewDevice() {
@@ -52,6 +53,7 @@ export default function ViewDevice() {
               surname: deviceData.surname,
               email: deviceData.email,
               department_name: deviceData.department_name,
+              device_logs: deviceData.device_logs,
             });
           } else {
             console.error("No device found:", data);
@@ -122,7 +124,17 @@ export default function ViewDevice() {
                     </li>
                   </>
                 )}
-              </ul>
+              <li className="list-group-item">
+                <h5>Device Logs:</h5>
+                <ul className="list-group">
+                  {device.device_logs.split("; ").map((log, index) => (
+                    <li key={index} className="list-group-item">
+                    {log}
+                  </li>
+                  ))}
+                </ul>
+              </li>
+              </ul>  
             </div>
           </div>
         </div>

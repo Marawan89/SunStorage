@@ -15,7 +15,7 @@ router.post('/', async (req, res) => {
       [user_id]
      );
      
-     await writeLog(device_id, 'DEVICE', 'Assegnato a '+resultSel[0].name + ' del dipartimento '+resultSel[0].department_name);
+     await writeLog(device_id, 'DEVICE_ASSIGNMENT', 'Assegnato a '+resultSel[0].name + ' del dipartimento '+resultSel[0].department_name);
      
      // insert new assignment la nuova assegnazione
      const [result] = await pool.query(

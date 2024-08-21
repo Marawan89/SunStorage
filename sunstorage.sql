@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2024-08-19 15:30:49
+Date: 2024-08-21 09:43:36
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -64,15 +64,14 @@ CREATE TABLE `deviceassignments` (
   KEY `user_id` (`user_id`),
   CONSTRAINT `deviceassignments_ibfk_1` FOREIGN KEY (`device_id`) REFERENCES `devices` (`id`),
   CONSTRAINT `deviceassignments_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of deviceassignments
 -- ----------------------------
-INSERT INTO `deviceassignments` VALUES ('4', '59', '9', '2024-08-16 18:22:00');
-INSERT INTO `deviceassignments` VALUES ('5', '62', '10', '2024-08-18 17:55:34');
-INSERT INTO `deviceassignments` VALUES ('11', '60', '1', '2024-08-18 18:02:18');
-INSERT INTO `deviceassignments` VALUES ('12', '63', '2', '2024-08-18 18:03:55');
+INSERT INTO `deviceassignments` VALUES ('41', '71', '2', '2024-08-20 18:09:32');
+INSERT INTO `deviceassignments` VALUES ('42', '71', '3', '2024-08-20 18:10:10');
+INSERT INTO `deviceassignments` VALUES ('43', '71', '3', '2024-08-20 18:12:23');
 
 -- ----------------------------
 -- Table structure for devicelogs
@@ -87,11 +86,16 @@ CREATE TABLE `devicelogs` (
   PRIMARY KEY (`id`),
   KEY `device_id` (`device_id`),
   CONSTRAINT `devicelogs_ibfk_1` FOREIGN KEY (`device_id`) REFERENCES `devices` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of devicelogs
 -- ----------------------------
+INSERT INTO `devicelogs` VALUES ('9', '71', 'DEVICE', 'Assegnato a Luca del dipartimento IT', '2024-08-20 18:09:32');
+INSERT INTO `devicelogs` VALUES ('10', '71', 'DEVICE', 'Assegnato a Michela del dipartimento Marketing', '2024-08-20 18:10:10');
+INSERT INTO `devicelogs` VALUES ('11', '71', 'DEVICE', 'Passato in status: free', '2024-08-20 18:10:56');
+INSERT INTO `devicelogs` VALUES ('12', '71', 'DEVICE', 'Assegnato a Michela del dipartimento Marketing', '2024-08-20 18:12:23');
+INSERT INTO `devicelogs` VALUES ('13', '72', 'DEVICE', 'Device creato', '2024-08-21 09:27:24');
 
 -- ----------------------------
 -- Table structure for devices
@@ -106,17 +110,13 @@ CREATE TABLE `devices` (
   PRIMARY KEY (`id`),
   KEY `device_type_id` (`device_type_id`),
   CONSTRAINT `devices_ibfk_1` FOREIGN KEY (`device_type_id`) REFERENCES `devicetypes` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=73 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of devices
 -- ----------------------------
-INSERT INTO `devices` VALUES ('59', '1', '3489087654890fggay', 'SunStorage_Device119990', 'assigned');
-INSERT INTO `devices` VALUES ('60', '3', 'kojfiunaa1341431', 'SunStorage_Device589344', 'assigned');
-INSERT INTO `devices` VALUES ('62', '1', '23456787rfymicaciao', 'SunStorage_DeviceNumber595732', 'assigned');
-INSERT INTO `devices` VALUES ('63', '1', 'acadasffaffafaf', 'SunStorage_DeviceNumber799757', 'assigned');
-INSERT INTO `devices` VALUES ('64', '3', 'qr3ekwmfwmgmw', 'SunStorage_DeviceNumber436329', 'free');
-INSERT INTO `devices` VALUES ('65', '2', 'ndsbgiwnopfognwofl', 'SunStorage_DeviceNumber537575', 'free');
+INSERT INTO `devices` VALUES ('71', '1', '1234567890', 'SunStorage_DeviceNumber962597', 'assigned');
+INSERT INTO `devices` VALUES ('72', '1', 'abcdefghilmno', 'SunStorage_DeviceNumber327989', 'free');
 
 -- ----------------------------
 -- Table structure for devicespecifics
@@ -130,40 +130,21 @@ CREATE TABLE `devicespecifics` (
   PRIMARY KEY (`id`),
   KEY `devicespecifics_ibfk_1` (`device_id`),
   CONSTRAINT `devicespecifics_ibfk_1` FOREIGN KEY (`device_id`) REFERENCES `devices` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=141 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=168 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of devicespecifics
 -- ----------------------------
-INSERT INTO `devicespecifics` VALUES ('106', '59', 'MODEL', 'phoemdv');
-INSERT INTO `devicespecifics` VALUES ('107', '59', 'DISK_SIZE', '256');
-INSERT INTO `devicespecifics` VALUES ('108', '60', 'DISK_TYPE', 'SSD');
-INSERT INTO `devicespecifics` VALUES ('109', '60', 'DISK_SIZE', '256');
-INSERT INTO `devicespecifics` VALUES ('110', '60', 'RAM_SIZE', '8');
-INSERT INTO `devicespecifics` VALUES ('111', '60', 'PROCESSOR_TYPE', 'A5');
-INSERT INTO `devicespecifics` VALUES ('112', '60', 'MODEL', 'Gay');
-INSERT INTO `devicespecifics` VALUES ('113', '60', 'MONITOR_INCHES', '25');
-INSERT INTO `devicespecifics` VALUES ('119', '59', 'DISK_TYPE', 'SSD');
-INSERT INTO `devicespecifics` VALUES ('120', '59', 'RAM_SIZE', '8');
-INSERT INTO `devicespecifics` VALUES ('121', '59', 'PROCESSOR_TYPE', 'dasv');
-INSERT INTO `devicespecifics` VALUES ('123', '62', 'DISK_TYPE', 'SSD');
-INSERT INTO `devicespecifics` VALUES ('124', '62', 'DISK_SIZE', '256');
-INSERT INTO `devicespecifics` VALUES ('125', '62', 'RAM_SIZE', '16');
-INSERT INTO `devicespecifics` VALUES ('126', '62', 'PROCESSOR_TYPE', 'I5caio');
-INSERT INTO `devicespecifics` VALUES ('127', '62', 'MODEL', 'Probookciao');
-INSERT INTO `devicespecifics` VALUES ('128', '63', 'DISK_TYPE', 'SSD');
-INSERT INTO `devicespecifics` VALUES ('129', '63', 'DISK_SIZE', '256');
-INSERT INTO `devicespecifics` VALUES ('130', '63', 'RAM_SIZE', '16');
-INSERT INTO `devicespecifics` VALUES ('131', '63', 'PROCESSOR_TYPE', 'fsafa');
-INSERT INTO `devicespecifics` VALUES ('132', '63', 'MODEL', 'fasfafa');
-INSERT INTO `devicespecifics` VALUES ('133', '64', 'DISK_TYPE', 'HDD');
-INSERT INTO `devicespecifics` VALUES ('134', '64', 'DISK_SIZE', '256');
-INSERT INTO `devicespecifics` VALUES ('135', '64', 'RAM_SIZE', '8');
-INSERT INTO `devicespecifics` VALUES ('136', '64', 'PROCESSOR_TYPE', 'feqwfq');
-INSERT INTO `devicespecifics` VALUES ('137', '64', 'MODEL', 'fefqwe');
-INSERT INTO `devicespecifics` VALUES ('138', '64', 'MONITOR_INCHES', '21');
-INSERT INTO `devicespecifics` VALUES ('139', '65', 'MODEL', 'GaranziaTest');
-INSERT INTO `devicespecifics` VALUES ('140', '65', 'DISK_SIZE', '128');
+INSERT INTO `devicespecifics` VALUES ('158', '71', 'DISK_TYPE', 'SSD');
+INSERT INTO `devicespecifics` VALUES ('159', '71', 'DISK_SIZE', '128');
+INSERT INTO `devicespecifics` VALUES ('160', '71', 'RAM_SIZE', '4');
+INSERT INTO `devicespecifics` VALUES ('161', '71', 'PROCESSOR_TYPE', 'I5');
+INSERT INTO `devicespecifics` VALUES ('162', '71', 'MODEL', 'Model 5');
+INSERT INTO `devicespecifics` VALUES ('163', '72', 'DISK_TYPE', 'SSD');
+INSERT INTO `devicespecifics` VALUES ('164', '72', 'DISK_SIZE', '256');
+INSERT INTO `devicespecifics` VALUES ('165', '72', 'RAM_SIZE', '16');
+INSERT INTO `devicespecifics` VALUES ('166', '72', 'PROCESSOR_TYPE', 'I6');
+INSERT INTO `devicespecifics` VALUES ('167', '72', 'MODEL', 'fda');
 
 -- ----------------------------
 -- Table structure for devicespecificsinputs
@@ -228,16 +209,13 @@ CREATE TABLE `devicewarranties` (
   PRIMARY KEY (`id`),
   KEY `devicewarranties_ibfk_1` (`device_id`),
   CONSTRAINT `devicewarranties_ibfk_1` FOREIGN KEY (`device_id`) REFERENCES `devices` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of devicewarranties
 -- ----------------------------
-INSERT INTO `devicewarranties` VALUES ('41', '60', '2024-08-06', '2028-08-06');
-INSERT INTO `devicewarranties` VALUES ('44', '59', '2024-08-24', '2024-09-06');
-INSERT INTO `devicewarranties` VALUES ('46', '63', null, null);
-INSERT INTO `devicewarranties` VALUES ('47', '64', null, null);
-INSERT INTO `devicewarranties` VALUES ('48', '65', '2021-01-09', '2023-02-08');
+INSERT INTO `devicewarranties` VALUES ('54', '71', null, null);
+INSERT INTO `devicewarranties` VALUES ('55', '72', null, null);
 
 -- ----------------------------
 -- Table structure for users
@@ -252,7 +230,7 @@ CREATE TABLE `users` (
   PRIMARY KEY (`id`),
   KEY `department_id` (`department_id`),
   CONSTRAINT `users_ibfk_1` FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of users
@@ -271,3 +249,4 @@ INSERT INTO `users` VALUES ('11', '36', 'Sofia', 'Pipicella', 'sofia@pipicella')
 INSERT INTO `users` VALUES ('12', '36', 'Sofia', 'Pipicella', 'sofia@pipicella');
 INSERT INTO `users` VALUES ('13', '36', 'Sofia', 'Pipicella', 'sofia@pipicella');
 INSERT INTO `users` VALUES ('14', '36', 'Sofia', 'Pipicella', 'sofia@pipicella');
+INSERT INTO `users` VALUES ('15', '1', 'Marawan', 'emad', 'marawa@emad');

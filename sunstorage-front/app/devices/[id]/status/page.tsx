@@ -77,7 +77,7 @@ export default function Actions() {
   const freeDevice = async () => {
     try {
       const response = await fetch(
-        `http://192.168.16.119:4000/api/devices/${idDevice}/status`,
+        `http://localhost:4000/api/devices/${idDevice}/status`,
         {
           method: "PATCH",
           headers: {

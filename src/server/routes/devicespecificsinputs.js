@@ -7,7 +7,7 @@ router.get("/:device_type_id", async (req, res) => {
   const { device_type_id } = req.params;
   try {
     const result = await pool.query(
-      "SELECT input_name, input_type, input_values, input_placeholder, input_label FROM devicespecificsinputs WHERE device_type_id = ?",
+      "SELECT id, input_name, input_type, input_values, input_placeholder, input_label FROM devicespecificsinputs WHERE device_type_id = ?",
       [device_type_id]
     );
     res.json(result[0]);

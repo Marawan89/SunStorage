@@ -4,10 +4,10 @@ const pool = require('../../../db');
 
 // Create a new device specific
 router.post('/', async (req, res) => {
-  const { device_id, name, value } = req.body;
+  const { device_id, devicespecific_input_id, value } = req.body;
   try {
-    const [result] = await pool.query('INSERT INTO devicespecifics (device_id, name, value) VALUES (?, ?, ?)', [device_id, name, value]);
-    res.status(201).json({ id: result.insertId, device_id, name, value });
+    const [result] = await pool.query('INSERT INTO devicespecifics (device_id, devicespecific_input_id, value) VALUES (?, ?, ?)', [device_id, devicespecific_input_id, value]);
+    res.status(201).json({ id: result.insertId, device_id, devicespecific_input_id, value });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

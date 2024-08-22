@@ -93,7 +93,7 @@ export default function AddDevice() {
 
     try {
       for (const field of deviceTypeInputs) {
-        if (document.getElementById(field.input_name).value == 'Choose an option...' || document.getElementById(field.input_name).value == null || document.getElementById(field.input_name).value == '') {
+        if (document.getElementById(field.id).value == 'Choose an option...' || document.getElementById(field.id).value == null || document.getElementById(field.id).value == '') {
           alert("Please fill " + field.input_name + " field");
           return;
         }
@@ -154,8 +154,8 @@ export default function AddDevice() {
             },
             body: JSON.stringify({
               device_id: deviceData.id,
-              name: field.input_name,
-              value: document.getElementById(field.input_name).value || null,
+              devicespecific_input_id: field.id,
+              value: document.getElementById(field.id).value || null,
             }),
           }
         );
@@ -225,8 +225,8 @@ export default function AddDevice() {
                         <>
                         <p>{input.input_label}:</p>
                         <select
-                          id={input.input_name}
-                          name={input.input_name}
+                          id={input.id}
+                          name={input.id}
                           required
                         >
                           <option>
@@ -244,8 +244,8 @@ export default function AddDevice() {
                         <p>{input.input_label}:</p>
                         <input
                           type="text"
-                          id={input.input_name}
-                          name={input.input_name}
+                          id={input.id}
+                          name={input.id}
                           placeholder={input.input_placeholder}
                           required
                         />
@@ -257,8 +257,8 @@ export default function AddDevice() {
                          <p>{input.input_label}:</p>
                          <input
                            type="number"
-                           id={input.input_name}
-                           name={input.input_name}
+                           id={input.id}
+                           name={input.id}
                            min={10}
                            placeholder={input.input_label}
                            required

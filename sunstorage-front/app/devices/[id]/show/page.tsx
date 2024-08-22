@@ -83,7 +83,7 @@ export default function ViewDevice() {
                     {devicespecific.input_label} : {devicespecific.value} 
                   </li>
                   ))}
-                {device.devicewarranty.start_date && device.devicewarranty.end_date ? (
+                {device.devicewarranty && device.devicewarranty.start_date && device.devicewarranty.end_date ? (
                   <>
                     <li className="list-group-item">
                       Warranty Start Date:{" "}

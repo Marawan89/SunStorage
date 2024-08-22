@@ -50,7 +50,7 @@ router.get("/details", async (req, res) => {
       };
  
       const [rowsSpecifics] = await pool.query(
-         "SELECT devicespecifics.name, devicespecifics.value, devicespecificsinputs.input_label FROM devicespecifics INNER JOIN devicespecificsinputs ON devicespecifics.name = devicespecificsinputs.input_name WHERE device_id = ?",
+         "SELECT devicespecificsinputs.input_name as name, devicespecifics.value, devicespecificsinputs.input_label FROM devicespecifics INNER JOIN devicespecificsinputs ON devicespecifics.devicespecific_input_id = devicespecificsinputs.id WHERE device_id = ?",
          [rowDevice.id]
       );
       if (rowsSpecifics.length !== 0) {
@@ -114,7 +114,7 @@ router.get("/:id/devicespecifics", async (req, res) => {
   const { id } = req.params;
   try {
     const [rows] = await pool.query(
-      "SELECT devicespecifics.name, devicespecifics.value, devicespecificsinputs.input_label FROM devicespecifics INNER JOIN devicespecificsinputs ON devicespecifics.name = devicespecificsinputs.input_name WHERE device_id = ?",
+      "SELECT devicespecificsinputs.input_name as name, devicespecifics.value, devicespecificsinputs.input_label FROM devicespecifics INNER JOIN devicespecificsinputs ON devicespecifics.devicespecific_input_id = devicespecificsinputs.id WHERE device_id = ?",
       [id]
     );
     if (rows.length === 0) {
@@ -198,7 +198,7 @@ router.get("/:id/details", async (req, res) => {
     device = rowsDevice[0];
 
     const [rowsSpecifics] = await pool.query(
-      "SELECT devicespecifics.name, devicespecifics.value, devicespecificsinputs.input_label FROM devicespecifics INNER JOIN devicespecificsinputs ON devicespecifics.name = devicespecificsinputs.input_name WHERE device_id = ?",
+      "SELECT devicespecificsinputs.input_name as name, devicespecifics.value, devicespecificsinputs.input_label FROM devicespecifics INNER JOIN devicespecificsinputs ON devicespecifics.devicespecific_input_id = devicespecificsinputs.id WHERE device_id = ?",
       [id]
     );
     if (rowsSpecifics.length !== 0) {

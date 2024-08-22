@@ -234,7 +234,7 @@ export default function Devices() {
                         <th scope="row">{device.sn}</th>
                         <td>{device.device_type_name}</td>
                         <td>
-                          {isWarrantyActive(device.devicewarranty?.start_date, device.devicewarranty?.end_date)}
+                          {device.devicewarranty ? isWarrantyActive(device.devicewarranty.start_date, device.devicewarranty.end_date) : 'Not available'}
                         </td>
                         <td>
                            {device.status}

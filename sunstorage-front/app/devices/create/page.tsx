@@ -8,13 +8,15 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../../globals.css";
 import "./style.css";
 import apiendpoint from "../../../../apiendpoint";
+import { withAuth } from '../../../../src/server/middleware/withAuth';
+
 
 interface DeviceType {
   id: number;
   name: string;
 }
 
-export default function AddDevice() {
+function AddDevice() {
   const [deviceTypes, setDeviceTypes] = useState<DeviceType[]>([]);
   const [serialNumber, setSerialNumber] = useState("");
   const [selectedDeviceType, setSelectedDeviceType] = useState<string>("");
@@ -27,7 +29,9 @@ export default function AddDevice() {
   useEffect(() => {
     async function fetchDeviceTypes() {
       try {
-        const res = await fetch(`${apiendpoint}api/devicetypes`);
+        const res = await fetch(`${apiendpoint}api/devicetypes` , {
+         credentials:'include',
+        });
         if (!res.ok) {
           throw new Error("Failed to fetch device types");
         }
@@ -46,7 +50,9 @@ export default function AddDevice() {
       if (selectedDeviceType){
         try {
           console.log('download = '+selectedDeviceType);
-          const res = await fetch(`${apiendpoint}api/devicespecificsinputs/`+selectedDeviceType);
+          const res = await fetch(`${apiendpoint}api/devicespecificsinputs/`+selectedDeviceType, {
+            credentials: 'include',
+          });
           if (!res.ok) {
             throw new Error("Failed to fetch device types");
           }
@@ -111,6 +117,7 @@ export default function AddDevice() {
           sn: serialNumber,
           qr_code_string: `SunStorage_DeviceNumber${Math.floor(Math.random() * 1000000)}`,
         }),
+        credentials: 'include',
       });
 
       if (!deviceRes.ok) {
@@ -134,6 +141,7 @@ export default function AddDevice() {
             start_date: hasWarranty ? warrantyStart : null,
             end_date: hasWarranty ? warrantyEnd : null,
           }),
+          credentials:'include',
         }
       );
 
@@ -157,6 +165,7 @@ export default function AddDevice() {
               devicespecific_input_id: field.id,
               value: document.getElementById(field.id).value || null,
             }),
+            credentials: 'include',
           }
         );
         if (!insertSpecific.ok) {
@@ -326,15 +335,4 @@ export default function AddDevice() {
   );
 }
 
-
-/* Da mettere a posto:
-- aggiunge al db anche se non si scrive niente nelle specifiche
-   - é meglio fargli aggiungere al db un valore NULL quando l'utente non scrive nulla oppure come sta facendo adesso che non aggiunge niente
-- se attiva lo switch della garanzia e l'utente non scrive nessuna garanzia deve dirgli scrivi le date di garanzia
-- il serial number deve avere una lunghezza specifica
-- quando c'è un errore voglio che si evidenzi in rosso solo l'input con l'errore basta sti alert per tutto (per adesso teniamoli)
-
-
-Da migliorare
-- fare che se si sceglie Laptop fa vedere il pannello specifiche se no no (per adesso funziona ma è molto blando e manuale )
-*/
+export default withAuth(AddDevice);

@@ -9,6 +9,7 @@ import "../../../globals.css";
 import "./style.css";
 import apiendpoint from "../../../../../apiendpoint";
 const formatDate = require('../../../../dateFormatter');
+import { withAuth } from '../../../../../src/server/middleware/withAuth';
 
 interface Device {
    sn: string;
@@ -45,13 +46,15 @@ interface DeviceLog {
    event_datetime: string;
 }
 
-export default function ViewDevice() {
+function ViewDevice() {
   const params = useParams(); //parametro get della route
   const [device, setDevice] = useState<Device|null>(null);
 
   useEffect(() => {
     const deviceId = params.id;
-    fetch(`${apiendpoint}api/devices/${deviceId}/details`)
+    fetch(`${apiendpoint}api/devices/${deviceId}/details`, {
+      credentials:'include',
+    })
       .then((response) => response.json())
       .then((data) => {
         setDevice(data);
@@ -133,3 +136,5 @@ export default function ViewDevice() {
     </>
   );
 }
+
+export default withAuth(ViewDevice);

@@ -7,10 +7,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../../globals.css";
 import "./style.css";
 import apiendpoint from "../../../../apiendpoint";
+import { withAuth } from '../../../../src/server/middleware/withAuth';
 
-export default function CreateDepartment() {
+function AddDepartment() {
    
-  async function activateLasers() {
+    async function activateLasers() {
     const nameDepartmentElement = document.getElementById(
       "name_department"
     ) as HTMLInputElement;
@@ -27,23 +28,29 @@ export default function CreateDepartment() {
         return;
       }
 
-      const resAdd = await fetch(`${apiendpoint}api/devices/departments`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name: name }),
-      });
-      const dataAdd = await resAdd.json();
+      try {
+        const resAdd = await fetch(`${apiendpoint}api/departments`, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name: name }),
+          credentials: 'include',
+        });
+        const dataAdd = await resAdd.json();
 
-      if (dataAdd.id) {
-        // successful insertion
-        alert("Inserimento riuscito");
-        window.location.href = "/departments"; // redirecting to the /departments page
-      } else {
-        // if the server response does not contain an id in the JSON response body
-        alert(dataAdd.error);
+        if (dataAdd.id) {
+          // successful insertion
+          alert("Inserimento riuscito");
+          window.location.href = "/departments"; // redirecting to the /departments page
+        } else {
+          // if the server response does not contain an id in the JSON response body
+          alert(dataAdd.error);
+        }
+      } catch (error) {
+        console.error('Errore nella creazione del dipartimento:', error);
+        alert('Errore nella creazione del dipartimento.');
       }
     } else {
       // if the element with the name_department ID is not found in the DOM, then the getElementById resets null
@@ -86,3 +93,5 @@ export default function CreateDepartment() {
     </>
   );
 }
+
+export default withAuth(AddDepartment);

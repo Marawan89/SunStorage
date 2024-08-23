@@ -8,6 +8,7 @@ import "bootstrap/dist/js/bootstrap.bundle.min";
 import "../globals.css";
 import "./style.css";
 const apiendpoint = require('../../../apiendpoint');
+import { withAuth } from '../../../src/server/middleware/withAuth';
 
 interface Device{
    id: number;
@@ -46,7 +47,7 @@ interface DeviceLog {
    event_datetime: string;
 }
 
-export default function Devices() {
+function Devices() {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [devices, setDevices] = useState<Device[]>();
   const [deviceTypeFilter, setDeviceTypeFilter] = useState<string>("");
@@ -61,18 +62,24 @@ export default function Devices() {
 
   // Route per ottenere una panoramica di tutti i dispositivi
   function fetchDevices() {
-   fetch(`${apiendpoint}api/devices/details`)
+   fetch(`${apiendpoint}api/devices/details`, {
+     credentials: 'include',
+   })
      .then((response) => response.json())
      .then((data) => {
-      setFilterDeviceTypeOptions(uniqueValues(data, 'device_type_name'));
-      setFilterDeviceStatusOption(uniqueValues(data, 'status'));
-       const updatedDevices = data.map((item: Device) => ({
+       setFilterDeviceTypeOptions(uniqueValues(data, 'device_type_name'));
+       setFilterDeviceStatusOption(uniqueValues(data, 'status'));
+       const updatedDevices = data.map((item: any) => ({
          ...item,
          show: true,
        }));
        setDevices(updatedDevices);
+     })
+     .catch((error) => {
+       console.error('Errore nel fetch dei dispositivi:', error);
      });
  }
+ 
 
  useEffect(() => {
    if (!devices) {
@@ -147,6 +154,7 @@ export default function Devices() {
         `${apiendpoint}api/devices/${deviceId}`,
         {
           method: "DELETE",
+          credentials: 'include',
         }
       );
 
@@ -300,3 +308,5 @@ export default function Devices() {
     </>
   );
 }
+
+export default withAuth(Devices);

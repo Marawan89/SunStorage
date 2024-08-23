@@ -6,6 +6,9 @@ import Menu  from "../parts/menu";
 import Navbar from "../parts/navbar";
 import "../globals.css";
 import "./style.css";
+import { withAuth } from '../../../src/server/middleware/withAuth';
+
+
 const apiendpoint = require('../../../apiendpoint');
 
 interface Department {
@@ -13,17 +16,22 @@ interface Department {
    name: string;
  }
 
-export default function Departments() {
+function Departments() {
   // se si chiama departments sarà sempre il setter come set"nome" quindi --> setDepartments
   const [departments, setDepartments] = useState<Department[]>([]);
 
   useEffect(() => {
-     fetch(`${apiendpoint}api/departments/`)
-      .then((res) => res.json())
-      .then((data) => {
-        setDepartments(data)
-      })
-  }, []);
+   fetch(`${apiendpoint}api/departments/`, {
+     credentials: 'include',
+   })
+     .then((res) => res.json())
+     .then((data) => {
+       setDepartments(data);
+     })
+     .catch((error) => {
+       console.error('Errore nel fetch dei dipartimenti:', error);
+     });
+ }, []);
 
   if (!departments) {
     return "loading...";
@@ -67,3 +75,5 @@ export default function Departments() {
     </>
   );
 }
+
+export default withAuth(Departments);

@@ -7,8 +7,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../../globals.css";
 import "./style.css";
 import apiendpoint from "../../../../apiendpoint";
+import { withAuth } from '../../../../src/server/middleware/withAuth';
 
-export default function CreateDeviceTypes() {
+function CreateDeviceTypes() {
 
   async function activateLasers() {
     const nameDevicetypesElement = document.getElementById(
@@ -34,6 +35,7 @@ export default function CreateDeviceTypes() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ name: name }),
+        credentials: 'include',
       });
       const dataAdd = await resAdd.json();
 
@@ -86,3 +88,5 @@ export default function CreateDeviceTypes() {
     </>
   );
 }
+
+export default withAuth(CreateDeviceTypes);

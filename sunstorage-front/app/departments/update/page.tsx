@@ -7,8 +7,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../../globals.css";
 import "./style.css";
 import apiendpoint from "../../../../apiendpoint";
+import { withAuth } from '../../../../src/server/middleware/withAuth';
 
-export default function UpdateDepartment() {
+function UpdateDepartment() {
    const [name, setName] = useState("");
    const [id, setId] = useState<string | null>(null);
 
@@ -18,7 +19,9 @@ export default function UpdateDepartment() {
       setId(departmentId);
   
       if (departmentId) {
-        fetch(`${apiendpoint}api/departments/${departmentId}`)
+        fetch(`${apiendpoint}api/departments/${departmentId}`, {
+         credentials: 'include',
+        })
           .then((res) => res.json())
           .then((data) => {
             setName(data.name);
@@ -34,6 +37,7 @@ export default function UpdateDepartment() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ name }),
+          credentials: 'include',
         })
           .then((res) => res.json())
           .then((data) => {
@@ -88,3 +92,5 @@ export default function UpdateDepartment() {
     </>
   );
 }
+
+export default withAuth(UpdateDepartment);

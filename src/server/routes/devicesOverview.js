@@ -1,6 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../../../db");
+// const authMiddleware = require("../middleware/authMiddleware");
+
+// // middleware di autenticazione
+// router.use(authMiddleware);
 
 // query to get all device specifics
 router.get("/", async (req, res) => {
@@ -41,7 +45,7 @@ router.get("/", async (req, res) => {
       INNER JOIN devicetypes ON devices.device_type_id = devicetypes.id
       LEFT JOIN devicewarranties ON devices.id = devicewarranties.device_id
       LEFT JOIN devicespecifics ON devices.id = devicespecifics.device_id
-      LEFT JOIN devicespecificsinputs ON devicespecifics.name = devicespecificsinputs.input_name
+      LEFT JOIN devicespecificsinputs ON devicespecifics.devicespecific_input_id = devicespecificsinputs.input_name
       LEFT JOIN (
          SELECT
             da.device_id,
@@ -153,5 +157,6 @@ router.patch("/:id", async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
+
 
 module.exports = router;

@@ -25,11 +25,23 @@ nav a .logo {
 
 .nav-item p {
   font-size: 20px;
-}
+}  
 
 .user_icon {
-  color: white;
+  color: black;
   width: 30px;
+}
+
+.dropdown-button .btn-primary {
+   background-color: #fbdd01;
+  border-color: #6f6306;
+}
+
+.dropdown-button .btn-primary:hover,
+.dropdown-button .btn-primary:focus,
+.dropdown-button .btn-primary:active {
+  background-color: #cfb90f;
+  border-color: #6f6306;
 }
 
 /*Menu*/

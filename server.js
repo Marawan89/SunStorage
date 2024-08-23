@@ -1,11 +1,20 @@
+require('dotenv').config();
 const express = require("express");
+const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
+const authMiddleware = require("./src/server/middleware/authMiddleware");
 const cors = require("cors");
 const app = express();
 
 // middleware
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cookieParser());
+
+app.use(cors({
+   origin: 'http://localhost:3000',
+   credentials: true
+}));
+ 
 
 var path = "./src/server/routes/";
 
@@ -20,21 +29,25 @@ const deviceWarrantyRoutes = require(path + "devicewarranty");
 const userRoutes = require(path + "user");
 const devicesOverviewRoutes = require(path + "devicesOverview");
 const deviceSpecificsInputsRoutes = require(path + "devicespecificsinputs");
+const authRoutes = require(path + "auth");
 
-// use routes
 app.use("/api/devices/overview", devicesOverviewRoutes);
 
-app.use("/api/devices", deviceRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/departments", departmentRoutes);
-app.use("/api/deviceassignments", deviceAssignmentRoutes);
-app.use("/api/devicelogs", deviceLogRoutes);
-app.use("/api/devicespecifics", deviceSpecificRoutes);
-app.use("/api/devicetypes", devicetypesRoutes);
-app.use("/api/devicewarranties", deviceWarrantyRoutes);
-app.use("/api/devicespecificsinputs", deviceSpecificsInputsRoutes);
+// Applicare authMiddleware solo alle rotte sotto "/api/devices" e "/api/users"
+app.use("/api/devices", authMiddleware, deviceRoutes);
+app.use("/api/users", authMiddleware, userRoutes);
+app.use("/api/departments", authMiddleware, departmentRoutes);
+app.use("/api/deviceassignments", authMiddleware, deviceAssignmentRoutes);
+app.use("/api/devicelogs", authMiddleware, deviceLogRoutes);
+app.use("/api/devicespecifics", authMiddleware, deviceSpecificRoutes);
+app.use("/api/devicetypes", authMiddleware, devicetypesRoutes);
+app.use("/api/devicewarranties", authMiddleware, deviceWarrantyRoutes);
+app.use("/api/devicespecificsinputs", authMiddleware, deviceSpecificsInputsRoutes);
+
+app.use("/api/auth", authRoutes); // Auth routes are not protected
 
 const port = process.env.PORT || 4000;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+

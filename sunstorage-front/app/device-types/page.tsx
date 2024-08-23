@@ -7,17 +7,21 @@ import Navbar from "../parts/navbar";
 import "../globals.css";
 import "./style.css";
 import apiendpoint from "../../../apiendpoint";
+import { withAuth } from '../../../src/server/middleware/withAuth';
+
 
 interface Devicetypes {
    id: number;
    name: string;
  }
 
-export default function Devicetypes() {
+function Devicetypes() {
   const [devicetypes, setDeviceTypes] = useState<Devicetypes[]>([]);
 
   useEffect(() => {
-     fetch(`${apiendpoint}api/devicetypes`)
+     fetch(`${apiendpoint}api/devicetypes`, {
+      credentials: 'include',
+     })
       .then((res) => res.json())
       .then((data) => {
         setDeviceTypes(data)
@@ -66,3 +70,5 @@ export default function Devicetypes() {
     </>
   );
 }
+
+export default withAuth(Devicetypes);

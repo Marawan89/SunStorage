@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../../../db');
+// const authMiddleware = require("../middleware/authMiddleware");
+
+// // middleware di autenticazione
+// router.use(authMiddleware);
 
 // Create a new device log
 router.post('/', async (req, res) => {

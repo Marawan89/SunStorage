@@ -8,6 +8,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../globals.css";
 import "./style.css";
 import apiendpoint from "../../../../../apiendpoint";
+import { withAuth } from '../../../../../src/server/middleware/withAuth';
+
 
 interface DeviceType {
   id: number;
@@ -30,7 +32,7 @@ interface DeviceWarranty {
   end_date: string;
 }
 
-export default function EditDevice() {
+function EditDevice() {
   const params = useParams();
   const [hasWarranty, setHasWarranty] = useState<boolean>(false);
   const [deviceData, setDeviceData] = useState<Device | null>(null);
@@ -45,12 +47,15 @@ export default function EditDevice() {
   const [deviceTypeInputs, setDeviceTypeInputs] = useState<any[]>([]);
   const [deviceTypeInputsValues, setDeviceTypeInputsValues] = useState<{ fieldName: string; fieldValue: string | null; fieldId: integer | null }[]>([]);
   const [deviceTypeInputsValuesInitial, setDeviceTypeInputsValuesInitial] = useState<{ fieldName: string; fieldValue: string | null; fieldId: integer | null }[]>([]);
+  
 
   const idDevice = params.id;
 
   const fetchDeviceTypes = useCallback(async () => {
     try {
-      const response = await fetch(`${apiendpoint}api/devicetypes`);
+      const response = await fetch(`${apiendpoint}api/devicetypes`, {
+         credentials: 'include',
+      } );
       const data = await response.json();
       setDeviceTypes(data);
     } catch (error) {
@@ -60,7 +65,9 @@ export default function EditDevice() {
 
   const fetchDeviceData = useCallback(async () => {
     try {
-      const response = await fetch(`${apiendpoint}api/devices/${idDevice}`);
+      const response = await fetch(`${apiendpoint}api/devices/${idDevice}`, {
+         credentials: 'include',
+      });
       const data: Device = await response.json();
       setDeviceData(data);
       setSerialNumber(data.sn);
@@ -74,18 +81,23 @@ export default function EditDevice() {
 
   const fetchDeviceSpecifics = useCallback(async (deviceTypeId: string, updateInitial: boolean) => {
     try {
-      const response = await fetch(`${apiendpoint}api/devices/${idDevice}/devicespecifics`);
+      const response = await fetch(`${apiendpoint}api/devices/${idDevice}/devicespecifics`, {
+         credentials: 'include',
+      });
       const data = await response.json();
       setDeviceSpecificsData(data);
-
-      const inputResponse = await fetch(`${apiendpoint}api/devicespecificsinputs/${deviceTypeId}`);
+      
+      const inputResponse = await fetch(`${apiendpoint}api/devicespecificsinputs/${deviceTypeId}`, {
+         credentials: 'include',
+      });
       const inputs = await inputResponse.json();
       setDeviceTypeInputs(inputs);
-
+      
       const fields = inputs.map((input: any) => {
-        const foundItem = data.find((item: any) => item.name === input.input_name);
+        const foundItem = data.find((item: any) => item.devicespecific_input_id === input.id);
         return { fieldName: input.input_name, fieldValue: foundItem ? foundItem.value : null, fieldId: foundItem ? foundItem.id : null };
       });
+      
       setDeviceTypeInputsValues(fields);
       if (updateInitial){
         setDeviceTypeInputsValuesInitial(fields);
@@ -97,7 +109,9 @@ export default function EditDevice() {
 
   const fetchDeviceWarranty = useCallback(async () => {
     try {
-      const response = await fetch(`${apiendpoint}api/devices/${idDevice}/devicewarranty`);
+      const response = await fetch(`${apiendpoint}api/devices/${idDevice}/devicewarranty`, {
+         credentials: 'include',
+      });
       const data: DeviceWarranty = await response.json();
       setDeviceWarrantyData(data);
       setHasWarranty((data.error ? false : true));
@@ -451,3 +465,5 @@ const fetchWithErrorHandling = async (url, options = {}) => {
     </>
   );
 }
+
+export default withAuth(EditDevice)

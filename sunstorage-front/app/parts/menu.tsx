@@ -46,13 +46,6 @@ export default function Menu() {
               <p className="mb-0">Device Types</p>
             </a>
           </button>    
-          <div className="spacer"></div>
-          <button className="logout-btn nav-item btn p-0">
-            <a href="/login" className="d-flex align-items-center">
-              <FontAwesomeIcon icon={faRightFromBracket} className="menuIcons mr-2" />
-              <p className="mb-0">Logout</p>
-            </a>
-          </button>
         </div>
       </div>
     </div>

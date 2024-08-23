@@ -6,29 +6,48 @@ import Navbar from "../../../parts/navbar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../globals.css";
 import apiendpoint from "../../../../../apiendpoint";
-// import "./style.css";
+import { withAuth } from "../../../../../src/server/middleware/withAuth";
 
-interface DeviceDetails {
-  id: number;
-  serial_number: string;
-  qr_code: string;
-  device_type: string;
-  warranty_start: string | null;
-  warranty_end: string | null;
+interface Device {
+  sn: string;
+  device_type_name: string;
   status: string;
-  specifics: string;
-  user_name: string;
-  surname: string;
-  email: string;
-  department_name: string;
+  qr_code_string: string;
+  devicespecifics: DeviceSpecific[];
+  devicewarranty: DeviceWarranty;
+  devicelogs: DeviceLog[];
+  deviceassignments: DeviceAssignment[];
 }
 
-export default function ViewDeviceWithActions() {
+interface DeviceAssignment {
+  name: string;
+  surname: string;
+  department_name: string;
+  email: string;
+}
+
+interface DeviceSpecific {
+  name: string;
+  value: string;
+  input_label: string;
+}
+
+interface DeviceWarranty {
+  start_date: string;
+  end_date: string;
+}
+
+interface DeviceLog {
+  log_type: string;
+  additional_notes: string;
+  event_datetime: string;
+}
+
+function QrCodePage() {
   const params = useParams();
   const idDevice = params.id;
-  const [device, setDevice] = useState<DeviceDetails | null>(null);
+  const [device, setDevice] = useState<Device | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [deviceStatus, setDeviceStatus] = useState("");
   const [assignmentId, setAssignmentId] = useState<number | null>(null);
 
   useEffect(() => {
@@ -38,35 +57,40 @@ export default function ViewDeviceWithActions() {
 
         // Fetch device details
         const response = await fetch(
-          `${apiendpoint}api/devices/overview?qr=${deviceId}`
+          `${apiendpoint}api/devices/overview?qr=${deviceId}`,
+          {
+            credentials: "include",
+          }
         );
-        const data = await response.json();
-        if (data.length > 0) {
-          const deviceData = data[0];
-          setDevice({
-            id: deviceData.id,
-            serial_number: deviceData.sn,
-            qr_code: deviceData.qr_code_string,
-            device_type: deviceData.device_type,
-            warranty_start: deviceData.start_date,
-            warranty_end: deviceData.end_date,
-            specifics: deviceData.specifics,
-            status: deviceData.status,
-            user_name: deviceData.user_name,
-            surname: deviceData.surname,
-            email: deviceData.email,
-            department_name: deviceData.department_name,
-          });
-          setDeviceStatus(deviceData.status);
-        } else {
-          console.error("No device found:", data);
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch device data");
         }
+
+        const data = await response.json();
+        console.log("Device data:", data);  // Debugging line to check API response
+
+        if (!data || !data.devicespecifics) {
+          throw new Error("Invalid device data structure");
+        }
+
+        setDevice(data);
 
         // Fetch assignment data
         const assignmentResponse = await fetch(
-          `${apiendpoint}api/deviceassignments/check/${device.id}`
+          `${apiendpoint}api/deviceassignments/check/${idDevice}`,
+          {
+            credentials: "include",
+          }
         );
+
+        if (!assignmentResponse.ok) {
+          throw new Error("Failed to fetch assignment data");
+        }
+
         const assignmentData = await assignmentResponse.json();
+        console.log("Assignment data:", assignmentData);  // Debugging line to check assignment data
+
         if (assignmentData.length > 0) {
           setAssignmentId(assignmentData[0].id);
         }
@@ -80,27 +104,26 @@ export default function ViewDeviceWithActions() {
     fetchDeviceData();
   }, [params.id]);
 
-  if (isLoading || !device) {
+  if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  const specificsList = device.specifics.split(", ").map((spec, index) => (
-    <li key={index} className="list-group-item">
-      {spec}
-    </li>
-  ));
+  if (!device) {
+    return <div>No device data available</div>;
+  }
 
-  // Funzione per dismettere il dispositivo
+  // Function to dismiss the device
   const dismissDevice = async () => {
     try {
       const response = await fetch(
-        `${apiendpoint}api/devices/${device.id}/status`,
+        `${apiendpoint}api/devices/${idDevice}/status`,
         {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ status: "dismissed" }),
+          credentials: "include",
         }
       );
 
@@ -111,24 +134,25 @@ export default function ViewDeviceWithActions() {
         if (!confirmDelete) return;
         window.location.href = "/devices";
       } else {
-        console.error("Errore nella dismissione del dispositivo");
+        console.error("Error dismissing the device");
       }
     } catch (error) {
-      console.error("Errore nella dismissione del dispositivo:", error);
+      console.error("Error dismissing the device:", error);
     }
   };
 
-  // Funzione per cambiare un dispostivo in riparazione (status)
+  // Function to change device status to "free"
   const freeDevice = async () => {
     try {
       const response = await fetch(
-        `${apiendpoint}api/devices/${device.id}/status`,
+        `${apiendpoint}api/devices/${idDevice}/status`,
         {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ status: "free" }),
+          credentials: "include",
         }
       );
 
@@ -136,23 +160,24 @@ export default function ViewDeviceWithActions() {
         alert("Device is now free!");
         window.location.href = "/devices";
       } else {
-        console.error("Errore nell'invio del dispositivo in riparazione");
+        console.error("Error setting device to free");
       }
     } catch (error) {
-      console.error("Errore nell'invio del dispositivo in riparazione:", error);
+      console.error("Error setting device to free:", error);
     }
   };
 
   const repairDevice = async () => {
     try {
       const response = await fetch(
-        `${apiendpoint}api/devices/${device.id}/status`,
+        `${apiendpoint}api/devices/${idDevice}/status`,
         {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ status: "under repair" }),
+          credentials: "include",
         }
       );
 
@@ -160,16 +185,16 @@ export default function ViewDeviceWithActions() {
         alert("Device sent to repair successfully!");
         window.location.href = "/devices";
       } else {
-        console.error("Errore nell'invio del dispositivo in riparazione");
+        console.error("Error sending device to repair");
       }
     } catch (error) {
-      console.error("Errore nell'invio del dispositivo in riparazione:", error);
+      console.error("Error sending device to repair:", error);
     }
   };
 
-  // Funzione per assegnare il dispositivo
+  // Function to assign the device
   const assignDevice = async () => {
-    window.location.href = `/devices/${device.id}/assign`;
+    window.location.href = `/devices/${idDevice}/assign`;
   };
 
   return (
@@ -179,23 +204,27 @@ export default function ViewDeviceWithActions() {
         <div className="col-12 d-flex justify-content-center align-items-center">
           <div className="col-12 bg-content p-md-5">
             <div className="d-flex flex-column justify-content-center align-items-center">
-              <h3 className="sn">S/N: {device.serial_number}</h3>
+              <h3 className="sn">S/N: {device.sn}</h3>
             </div>
             <ul className="list-group">
               <li className="list-group-item disabled">
-                {device.device_type} specifics:
+                {device.device_type_name} specifics:
               </li>
               <li className="list-group-item">Status: {device.status}</li>
-              {specificsList}
-              {device.warranty_start && device.warranty_end ? (
+              {device.devicespecifics.map((devicespecific, index) => (
+                <li key={index} className="list-group-item">
+                  {devicespecific.input_label} : {devicespecific.value} 
+                </li>
+              ))}
+              {device.devicewarranty.start_date && device.devicewarranty.end_date ? (
                 <>
                   <li className="list-group-item">
                     Warranty Start Date:{" "}
-                    {new Date(device.warranty_start).toLocaleDateString()}
+                    {new Date(device.devicewarranty.start_date).toLocaleDateString()}
                   </li>
                   <li className="list-group-item">
                     Warranty End Date:{" "}
-                    {new Date(device.warranty_end).toLocaleDateString()}
+                    {new Date(device.devicewarranty.end_date).toLocaleDateString()}
                   </li>
                 </>
               ) : (
@@ -204,20 +233,20 @@ export default function ViewDeviceWithActions() {
               {device.status === "assigned" && (
                 <>
                   <li className="list-group-item">
-                    Name owner: {device.user_name} {device.surname}
+                    Name owner: {device.deviceassignments[0]?.name} {device.deviceassignments[0]?.surname}
                   </li>
                   <li className="list-group-item">
-                    Email owner: {device.email}
+                    Email owner: {device.deviceassignments[0]?.email}
                   </li>
                   <li className="list-group-item">
-                    Owner department: {device.department_name}
+                    Owner department: {device.deviceassignments[0]?.department_name}
                   </li>
                 </>
               )}
             </ul>
 
             <div className="d-flex justify-content-between align-items-center">
-              {deviceStatus === "free" && (
+              {device.status === "free" && (
                 <>
                   <button className="p-3 btn btn-info" onClick={assignDevice}>
                     Assegna (status: assigned)
@@ -236,7 +265,7 @@ export default function ViewDeviceWithActions() {
                   </button>
                 </>
               )}
-              {deviceStatus === "assigned" && (
+              {device.status === "assigned" && (
                 <>
                   <button className="p-3 btn btn-primary" onClick={freeDevice}>
                     Rientra (status: free)
@@ -255,7 +284,7 @@ export default function ViewDeviceWithActions() {
                   </button>
                 </>
               )}
-              {deviceStatus === "under repair" && (
+              {device.status === "under repair" && (
                 <>
                   <button className="p-3 btn btn-info" onClick={assignDevice}>
                     Assegna (status: assigned)
@@ -271,7 +300,7 @@ export default function ViewDeviceWithActions() {
                   </button>
                 </>
               )}
-              {deviceStatus === "dismissed" && (
+              {device.status === "dismissed" && (
                 <>
                   <button
                     className="p-3 btn btn-success"
@@ -291,3 +320,5 @@ export default function ViewDeviceWithActions() {
     </>
   );
 }
+
+export default withAuth(QrCodePage);

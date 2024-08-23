@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../../../db');
 const writeLog = require('../../../logger');
+// const authMiddleware = require("../middleware/authMiddleware");
+
+// // middleware di autenticazione
+// router.use(authMiddleware);
 
 // Create a new device assignment
 router.post('/', async (req, res) => {
@@ -97,6 +101,5 @@ router.get('/check/:device_id', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-
 
 module.exports = router;

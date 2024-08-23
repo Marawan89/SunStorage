@@ -1,3 +1,5 @@
+"use client"
+
 import React from "react";
 import {} from "@fortawesome/free-regular-svg-icons";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -5,8 +7,9 @@ import "./globals.css";
 import "./style.css";
 import Navbar from "./parts/navbar"
 import Menu from "./parts/menu"
+import { withAuth } from '../../src/server/middleware/withAuth';
 
-export default function Dashboard() {
+function Dashboard() {
   return (
     <>
       <Navbar/>
@@ -23,3 +26,5 @@ export default function Dashboard() {
     </>
   );
 }
+
+export default withAuth(Dashboard)

@@ -7,8 +7,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../globals.css";
 import "./style.css";
 import apiendpoint from "../../../../../apiendpoint";
+import { withAuth } from '../../../../../src/server/middleware/withAuth';
 
-export default function Actions() {
+
+function DeviceStatus() {
   const params = useParams();
   const idDevice = params.id;
   const [isLoading, setIsLoading] = useState(true);
@@ -20,14 +22,18 @@ export default function Actions() {
     const fetchDeviceStatus = async () => {
       try {
         const response = await fetch(
-          `${apiendpoint}api/devices/${idDevice}`
+          `${apiendpoint}api/devices/${idDevice}`, {
+            credentials:'include',
+          }
         );
         const data = await response.json();
         setDeviceStatus(data.status); // Imposta lo stato del dispositivo
 
         // Verifica se il dispositivo è assegnato e ottieni l'ID dell'assegnazione
         const assignmentResponse = await fetch(
-          `${apiendpoint}api/deviceassignments/check/${idDevice}`
+          `${apiendpoint}api/deviceassignments/check/${idDevice}`, {
+            credentials: 'include',
+          }
         );
         const assignmentData = await assignmentResponse.json();
         if (assignmentData.length > 0) {
@@ -57,6 +63,7 @@ export default function Actions() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ status: "dismissed" }),
+          credentials: 'include',
         }
       );
 
@@ -85,6 +92,7 @@ export default function Actions() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ status: "free" }),
+          credentials: 'include',
         }
       );
 
@@ -110,6 +118,7 @@ export default function Actions() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ status: "under repair" }),
+          credentials:'include',
         }
       );
 
@@ -215,3 +224,5 @@ export default function Actions() {
     </>
   );
 }
+
+export default withAuth(DeviceStatus);

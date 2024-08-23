@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../../../db');
+// const authMiddleware = require("../middleware/authMiddleware");
+
+// // middleware di autenticazione
+// router.use(authMiddleware);
 
 // Create a new device specific
 router.post('/', async (req, res) => {
@@ -65,5 +69,6 @@ router.delete('/:id', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 module.exports = router;

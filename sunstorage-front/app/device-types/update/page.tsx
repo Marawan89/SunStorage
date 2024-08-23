@@ -6,8 +6,10 @@ import Navbar from "../../parts/navbar";
 import "../../globals.css";
 import "./style.css";
 import apiendpoint from "../../../../apiendpoint";
+import { withAuth } from '../../../../src/server/middleware/withAuth';
 
-export default function UpdateDeviceType() {
+
+function UpdateDeviceType() {
    const [name, setName] = useState("");
    const [id, setId] = useState<string | null>(null);
 
@@ -17,7 +19,9 @@ export default function UpdateDeviceType() {
       setId(devicetypesId);
   
       if (devicetypesId) {
-        fetch(`${apiendpoint}api/devicetypes/${devicetypesId}`)
+        fetch(`${apiendpoint}api/devicetypes/${devicetypesId}`, {
+         credentials: 'include',
+        })
           .then((res) => res.json())
           .then((data) => {
             setName(data.name);
@@ -33,6 +37,7 @@ export default function UpdateDeviceType() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ name }),
+          credentials: 'include',
         })
           .then((res) => res.json())
           .then((data) => {
@@ -87,3 +92,5 @@ export default function UpdateDeviceType() {
     </>
   );
 }
+
+export default withAuth(UpdateDeviceType);

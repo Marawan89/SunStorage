@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../../../db");
 const writeLog = require("../../../logger");
+const authMiddleware = require("./../../../src/server/middleware/authMiddleware"); 
+
+// router.use(authMiddleware);
 
 // route to create a new device
 router.post("/", async (req, res) => {
@@ -114,7 +117,7 @@ router.get("/:id/devicespecifics", async (req, res) => {
   const { id } = req.params;
   try {
     const [rows] = await pool.query(
-      "SELECT devicespecificsinputs.input_name as name, devicespecifics.value, devicespecificsinputs.input_label FROM devicespecifics INNER JOIN devicespecificsinputs ON devicespecifics.devicespecific_input_id = devicespecificsinputs.id WHERE device_id = ?",
+      "SELECT devicespecific_input_id, devicespecificsinputs.input_name as name, devicespecifics.value, devicespecificsinputs.input_label FROM devicespecifics INNER JOIN devicespecificsinputs ON devicespecifics.devicespecific_input_id = devicespecificsinputs.id WHERE device_id = ?",
       [id]
     );
     if (rows.length === 0) {
@@ -285,5 +288,6 @@ router.patch("/:id/status", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 module.exports = router;

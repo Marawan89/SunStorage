@@ -9,6 +9,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../globals.css";
 import "./style.css";
 import apiendpoint from "../../../../../apiendpoint";
+import { withAuth } from '../../../../../src/server/middleware/withAuth';
+
 
 interface Department {
   id: number;
@@ -20,7 +22,7 @@ interface User {
   name: string;
 }
 
-export default function AssignDevice() {
+function AssignDevice() {
    const params = useParams();
 
   const idDevice = params.id;
@@ -38,7 +40,9 @@ export default function AssignDevice() {
   useEffect(() => {
     async function fetchDepartments() {
       try {
-        const res = await fetch(`${apiendpoint}api/departments`);
+        const res = await fetch(`${apiendpoint}api/departments`, {
+         credentials: 'include',
+        });
         if (!res.ok) {
           throw new Error("Failed to fetch departments");
         }
@@ -59,7 +63,9 @@ export default function AssignDevice() {
         const res = await fetch(
           `${apiendpoint}api/departments/` +
             selectedDepartment +
-            "/users"
+            "/users", {
+               credentials: 'include',
+             }
         );
         if (!res.ok) {
           throw new Error("Failed to fetch users");
@@ -83,6 +89,7 @@ export default function AssignDevice() {
         device_id: idDevice,
         user_id: userid,
       }),
+      credentials:'include',
     }).then((res) => {
       if (!res.ok) {
         throw new Error("Failed to crearte user");
@@ -115,6 +122,7 @@ export default function AssignDevice() {
             surname: newUserSurname,
             email: newUserEmail,
           }),
+          credentials: 'include',
         }).then((res) => {
           if (!res.ok) {
             throw new Error("Failed to crearte user");
@@ -235,3 +243,5 @@ export default function AssignDevice() {
     </>
   );
 }
+
+export default withAuth(AssignDevice);

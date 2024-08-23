@@ -1,6 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../../../db");
+// const authMiddleware = require('../middleware/authMiddleware');
+
+// // middleware di autenticazione
+// router.use(authMiddleware);
 
 // route to create a new department
 router.post("/", async (req, res) => {

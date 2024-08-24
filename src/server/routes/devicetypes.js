@@ -1,15 +1,20 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../../../db");
-// const authMiddleware = require('../middleware/authMiddleware');
-
-// // middleware di autenticazione
-// router.use(authMiddleware);
 
 // route to create a new device type
 router.post("/", async (req, res) => {
-  const { name } = req.body;
-  console.log(req.body);
+  const { name, inputs } = req.body;
+
+  // Check if inputs is an array and has at least one input
+  if (!Array.isArray(inputs) || inputs.length === 0) {
+    return res
+      .status(400)
+      .json({
+        error: "Devi aggiungere almeno un input per il tipo di device.",
+      });
+  }
+
   try {
     // Check if the devicetype already exists
     const [existingDeviceType] = await pool.query(
@@ -17,7 +22,9 @@ router.post("/", async (req, res) => {
       [name]
     );
     if (existingDeviceType.length > 0) {
-      return res.status(400).json({error: "Questo tipo di device esiste già"})
+      return res
+        .status(400)
+        .json({ error: "Questo tipo di device esiste già" });
     }
 
     // Insert the new devicetype
@@ -25,9 +32,34 @@ router.post("/", async (req, res) => {
       "INSERT INTO devicetypes (name) VALUES (?)",
       [name]
     );
-    res.status(201).json({ id: result.insertId, name });
+
+    const deviceTypeId = result.insertId;
+
+    // Insert associated inputs
+    const inputPromises = inputs.map((input) => {
+      return pool.query(
+        "INSERT INTO devicespecificsinputs (device_type_id, input_name, input_label, input_type, input_values, input_placeholder) VALUES (?, ?, ?, ?, ?, ?)",
+        [
+          deviceTypeId,
+          input.name,
+          input.label,
+          input.type,
+          JSON.stringify(input.values),
+          input.placeholder,
+        ]
+      );
+    });
+
+    await Promise.all(inputPromises);
+
+    res
+      .status(200)
+      .json({ message: "Device type created successfully", id: deviceTypeId });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error("Error creating device type:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while creating the device type" });
   }
 });
 
@@ -90,6 +122,5 @@ router.delete("/:id", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-
 
 module.exports = router;

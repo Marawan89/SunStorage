@@ -75,35 +75,72 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const [rows] = await pool.query("SELECT * FROM devicetypes WHERE id = ?", [
-      id,
-    ]);
-    if (rows.length === 0) {
+    const [deviceTypeRows] = await pool.query(
+      "SELECT * FROM devicetypes WHERE id = ?",
+      [id]
+    );
+    if (deviceTypeRows.length === 0) {
       return res.status(404).json({ error: "Device type not found" });
     }
-    res.json(rows[0]);
+
+    const deviceType = deviceTypeRows[0];
+
+    // Get the associated inputs
+    const [inputRows] = await pool.query(
+      "SELECT * FROM devicespecificsinputs WHERE device_type_id = ?",
+      [id]
+    );
+
+    deviceType.inputs = inputRows.map((input) => ({
+      name: input.input_name,
+      label: input.input_label,
+      type: input.input_type,
+      values: JSON.parse(input.input_values), // Parse the JSON string back to an array
+      placeholder: input.input_placeholder,
+    }));
+
+    res.json(deviceType);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// route to update a device type by id
+// route to update a device type by id, including specific inputs
 router.patch("/:id", async (req, res) => {
-  const { id } = req.params;
-  const { name } = req.body;
-  try {
-    const [result] = await pool.query(
-      "UPDATE devicetypes SET name = ? WHERE id = ?",
-      [name, id]
-    );
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ error: "Device type not found" });
-    }
-    res.json({ id, name });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
+   const { id } = req.params;
+   const { name, inputs } = req.body;
+ 
+   try {
+     // Update the device type name
+     const [result] = await pool.query("UPDATE devicetypes SET name = ? WHERE id = ?", [name, id]);
+     if (result.affectedRows === 0) {
+       return res.status(404).json({ error: "Device type not found" });
+     }
+ 
+     // Delete existing inputs for the device type
+     await pool.query("DELETE FROM devicespecificsinputs WHERE device_type_id = ?", [id]);
+ 
+     // Insert updated inputs
+     for (const input of inputs) {
+       await pool.query(
+         "INSERT INTO devicespecificsinputs (device_type_id, input_name, input_label, input_type, input_values, input_placeholder) VALUES (?, ?, ?, ?, ?, ?)",
+         [
+           id,
+           input.name,
+           input.label,
+           input.type,
+           JSON.stringify(input.values),
+           input.placeholder,
+         ]
+       );
+     }
+ 
+     res.json({ message: "Device type updated successfully" });
+   } catch (error) {
+     res.status(500).json({ error: error.message });
+   }
+ });
+ 
 
 // route to delete a device type by id
 router.delete("/:id", async (req, res) => {

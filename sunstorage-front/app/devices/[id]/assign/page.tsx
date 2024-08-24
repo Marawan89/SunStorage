@@ -144,7 +144,7 @@ function AssignDevice() {
     }
 
     alert("Device assigned successfully")
-    window.location.href = "status";
+    window.location.href = "/devices";
   };
 
   return (
@@ -201,6 +201,7 @@ function AssignDevice() {
                   )}
                   {selectedUser == "-1" && (
                     <>
+                    <form>
                       <p>Name</p>
                       <input
                         type="text"
@@ -213,9 +214,10 @@ function AssignDevice() {
                       />
                       <p>Email</p>
                       <input
-                        type="text"
+                        type="email"
                         onChange={(e) => setNewUserEmail(e.target.value)}
                       />
+                      </form>
                     </>
                   )}
                 </form>

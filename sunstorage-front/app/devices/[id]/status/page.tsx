@@ -190,9 +190,6 @@ function DeviceStatus() {
               )}
               {deviceStatus === "under repair" && (
                 <>
-                  <button className="p-3 btn btn-info" onClick={assignDevice}>
-                    Assegna (status: assigned)
-                  </button>
                   <button className="p-3 btn btn-primary" onClick={freeDevice}>
                     Rientra (status: free)
                   </button>

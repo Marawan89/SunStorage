@@ -1,10 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../../../db");
-// const authMiddleware = require("../middleware/authMiddleware");
-
-// // middleware di autenticazione
-// router.use(authMiddleware);
 
 // query to get all device specifics
 router.get("/", async (req, res) => {
@@ -67,8 +63,8 @@ router.get("/", async (req, res) => {
       LEFT JOIN departments ON users.department_id = departments.id
       LEFT JOIN devicelogs ON devices.id = devicelogs.device_id
       ` +
-            (deviceQr ? "WHERE devices.id = ? OR devices.qr_code_string = ?" : "") +
-            `
+      (deviceQr ? "WHERE devices.id = ? OR devices.qr_code_string = ?" : "") +
+      `
       GROUP BY
          devices.id,
          devices.sn,
@@ -157,6 +153,5 @@ router.patch("/:id", async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
-
 
 module.exports = router;

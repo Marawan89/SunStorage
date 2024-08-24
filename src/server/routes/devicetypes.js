@@ -8,11 +8,9 @@ router.post("/", async (req, res) => {
 
   // Check if inputs is an array and has at least one input
   if (!Array.isArray(inputs) || inputs.length === 0) {
-    return res
-      .status(400)
-      .json({
-        error: "Devi aggiungere almeno un input per il tipo di device.",
-      });
+    return res.status(400).json({
+      error: "Devi aggiungere almeno un input per il tipo di device.",
+    });
   }
 
   try {

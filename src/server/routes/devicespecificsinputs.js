@@ -1,13 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const pool = require('../../../db');
-// const authMiddleware = require("../middleware/authMiddleware");
+const pool = require("../../../db");
 
-
-// // middleware di autenticazione
-// router.use(authMiddleware);
-
-// get all inputs for a specifics device type 
+// get all inputs for a specifics device type
 router.get("/:device_type_id", async (req, res) => {
   const { device_type_id } = req.params;
   try {
@@ -34,6 +29,5 @@ router.post("/", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
 
 module.exports = router;

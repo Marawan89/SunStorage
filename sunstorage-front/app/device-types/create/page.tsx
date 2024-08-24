@@ -24,7 +24,7 @@ function CreateDeviceTypes() {
   const handleAddInput = () => {
     setInputs([
       ...inputs,
-      { name: "", label: "", type: "text", values: [], placeholder: "" },
+      { name: "", label: "", type: "choose", values: [], placeholder: "" },
     ]);
   };
 
@@ -80,10 +80,25 @@ function CreateDeviceTypes() {
       return;
     }
 
-    // Controlla se ogni input ha almeno un valore valido
+    // Verifica che ogni input abbia un nome, un'etichetta, e soddisfi le condizioni specifiche per 'select', 'text', e 'number'
     for (let input of inputs) {
       if (!input.name || !input.label) {
         alert("Ogni input deve avere un nome e un'etichetta.");
+        return;
+      }
+      if (input.type === "select" && input.values.length < 2) {
+        alert(
+          "Se il tipo di input è 'select', devi aggiungere almeno due valori."
+        );
+        return;
+      }
+      if (
+        (input.type === "text" || input.type === "number") &&
+        !input.placeholder
+      ) {
+        alert(
+          "I campi di tipo 'text' e 'number' non possono essere lasciati vuoti."
+        );
         return;
       }
     }
@@ -168,6 +183,7 @@ function CreateDeviceTypes() {
                           handleInputChange(index, "type", e.target.value)
                         }
                       >
+                        <option value="choose">Choose an input type...</option>
                         <option value="text">Text</option>
                         <option value="number">Number</option>
                         <option value="select">Select</option>

@@ -120,13 +120,13 @@ function ViewDevice() {
                 )}
               <li className="list-group-item">
                 <h5>Device Logs:</h5>
-                {device.devicelogs.map((devicelog, index) => {
-                  return (
-                  <li key={index} className="list-group-item">
-                    [{formatDate(devicelog.event_datetime)}] {devicelog.log_type}: {devicelog.additional_notes} 
-                  </li>
-                  );
-                })}
+                <ul className="list-group scrollable-logs">
+                    {device.devicelogs.map((devicelog, index) => (
+                      <li key={index} className="list-group-item">
+                        [{formatDate(devicelog.event_datetime)}] {devicelog.log_type}: {devicelog.additional_notes} 
+                      </li>
+                    ))}
+                  </ul>
               </li>
               </ul>  
             </div>

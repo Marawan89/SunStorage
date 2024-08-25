@@ -48,14 +48,25 @@ function CreateDeviceTypes() {
     value: string
   ) => {
     const updatedInputs = [...inputs];
-    updatedInputs[index].values[valueIndex] = value;
+
+    // solo se il valore non è vuoto
+    if (value.trim() !== "") {
+      updatedInputs[index].values[valueIndex] = value;
+    }
     setInputs(updatedInputs);
   };
 
   const handleAddValue = (index: number) => {
+
+    // solo se l'ultimo valore non è vuoto
     const updatedInputs = [...inputs];
-    updatedInputs[index].values.push("");
-    setInputs(updatedInputs);
+    const lastValue = updatedInputs[index].values[updatedInputs[index].values.length - 1];
+    if (lastValue?.trim() !== "") {
+      updatedInputs[index].values.push("");
+      setInputs(updatedInputs);
+    } else {
+      alert("Non puoi aggiungere un valore vuoto.");
+    }
   };
 
   const handleRemoveValue = (index: number, valueIndex: number) => {
@@ -80,16 +91,24 @@ function CreateDeviceTypes() {
       return;
     }
 
-    // Verifica che ogni input abbia un nome, un'etichetta, e soddisfi le condizioni specifiche per 'select', 'text', e 'number'
+    // ogni input deve avere un nome, un'etichetta, e soddisfi le condizioni specifiche per 'select', 'text', e 'number'
     for (let input of inputs) {
       if (!input.name || !input.label) {
         alert("Ogni input deve avere un nome e un'etichetta.");
+        return;
+      }
+      if (input.type === "choose") {
+        alert("Devi scegliere un tipo di input valido (text, number, select).");
         return;
       }
       if (input.type === "select" && input.values.length < 2) {
         alert(
           "Se il tipo di input è 'select', devi aggiungere almeno due valori."
         );
+        return;
+      }
+      if (input.type === "select" && input.values.some(v => v.trim() === "")) {
+        alert("I valori per il tipo di input 'select' non possono essere vuoti.");
         return;
       }
       if (
@@ -102,6 +121,7 @@ function CreateDeviceTypes() {
         return;
       }
     }
+    
 
     try {
       const resAdd = await fetch(`${apiendpoint}api/devicetypes`, {

@@ -111,4 +111,23 @@ router.post("/logout", (req, res) => {
   return res.status(200).json({ message: "Logout successful" });
 });
 
+// Route per ottenere i dettagli dell'utente loggato
+router.get("/admin", authMiddleware, async (req, res) => {
+   try {
+     const [user] = await db.execute(
+       "SELECT * FROM admin_users WHERE id = ?",
+       [req.user.id]
+     );
+ 
+     if (user.length === 0) {
+       return res.status(404).json({ msg: "User not found" });
+     }
+ 
+     res.json(user[0]);
+   } catch (err) {
+     console.error(err.message);
+     res.status(500).send("Server error");
+   }
+ });
+
 module.exports = router;

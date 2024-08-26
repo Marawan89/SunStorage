@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleUser } from "@fortawesome/free-solid-svg-icons";
 import { Modal, Button, Dropdown, DropdownButton } from "react-bootstrap";
@@ -12,43 +12,74 @@ import apiendpoint from "../../../apiendpoint";
 config.autoAddCss = false;
 
 export default function Navbar() {
-   const [showModal, setShowModal] = useState(false);
-   const [formData, setFormData] = useState({
-     name: "",
-     surname: "",
-     email: "",
-     password: "",
-     role: "",
-   });
- 
-   const handleShowModal = () => setShowModal(true);
-   const handleCloseModal = () => setShowModal(false);
- 
-   const handleChange = (e) => {
-     setFormData({ ...formData, [e.target.name]: e.target.value });
-   };
- 
-   const handleSubmit = async (e) => {
-     e.preventDefault();
-     try {
-       await axios.post(`${apiendpoint}api/auth/register`, formData);
-       handleCloseModal();
-       alert("User registered successfully");
-     } catch (error) {
-       console.error("Error registering user:", error);
-       alert("Error during registration");
-     }
-   };
- 
-   const handleLogout = async () => {
-     try {
-       await axios.post(`${apiendpoint}api/auth/logout`, {}, { withCredentials: true });
-       alert("logout successfully");
-       window.location.href = "/login";
-     } catch (error) {
-       console.error("Error during logout:", error);
-     }
-   };
+  const [showModal, setShowModal] = useState(false);
+  const [user, setUser] = useState({ name: "", role: "" });
+
+  const [formData, setFormData] = useState({
+    name: "",
+    surname: "",
+    email: "",
+    password: "",
+    role: "",
+  });
+
+  // per rendere maiuscola la prima lettera di una stringa
+  const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+  };
+
+  // Effetto per recuperare i dati dell'utente dopo il login
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get(`${apiendpoint}api/auth/admin`, {
+          withCredentials: true,
+        });
+        const capitalizedUser = {
+          name: capitalizeFirstLetter(response.data.name),
+          role: response.data.role,
+        };
+        setUser(capitalizedUser);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  const handleShowModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post(`${apiendpoint}api/auth/register`, formData);
+      handleCloseModal();
+      alert("User registered successfully");
+    } catch (error) {
+      console.error("Error registering user:", error);
+      alert("Error during registration");
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await axios.post(
+        `${apiendpoint}api/auth/logout`,
+        {},
+        { withCredentials: true }
+      );
+      alert("Logout successfully");
+      window.location.href = "/login";
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
 
   return (
     <>
@@ -59,7 +90,7 @@ export default function Navbar() {
           </a>
           <div className="d-flex justify-content-end align-items-center">
             <div className="userText d-flex align-items-center">
-              <p className="mb-0 me-2">Ciao, Marawan</p>
+              <p className="mb-0 me-2">Ciao, {user.name}</p>
               <DropdownButton
                 align="end"
                 title={
@@ -68,10 +99,13 @@ export default function Navbar() {
                 id="dropdown-menu-align-end"
                 className="dropdown-button"
               >
-                <Dropdown.Item onClick={handleShowModal}>
-                  Create new admin
-                </Dropdown.Item>
-                <Dropdown.Item onClick={handleLogout} >Logout</Dropdown.Item>
+                {user.role === "ADMIN_FULL" && (
+                  <Dropdown.Item onClick={handleShowModal}>
+                    Create new admin
+                  </Dropdown.Item>
+                )}
+
+                <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
               </DropdownButton>
             </div>
           </div>

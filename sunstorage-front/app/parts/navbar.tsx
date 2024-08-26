@@ -13,7 +13,7 @@ config.autoAddCss = false;
 
 export default function Navbar() {
   const [showModal, setShowModal] = useState(false);
-  const [user, setUser] = useState({ name: "", role: "" });
+  const [admin, setAdmin] = useState({ name: "", role: "" });
 
   const [formData, setFormData] = useState({
     name: "",
@@ -39,9 +39,9 @@ export default function Navbar() {
           name: capitalizeFirstLetter(response.data.name),
           role: response.data.role,
         };
-        setUser(capitalizedUser);
+        setAdmin(capitalizedUser);
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        console.error("Error fetching admin data:", error);
       }
     };
 
@@ -60,9 +60,9 @@ export default function Navbar() {
     try {
       await axios.post(`${apiendpoint}api/auth/register`, formData);
       handleCloseModal();
-      alert("User registered successfully");
+      alert("Admin registered successfully");
     } catch (error) {
-      console.error("Error registering user:", error);
+      console.error("Error registering admin:", error);
       alert("Error during registration");
     }
   };
@@ -90,7 +90,7 @@ export default function Navbar() {
           </a>
           <div className="d-flex justify-content-end align-items-center">
             <div className="userText d-flex align-items-center">
-              <p className="mb-0 me-2">Ciao, {user.name}</p>
+              <p className="mb-0 me-2">Ciao, {admin.name}</p>
               <DropdownButton
                 align="end"
                 title={
@@ -99,7 +99,7 @@ export default function Navbar() {
                 id="dropdown-menu-align-end"
                 className="dropdown-button"
               >
-                {user.role === "ADMIN_FULL" && (
+                {admin.role === "ADMIN_FULL" && (
                   <Dropdown.Item onClick={handleShowModal}>
                     Create new admin
                   </Dropdown.Item>

@@ -7,6 +7,7 @@ import Navbar from "../parts/navbar";
 import "../globals.css";
 import "./style.css";
 import { withAuth } from "../../../src/server/middleware/withAuth";
+import axios from "axios";
 
 const apiendpoint = require("../../../apiendpoint");
 
@@ -16,8 +17,24 @@ interface Department {
 }
 
 function Departments() {
-  // se si chiama departments sarà sempre il setter come set"nome" quindi --> setDepartments
   const [departments, setDepartments] = useState<Department[]>([]);
+  const [admin, setAdmin] = useState({ role: "" });
+
+  // fetch per ottenere i dati dell'admin loggato
+  useEffect(() => {
+    const fetchAdminData = async () => {
+      try {
+        const response = await axios.get(`${apiendpoint}api/auth/admin`, {
+          withCredentials: true,
+        });
+        setAdmin({ role: response.data.role });
+      } catch (error) {
+        console.error("Error fetching admin data:", error);
+      }
+    };
+
+    fetchAdminData();
+  }, []);
 
   useEffect(() => {
     fetch(`${apiendpoint}api/departments/`, {
@@ -40,17 +57,22 @@ function Departments() {
         method: "DELETE",
       })
         .then((res) => {
-         if (window.confirm("Quando elimini un reparto tutti gli utenti di quel reparto vengono eliminati, sei sicuro? L'azione è irreversibile!")) {
+          if (
+            window.confirm(
+              "Quando elimini un reparto tutti gli utenti di quel reparto vengono eliminati, sei sicuro? L'azione è irreversibile!"
+            )
+          ) {
             if (res.status === 204) {
-               alert("Eliminazione eseguita con successo, se c'erano pc assegnati agli utenti di quel reparto sono passati in stato free")
-               setDepartments(
-                 departments.filter((department) => department.id !== id)
-               );
-             } else {
-               alert("Errore durante l'eliminazione del reparto.");
-             }
-         }
-          
+              alert(
+                "Eliminazione eseguita con successo, se c'erano pc assegnati agli utenti di quel reparto sono passati in stato free"
+              );
+              setDepartments(
+                departments.filter((department) => department.id !== id)
+              );
+            } else {
+              alert("Errore durante l'eliminazione del reparto.");
+            }
+          }
         })
         .catch((error) => {
           console.error("Errore:", error);
@@ -95,12 +117,14 @@ function Departments() {
                           >
                             Edit
                           </a>
-                          <button
-                            className="btn btn-danger m-1"
-                            onClick={() => handleDelete(department.id)}
-                          >
-                            Delete
-                          </button>
+                          {admin.role === "ADMIN_FULL" && (
+                            <button
+                              className="btn btn-danger m-1"
+                              onClick={() => handleDelete(department.id)}
+                            >
+                              Delete
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))}

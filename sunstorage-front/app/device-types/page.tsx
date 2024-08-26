@@ -8,6 +8,7 @@ import "../globals.css";
 import "./style.css";
 import apiendpoint from "../../../apiendpoint";
 import { withAuth } from "../../../src/server/middleware/withAuth";
+import axios from "axios";
 
 interface Devicetypes {
   id: number;
@@ -16,6 +17,7 @@ interface Devicetypes {
 
 function Devicetypes() {
   const [devicetypes, setDeviceTypes] = useState<Devicetypes[]>([]);
+  const [admin, setAdmin] = useState({ role: "" });
 
   useEffect(() => {
     fetch(`${apiendpoint}api/devicetypes`, {
@@ -25,6 +27,22 @@ function Devicetypes() {
       .then((data) => {
         setDeviceTypes(data);
       });
+  }, []);
+
+  // fetch per ottenere i dati dell'admin loggato
+  useEffect(() => {
+    const fetchAdminData = async () => {
+      try {
+        const response = await axios.get(`${apiendpoint}api/auth/admin`, {
+          withCredentials: true,
+        });
+        setAdmin({ role: response.data.role });
+      } catch (error) {
+        console.error("Error fetching admin data:", error);
+      }
+    };
+
+    fetchAdminData();
   }, []);
 
   // method to handle the deletion of a devicetypes from the db
@@ -41,7 +59,7 @@ function Devicetypes() {
             )
           ) {
             if (res.status === 204) {
-            alert("Eliminazione eseguita con successo")
+              alert("Eliminazione eseguita con successo");
               setDeviceTypes(
                 devicetypes.filter((devicetypes) => devicetypes.id !== id)
               );
@@ -93,12 +111,14 @@ function Devicetypes() {
                           >
                             Edit
                           </a>
-                          <button
-                            className="btn btn-danger m-1"
-                            onClick={() => handleDelete(devicetypes.id)}
-                          >
-                            Delete
-                          </button>
+                          {admin.role === "ADMIN_FULL" && (
+                            <button
+                              className="btn btn-danger m-1"
+                              onClick={() => handleDelete(devicetypes.id)}
+                            >
+                              Delete
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))}

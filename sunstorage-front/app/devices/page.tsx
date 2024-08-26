@@ -10,6 +10,7 @@ import "../globals.css";
 import "./style.css";
 const apiendpoint = require("../../../apiendpoint");
 import { withAuth } from "../../../src/server/middleware/withAuth";
+import axios from "axios";
 
 interface Device {
   id: number;
@@ -62,6 +63,7 @@ function Devices() {
   const [deviceWarrantyFilter, setDeviceWarrantyFilter] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDeviceId, setSelectedDeviceId] = useState<number>(0);
+  const [admin, setAdmin] = useState({ role: "" });
 
   // apro il modal con l'ID del dispostivo selezionato
   const handleOpenModal = (deviceId: number) => {
@@ -78,6 +80,22 @@ function Devices() {
   function uniqueValues<T>(array: Array<T>, key: keyof T): string[] {
     return Array.from(new Set(array.map((item) => item[key] as string)));
   }
+
+  // fetch per ottenere i dati dell'admin loggato
+  useEffect(() => {
+    const fetchAdminData = async () => {
+      try {
+        const response = await axios.get(`${apiendpoint}api/auth/admin`, {
+          withCredentials: true,
+        });
+        setAdmin({ role: response.data.role });
+      } catch (error) {
+        console.error("Error fetching admin data:", error);
+      }
+    };
+
+    fetchAdminData();
+  }, []);
 
   // fetch per ottenere una panoramica di tutti i dispositivi
   function fetchDevices() {
@@ -146,7 +164,7 @@ function Devices() {
     }
   }, [deviceTypeFilter, deviceStatusFilter, deviceWarrantyFilter]);
 
-  if (!devices) {
+  if (!devices || !admin.role) {
     return <div>Loading...</div>;
   }
 
@@ -317,13 +335,15 @@ function Devices() {
                                   >
                                     Status
                                   </a>
-                                  <a
-                                    className="dropdown-item"
-                                    href="#"
-                                    onClick={() => handleDelete(device.id)}
-                                  >
-                                    Delete
-                                  </a>
+                                  {admin.role === "ADMIN_FULL" && (
+                                    <a
+                                      className="dropdown-item"
+                                      href="#"
+                                      onClick={() => handleDelete(device.id)}
+                                    >
+                                      Delete
+                                    </a>
+                                  )}
                                 </div>
                               </div>
                             </td>

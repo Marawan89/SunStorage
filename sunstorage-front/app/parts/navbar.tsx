@@ -9,10 +9,12 @@ import "../globals.css";
 import "./style.css";
 import axios from "axios";
 import apiendpoint from "../../../apiendpoint";
+import CreateAdminModal from "./CreateAdminModal";
+
 config.autoAddCss = false;
 
 export default function Navbar() {
-  const [showModal, setShowModal] = useState(false);
+  const [showCreateAdminModal, setShowCreateAdminModal] = useState(false);
   const [admin, setAdmin] = useState({ name: "", role: "" });
 
   const [formData, setFormData] = useState({
@@ -24,11 +26,11 @@ export default function Navbar() {
   });
 
   // per rendere maiuscola la prima lettera di una stringa
-  const capitalizeFirstLetter = (string) => {
+  const capitalizeFirstLetter = (string: string) => {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   };
 
-  // Effetto per recuperare i dati dell'utente dopo il login
+  // recuperare i dati dell'admin loggato
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -48,18 +50,18 @@ export default function Navbar() {
     fetchUserData();
   }, []);
 
-  const handleShowModal = () => setShowModal(true);
-  const handleCloseModal = () => setShowModal(false);
+  const handleShowCreateAdminModal = () => setShowCreateAdminModal(true);
+  const handleCloseCreateAdminModal = () => setShowCreateAdminModal(false);
 
-  const handleChange = (e) => {
+  const handleChange = (e: { target: { name: any; value: any } }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     try {
       await axios.post(`${apiendpoint}api/auth/register`, formData);
-      handleCloseModal();
+      handleCloseCreateAdminModal();
       alert("Admin registered successfully");
     } catch (error) {
       console.error("Error registering admin:", error);
@@ -100,9 +102,12 @@ export default function Navbar() {
                 className="dropdown-button"
               >
                 {admin.role === "ADMIN_FULL" && (
-                  <Dropdown.Item onClick={handleShowModal}>
-                    Create new admin
-                  </Dropdown.Item>
+                  <>
+                    <Dropdown.Item onClick={handleShowCreateAdminModal}>
+                      Create new admin
+                    </Dropdown.Item>
+                    <Dropdown.Item>Admins</Dropdown.Item>
+                  </>
                 )}
 
                 <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
@@ -111,78 +116,7 @@ export default function Navbar() {
           </div>
         </div>
       </nav>
-
-      {/* Modal for Creating New Admin */}
-      <Modal show={showModal} onHide={handleCloseModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Register New Admin</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label>Name</label>
-              <input
-                type="text"
-                className="form-control"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="form-group">
-              <label>Surname</label>
-              <input
-                type="text"
-                className="form-control"
-                name="surname"
-                value={formData.surname}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="form-group">
-              <label>Email</label>
-              <input
-                type="email"
-                className="form-control"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="form-group">
-              <label>Password</label>
-              <input
-                type="password"
-                className="form-control"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="form-group">
-              <label>Role</label>
-              <select
-                className="form-control"
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-              >
-                <option value="">Select Role</option>
-                <option value="ADMIN">ADMIN</option>
-                <option value="ADMIN_FULL">ADMIN_FULL</option>
-              </select>
-            </div>
-            <div className="text-end">
-              <Button variant="secondary" onClick={handleCloseModal}>
-                Close
-              </Button>
-              <Button variant="primary" type="submit">
-                Add
-              </Button>
-            </div>
-          </form>
-        </Modal.Body>
-      </Modal>
+      <CreateAdminModal showModal={showCreateAdminModal} onClose={handleCloseCreateAdminModal} />
     </>
   );
 }

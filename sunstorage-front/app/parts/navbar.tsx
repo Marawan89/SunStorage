@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleUser } from "@fortawesome/free-solid-svg-icons";
-import { Modal, Button, Dropdown, DropdownButton } from "react-bootstrap";
+import { Dropdown, DropdownButton } from "react-bootstrap";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../globals.css";
@@ -10,11 +10,13 @@ import "./style.css";
 import axios from "axios";
 import apiendpoint from "../../../apiendpoint";
 import CreateAdminModal from "./CreateAdminModal";
+import AdminsListModal from "./AdminListModal";
 
 config.autoAddCss = false;
 
 export default function Navbar() {
   const [showCreateAdminModal, setShowCreateAdminModal] = useState(false);
+  const [showAdminsListModal, setShowAdminsListModal] = useState(false);
   const [admin, setAdmin] = useState({ name: "", role: "" });
 
   const [formData, setFormData] = useState({
@@ -34,7 +36,7 @@ export default function Navbar() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get(`${apiendpoint}api/auth/admin`, {
+        const response = await axios.get(`${apiendpoint}api/auth/admin-details`, {
           withCredentials: true,
         });
         const capitalizedUser = {
@@ -53,20 +55,11 @@ export default function Navbar() {
   const handleShowCreateAdminModal = () => setShowCreateAdminModal(true);
   const handleCloseCreateAdminModal = () => setShowCreateAdminModal(false);
 
+  const handleShowAdminsListModal = () => setShowAdminsListModal(true);
+  const handleCloseAdminsListModal = () => setShowAdminsListModal(false);
+
   const handleChange = (e: { target: { name: any; value: any } }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e: { preventDefault: () => void }) => {
-    e.preventDefault();
-    try {
-      await axios.post(`${apiendpoint}api/auth/register`, formData);
-      handleCloseCreateAdminModal();
-      alert("Admin registered successfully");
-    } catch (error) {
-      console.error("Error registering admin:", error);
-      alert("Error during registration");
-    }
   };
 
   const handleLogout = async () => {
@@ -106,7 +99,7 @@ export default function Navbar() {
                     <Dropdown.Item onClick={handleShowCreateAdminModal}>
                       Create new admin
                     </Dropdown.Item>
-                    <Dropdown.Item>Admins</Dropdown.Item>
+                    <Dropdown.Item onClick={handleShowAdminsListModal}>Admins</Dropdown.Item>
                   </>
                 )}
 
@@ -117,6 +110,7 @@ export default function Navbar() {
         </div>
       </nav>
       <CreateAdminModal showModal={showCreateAdminModal} onClose={handleCloseCreateAdminModal} />
+      <AdminsListModal showModal={showAdminsListModal} onClose={handleCloseAdminsListModal} />
     </>
   );
 }

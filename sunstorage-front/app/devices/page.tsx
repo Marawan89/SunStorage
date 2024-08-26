@@ -85,7 +85,7 @@ function Devices() {
   useEffect(() => {
     const fetchAdminData = async () => {
       try {
-        const response = await axios.get(`${apiendpoint}api/auth/admin`, {
+        const response = await axios.get(`${apiendpoint}api/auth/admin-details`, {
           withCredentials: true,
         });
         setAdmin({ role: response.data.role });

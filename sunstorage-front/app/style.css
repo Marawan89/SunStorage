@@ -1,7 +1,7 @@
 .logo-dashboard {
   font-weight: bold;
   font-family: "Inter", sans-serif;
-  font-size: 100px;
+  font-size: 80px;
   color: #fbdd01;
 }
 
@@ -13,12 +13,12 @@
 .userText-dashboard p {
   margin-right: 10px;
   color: white;
-  font-size: 30px;
+  font-size: 20px;
 }
 
 .user-icon-dashboard {
   color: black;
-  font-size: 50px;
+  font-size: 30px;
 }
 
 .dropdown-button .btn-primary {
@@ -61,31 +61,37 @@
   border: 1px solid #fbdd01;
 }
 
+.top-text{
+   background-color: #908005;
+   border-radius: 10px;
+   color: #FBDD01;
+}
+
 .actions-menu {
-  background-color: #fbdd01;
+  background-color: white;
   border-radius: 10px;
   padding: 10px;
   margin-top: 10px;
   width: 100%;
-  max-width: 400px;
 }
 
-.actions-menu h5 {
-  margin-bottom: 10px;
-  color: black;
+a {
+   text-decoration: none;
+   color: black;
 }
 
-.actions-menu .list-group-item {
+.actions-menu .list-group-item{
   background-color: white;
-  border: none;
   color: black;
+  border-color: #6f6306;
+  text-align: left;
 }
 
 .close-button {
   background: none;
   border: none;
   color: black;
-  font-size: 30px;
+  font-size: 20px;
   cursor: pointer;
 }
 

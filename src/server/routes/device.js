@@ -285,4 +285,21 @@ router.patch("/:id/status", async (req, res) => {
   }
 });
 
+// route to get a device by sn
+router.get("/search/:query", async (req, res) => {
+  const query = req.params.query;
+
+  try {
+    const [results] = await pool.query(
+      "SELECT * FROM devices WHERE sn LIKE ?",
+      [`${query}%`]
+    );
+
+    res.json(results);
+  } catch (error) {
+    console.error("Errore durante la ricerca del dispositivo:", error);
+    res.status(500).json({ error: "Errore interno al server" });
+  }
+});
+
 module.exports = router;

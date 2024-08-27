@@ -73,7 +73,7 @@ export default function Navbar() {
           </a>
           <div className="d-flex justify-content-end align-items-center">
             <div className="userText d-flex align-items-center">
-              <p className="mb-0 me-2">Ciao, {admin.name}</p>
+              <p className="mb-0 me-2">Ciao {admin.name}</p>
               <DropdownButton
                 align="end"
                 title={

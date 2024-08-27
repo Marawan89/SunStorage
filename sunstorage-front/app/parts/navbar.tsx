@@ -19,14 +19,6 @@ export default function Navbar() {
   const [showAdminsListModal, setShowAdminsListModal] = useState(false);
   const [admin, setAdmin] = useState({ name: "", role: "" });
 
-  const [formData, setFormData] = useState({
-    name: "",
-    surname: "",
-    email: "",
-    password: "",
-    role: "",
-  });
-
   // per rendere maiuscola la prima lettera di una stringa
   const capitalizeFirstLetter = (string: string) => {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
@@ -57,10 +49,6 @@ export default function Navbar() {
 
   const handleShowAdminsListModal = () => setShowAdminsListModal(true);
   const handleCloseAdminsListModal = () => setShowAdminsListModal(false);
-
-  const handleChange = (e: { target: { name: any; value: any } }) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
   const handleLogout = async () => {
     try {

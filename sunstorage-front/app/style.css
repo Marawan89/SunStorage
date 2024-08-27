@@ -1,0 +1,76 @@
+.logo-dashboard {
+  font-weight: bold;
+  font-family: "Inter", sans-serif;
+  font-size: 100px;
+  color: #fbdd01;
+}
+
+.logo-dashboard span {
+  font-weight: 100;
+  color: white;
+}
+
+.userText-dashboard p {
+  margin-right: 10px;
+  color: white;
+  font-size: 30px;
+}
+
+.user-icon-dashboard {
+  color: black;
+  font-size: 50px;
+}
+
+.dropdown-button .btn-primary {
+  background-color: #fbdd01;
+  border-color: #6f6306;
+}
+
+.dropdown-button .btn-primary:hover,
+.dropdown-button .btn-primary:focus,
+.dropdown-button .btn-primary:active {
+  background-color: #cfb90f;
+  border-color: #6f6306;
+}
+
+.search-group {
+  max-width: 100%;
+}
+
+.search-emoji {
+  background-color: #fbdd01;
+  border: none;
+  border-radius: 25px 0 0 25px;
+}
+
+.search-input {
+  height: 50px;
+  background-color: #fbdd01;
+  border: none;
+  border-radius: 0 25px 25px 0;
+}
+
+.search-button {
+  background-color: #000000;
+  border-radius: 25px;
+  padding: 0.75rem 1.5rem;
+  font-weight: bold;
+  color: #ffffff;
+  border: 1px solid #fbdd01;
+}
+
+
+@media (max-width: 767px) {
+   .logo-dashboard {
+     font-size: 50px;
+   }
+ 
+   .userText-dashboard p {
+     font-size: 20px;
+   }
+ 
+   .user-icon-dashboard {
+     font-size: 20px;
+   }
+ 
+ }

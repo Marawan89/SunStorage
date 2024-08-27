@@ -18,6 +18,7 @@ function Dashboard() {
   const [showCreateAdminModal, setShowCreateAdminModal] = useState(false);
   const [showAdminsListModal, setShowAdminsListModal] = useState(false);
   const [admin, setAdmin] = useState({ name: "", role: "" });
+  const [showActions, setShowActions] = useState(false);
 
   // per rendere maiuscola la prima lettera di una stringa
   const capitalizeFirstLetter = (string: string) => {
@@ -67,6 +68,14 @@ function Dashboard() {
     }
   };
 
+  const handleSearchClick = () => {
+    setShowActions(true);
+  };
+
+  const handleCloseActions = () => {
+    setShowActions(false);
+  };
+
   return (
     <>
       <div className="d-flex justify-content-end align-items-center me-3">
@@ -75,7 +84,10 @@ function Dashboard() {
           <DropdownButton
             align="end"
             title={
-              <FontAwesomeIcon className="user-icon-dashboard" icon={faCircleUser} />
+              <FontAwesomeIcon
+                className="user-icon-dashboard"
+                icon={faCircleUser}
+              />
             }
             id="dropdown-menu-align-end"
             className="dropdown-button"
@@ -105,9 +117,30 @@ function Dashboard() {
           </p>
           <div className="input-group mb-3 search-group">
             <span className="input-group-text search-emoji">🔍</span>
-            <input type="text" className="form-control search-input" />
+            <input
+              type="text"
+              className="form-control search-input"
+              onClick={handleSearchClick}
+            />
             <button className="btn search-button">search ✨</button>
           </div>
+          {showActions && (
+            <div className="actions-menu d-flex flex-column">
+              <div className="d-flex justify-content-end">
+                <button className="close-button" onClick={handleCloseActions}>
+                  ×
+                </button>
+              </div>
+              <h5 className="text-black">TOP 5 ACTIONS</h5>
+              <ul className="list-group">
+                <li className="list-group-item">Add new device</li>
+                <li className="list-group-item">View all devices</li>
+                <li className="list-group-item">View departments</li>
+                <li className="list-group-item">View Device Types</li>
+                <li className="list-group-item">Search S/N</li>
+              </ul>
+            </div>
+          )}
         </div>
       </div>
       <CreateAdminModal

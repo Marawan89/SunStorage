@@ -188,9 +188,11 @@ function Dashboard() {
                     <li className="list-group-item">
                       <a href="/departments">👥 View departments</a>
                     </li>
-                    <li className="list-group-item">
+                    {admin.role === "ADMIN_FULL" && (
+                     <li className="list-group-item">
                       <a href="/device-types">📱 View Device Types</a>
                     </li>
+                    )}
                     <li
                       className="list-group-item"
                       onClick={handleSearchSNClick}
@@ -201,7 +203,7 @@ function Dashboard() {
                 ) : searchResults.length > 0 ? (
                   searchResults.map((device) => (
                     <li key={device.id} className="list-group-item">
-                      Device S/N: {device.sn}
+                      <a href={`/devices/${device.id}/show`}> Device S/N: {device.sn} - Click to visit</a>
                     </li>
                   ))
                 ) : (

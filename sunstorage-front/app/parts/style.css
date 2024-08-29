@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /*Navbar*/
 nav a .logo {
   text-decoration: underline;
@@ -24,7 +28,7 @@ nav a .logo {
 
 .nav-item p {
   font-size: 20px;
-}  
+}
 
 .user_icon {
   color: black;
@@ -32,7 +36,7 @@ nav a .logo {
 }
 
 .dropdown-button .btn-primary {
-   background-color: #fbdd01;
+  background-color: #fbdd01;
   border-color: #6f6306;
 }
 
@@ -70,25 +74,35 @@ nav a .logo {
   margin-bottom: 3px;
 }
 
-.logout-btn a {
-  color: red;
-}
-
-.logout-btn a:hover {
-  color: darkred;
-}
-
+/*Admin List*/
 .menuIcons {
   width: 40px;
   margin-right: 8px;
 }
 
-
-.admin-icons{
-   cursor: pointer;
-   width: 30px;
+.admin-icons {
+  cursor: pointer;
+  width: 30px;
 }
 
+/*Bento Menu*/
+.bento-title {
+  font-size: 1.5rem; /* Dimensione font per i titoli */
+}
+
+.bento-number {
+  font-size: 2rem; /* Dimensione font per i numeri */
+}
+
+.qr-placeholder {
+  width: 100%;
+  height: 120px; /* Altezza aumentata */
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+}
 @media (max-width: 767px) {
   h1 {
     font-size: 24px;
@@ -105,5 +119,16 @@ nav a .logo {
   .bg-content {
     padding: 10px;
   }
-}
 
+  .bento-title {
+    font-size: 1.25rem; /* Dimensione font per schermi più piccoli */
+  }
+
+  .bento-number {
+    font-size: 1.75rem; /* Dimensione font per schermi più piccoli */
+  }
+
+  .qr-placeholder {
+    height: 100px; /* Altezza per schermi più piccoli */
+  }
+}

@@ -11,6 +11,7 @@ import { withAuth } from "../../src/server/middleware/withAuth";
 import apiendpoint from "../../apiendpoint";
 import CreateAdminModal from "./parts/CreateAdminModal";
 import AdminsListModal from "./parts/AdminListModal";
+import BentoMenu from "./parts/BentoMenu";
 
 interface Device {
   id: number;
@@ -154,7 +155,7 @@ function Dashboard() {
           <p className="text-white">
             Cerca, aggiungi, modifica – ogni azione è a portata di mano.
           </p>
-          <div className="input-group search-group">
+          <div className="input-group search-group p-3">
             <span className="input-group-text search-emoji">🔍</span>
             <input
               type="text"
@@ -214,6 +215,7 @@ function Dashboard() {
           )}
         </div>
       </div>
+      <BentoMenu />
       <CreateAdminModal
         showModal={showCreateAdminModal}
         onClose={handleCloseCreateAdminModal}

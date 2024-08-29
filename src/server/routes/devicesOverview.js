@@ -2,96 +2,99 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../../../db");
 
-// query to get all device specifics
-router.get("/", async (req, res) => {
-  try {
-    const deviceQr = req.query.qr;
-    let query =
-      `
-      SELECT
+// Route per ottenere i dettagli di un dispositivo specifico tramite codice QR
+router.get("/qr/:qrCode", async (req, res) => {
+   const qrCode = req.params.qrCode;
+ 
+   try {
+     // Query per ottenere i dettagli di base del dispositivo
+     let query = `
+       SELECT
          devices.id,
          devices.sn,
          devices.qr_code_string,
          devices.status,
-         devicetypes.name AS device_type,
+         devicetypes.name AS device_type_name,
          devicewarranties.start_date AS start_date,
-         devicewarranties.end_date AS end_date,
-         GROUP_CONCAT(
-            DISTINCT CONCAT(
-                  devicespecificsinputs.input_label,
-                  ': ',
-                  devicespecifics.VALUE
-            ) SEPARATOR ', '
-         ) AS specifics,
-         users.name AS user_name,
-         users.surname,
-         users.email,
-         departments.name AS department_name,
-         GROUP_CONCAT(
-            DISTINCT CONCAT(
-                  devicelogs.log_type, 
-                  ': ', 
-                  devicelogs.additional_notes, 
-                  ' @ ', 
-                  DATE_FORMAT(devicelogs.event_datetime, '%Y-%m-%d %H:%i:%s')
-            ) SEPARATOR '; '
-         ) AS device_logs
-      FROM
+         devicewarranties.end_date AS end_date
+       FROM
          devices
-      INNER JOIN devicetypes ON devices.device_type_id = devicetypes.id
-      LEFT JOIN devicewarranties ON devices.id = devicewarranties.device_id
-      LEFT JOIN devicespecifics ON devices.id = devicespecifics.device_id
-      LEFT JOIN devicespecificsinputs ON devicespecifics.devicespecific_input_id = devicespecificsinputs.input_name
-      LEFT JOIN (
-         SELECT
-            da.device_id,
-            da.user_id,
-            da.assign_datetime
-         FROM
-            deviceassignments da
-         INNER JOIN (
-            SELECT
-                  device_id,
-                  MAX(assign_datetime) AS latest_assignment
-            FROM
-                  deviceassignments
-            GROUP BY
-                  device_id
-         ) latest ON da.device_id = latest.device_id AND da.assign_datetime = latest.latest_assignment
-      ) latest_assignments ON devices.id = latest_assignments.device_id
-      LEFT JOIN users ON latest_assignments.user_id = users.id
-      LEFT JOIN departments ON users.department_id = departments.id
-      LEFT JOIN devicelogs ON devices.id = devicelogs.device_id
-      ` +
-      (deviceQr ? "WHERE devices.id = ? OR devices.qr_code_string = ?" : "") +
-      `
-      GROUP BY
-         devices.id,
-         devices.sn,
-         devices.qr_code_string,
-         devices.status,
-         devicetypes.name,
-         devicewarranties.start_date,
-         devicewarranties.end_date,
-         users.name,
-         users.surname,
-         users.email,
-         departments.name,
-         devicelogs.device_id
-      ORDER BY
-         latest_assignments.assign_datetime DESC;
+       INNER JOIN
+         devicetypes ON devices.device_type_id = devicetypes.id
+       LEFT JOIN
+         devicewarranties ON devices.id = devicewarranties.device_id
+       WHERE
+         devices.qr_code_string = ?
      `;
-
-    // Execute the query
-    const [rows] = await pool.query(
-      query,
-      deviceQr ? [deviceQr, deviceQr] : []
-    );
-    res.json(rows);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+ 
+     const [rowsDevices] = await pool.query(query, [qrCode]);
+ 
+     if (rowsDevices.length === 0) {
+       return res.status(404).json({ error: "Device not found" });
+     }
+ 
+     const device = {
+       ...rowsDevices[0],
+       devicespecifics: null,
+       devicewarranty: null,
+       devicelogs: null,
+       deviceassignments: null,
+     };
+ 
+     // Ottieni i dettagli specifici del dispositivo
+     const [rowsSpecifics] = await pool.query(
+       "SELECT devicespecificsinputs.input_name as name, devicespecifics.value, devicespecificsinputs.input_label FROM devicespecifics INNER JOIN devicespecificsinputs ON devicespecifics.devicespecific_input_id = devicespecificsinputs.id WHERE device_id = ?",
+       [device.id]
+     );
+     if (rowsSpecifics.length !== 0) {
+       device.devicespecifics = rowsSpecifics;
+     }
+ 
+     // Ottieni la garanzia del dispositivo
+     const [rowsWarranties] = await pool.query(
+       "SELECT * FROM devicewarranties WHERE device_id = ?",
+       [device.id]
+     );
+     if (rowsWarranties.length !== 0) {
+       device.devicewarranty = rowsWarranties[0];
+     }
+ 
+     // Ottieni i log del dispositivo
+     const [rowsLogs] = await pool.query(
+       "SELECT * FROM devicelogs WHERE device_id = ?",
+       [device.id]
+     );
+     if (rowsLogs.length !== 0) {
+       device.devicelogs = rowsLogs;
+     }
+ 
+     // Ottieni gli assignment del dispositivo
+     const [rowsAssignments] = await pool.query(
+       `SELECT 
+          deviceassignments.*, 
+          users.*, 
+          departments.name as department_name 
+        FROM 
+          deviceassignments 
+        INNER JOIN 
+          users ON deviceassignments.user_id = users.id 
+        INNER JOIN 
+          departments ON departments.id = users.department_id 
+        WHERE 
+          device_id = ? 
+        ORDER BY 
+          deviceassignments.assign_datetime DESC`,
+       [device.id]
+     );
+     if (rowsAssignments.length !== 0) {
+       device.deviceassignments = rowsAssignments;
+     }
+ 
+     res.json(device);
+   } catch (error) {
+     res.status(500).json({ error: error.message });
+   }
+ });
 
 // route to update a device by id
 router.patch("/:id", async (req, res) => {

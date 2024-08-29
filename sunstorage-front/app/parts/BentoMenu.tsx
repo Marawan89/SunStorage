@@ -14,7 +14,7 @@ export default function BentoMenu() {
 
   useEffect(() => {
     // Fetch totale dispositivi
-    fetch(`${apiendpoint}api/devices/count`, {
+    fetch(`${apiendpoint}api/devices/dashboard`, {
       credentials: 'include',
     })
       .then(res => {
@@ -27,7 +27,7 @@ export default function BentoMenu() {
       .catch(error => console.error("Errore:", error.message));
 
     // Fetch conteggio per tipo di dispositivo
-    fetch(`${apiendpoint}api/devices/count/countByType`, {
+    fetch(`${apiendpoint}api/devices/dashboard/countByType`, {
       credentials: 'include',
     })
       .then(res => {
@@ -40,7 +40,7 @@ export default function BentoMenu() {
       .catch(error => console.error("Errore:", error.message));
 
     // Fetch totale tipi di dispositivo
-    fetch(`${apiendpoint}api/devices/count/totalDeviceTypes`, {
+    fetch(`${apiendpoint}api/devices/dashboard/totalDeviceTypes`, {
       credentials: 'include',
     })
       .then(res => {
@@ -53,7 +53,7 @@ export default function BentoMenu() {
       .catch(error => console.error("Errore:", error.message));
 
     // Fetch totale dipartimenti
-    fetch(`${apiendpoint}api/devices/count/totalDepartments`, {
+    fetch(`${apiendpoint}api/devices/dashboard/totalDepartments`, {
       credentials: 'include',
     })
       .then(res => {
@@ -66,7 +66,7 @@ export default function BentoMenu() {
       .catch(error => console.error("Errore:", error.message));
 
     // Fetch dispositivi con garanzia valida
-    fetch(`${apiendpoint}api/devices/count/validWarranties`, {
+    fetch(`${apiendpoint}api/devices/dashboard/validWarranties`, {
       credentials: 'include',
     })
       .then(res => {

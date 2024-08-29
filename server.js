@@ -31,10 +31,10 @@ const devicesOverviewRoutes = require(path + "devicesOverview");
 const deviceSpecificsInputsRoutes = require(path + "devicespecificsinputs");
 const authRoutes = require(path + "auth");
 
-const devicesCount = require(path+"count");
+const devicesCount = require(path+"dashboard");
 
 app.use("/api/devices/overview", devicesOverviewRoutes);
-app.use("/api/devices/count", authMiddleware, devicesCount);
+app.use("/api/devices/dashboard", authMiddleware, devicesCount);
 
 // Applicare authMiddleware solo alle rotte sotto "/api/devices" e "/api/users"
 app.use("/api/devices", authMiddleware, deviceRoutes);

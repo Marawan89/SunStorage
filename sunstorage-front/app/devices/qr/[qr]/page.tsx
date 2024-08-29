@@ -7,6 +7,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../globals.css";
 import apiendpoint from "../../../../../apiendpoint";
 import { withAuth } from "../../../../../src/server/middleware/withAuth";
+const formatDate = require('../../../../dateFormatter');
+import "./style.css";
 
 interface Device {
   sn: string;
@@ -45,19 +47,16 @@ interface DeviceLog {
 
 function QrCodePage() {
   const params = useParams();
-  const idDevice = params.id;
+  const qrCode = params.qr;
   const [device, setDevice] = useState<Device | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [assignmentId, setAssignmentId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchDeviceData = async () => {
       try {
-        const deviceId = params.qr;
-
-        // Fetch device details
+        // Fetch device details using the QR code
         const response = await fetch(
-          `${apiendpoint}api/devices/overview?qr=${deviceId}`,
+          `${apiendpoint}api/devices/overview/qr/${qrCode}`,
           {
             credentials: "include",
           }
@@ -68,32 +67,12 @@ function QrCodePage() {
         }
 
         const data = await response.json();
-        console.log("Device data:", data);  // Debugging line to check API response
 
         if (!data || !data.devicespecifics) {
           throw new Error("Invalid device data structure");
         }
 
         setDevice(data);
-
-        // Fetch assignment data
-        const assignmentResponse = await fetch(
-          `${apiendpoint}api/deviceassignments/check/${idDevice}`,
-          {
-            credentials: "include",
-          }
-        );
-
-        if (!assignmentResponse.ok) {
-          throw new Error("Failed to fetch assignment data");
-        }
-
-        const assignmentData = await assignmentResponse.json();
-        console.log("Assignment data:", assignmentData);  // Debugging line to check assignment data
-
-        if (assignmentData.length > 0) {
-          setAssignmentId(assignmentData[0].id);
-        }
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -102,7 +81,7 @@ function QrCodePage() {
     };
 
     fetchDeviceData();
-  }, [params.id]);
+  }, [qrCode]);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -116,7 +95,7 @@ function QrCodePage() {
   const dismissDevice = async () => {
     try {
       const response = await fetch(
-        `${apiendpoint}api/devices/${idDevice}/status`,
+        `${apiendpoint}api/devices/qr/${qrCode}/status`,
         {
           method: "PATCH",
           headers: {
@@ -145,7 +124,7 @@ function QrCodePage() {
   const freeDevice = async () => {
     try {
       const response = await fetch(
-        `${apiendpoint}api/devices/${idDevice}/status`,
+        `${apiendpoint}api/devices/qr/${qrCode}/status`,
         {
           method: "PATCH",
           headers: {
@@ -170,7 +149,7 @@ function QrCodePage() {
   const repairDevice = async () => {
     try {
       const response = await fetch(
-        `${apiendpoint}api/devices/${idDevice}/status`,
+        `${apiendpoint}api/devices/qr/${qrCode}/status`,
         {
           method: "PATCH",
           headers: {
@@ -194,7 +173,7 @@ function QrCodePage() {
 
   // Function to assign the device
   const assignDevice = async () => {
-    window.location.href = `/devices/${idDevice}/assign`;
+    window.location.href = `/devices/${qrCode}/assign`;
   };
 
   return (
@@ -243,8 +222,17 @@ function QrCodePage() {
                   </li>
                 </>
               )}
+              <li className="list-group-item">
+                <h5>Device Logs:</h5>
+                <ul className="list-group scrollable-logs">
+                    {device.devicelogs.map((devicelog, index) => (
+                      <li key={index} className="list-group-item">
+                        [{formatDate(devicelog.event_datetime)}] {devicelog.log_type}: {devicelog.additional_notes} 
+                      </li>
+                    ))}
+                  </ul>
+              </li>
             </ul>
-
             <div className="d-flex justify-content-between align-items-center">
               {device.status === "free" && (
                 <>

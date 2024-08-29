@@ -31,7 +31,10 @@ const devicesOverviewRoutes = require(path + "devicesOverview");
 const deviceSpecificsInputsRoutes = require(path + "devicespecificsinputs");
 const authRoutes = require(path + "auth");
 
+const devicesCount = require(path+"count");
+
 app.use("/api/devices/overview", devicesOverviewRoutes);
+app.use("/api/devices/count", authMiddleware, devicesCount);
 
 // Applicare authMiddleware solo alle rotte sotto "/api/devices" e "/api/users"
 app.use("/api/devices", authMiddleware, deviceRoutes);
@@ -44,7 +47,7 @@ app.use("/api/devicetypes", authMiddleware, devicetypesRoutes);
 app.use("/api/devicewarranties", authMiddleware, deviceWarrantyRoutes);
 app.use("/api/devicespecificsinputs", authMiddleware, deviceSpecificsInputsRoutes);
 
-app.use("/api/auth", authRoutes); // Auth routes are not protected
+app.use("/api/auth", authRoutes);
 
 const port = process.env.PORT || 4000;
 app.listen(port, () => {

@@ -190,9 +190,9 @@ function Dashboard() {
                       <a href="/departments">👥 View departments</a>
                     </li>
                     {admin.role === "ADMIN_FULL" && (
-                     <li className="list-group-item">
-                      <a href="/device-types">📱 View Device Types</a>
-                    </li>
+                      <li className="list-group-item">
+                        <a href="/device-types">📱 View Device Types</a>
+                      </li>
                     )}
                     <li
                       className="list-group-item"
@@ -204,7 +204,10 @@ function Dashboard() {
                 ) : searchResults.length > 0 ? (
                   searchResults.map((device) => (
                     <li key={device.id} className="list-group-item">
-                      <a href={`/devices/${device.id}/show`}> Device S/N: {device.sn} - Click to visit</a>
+                      <a href={`/devices/${device.id}/show`}>
+                        {" "}
+                        Device S/N: {device.sn} - Click to visit
+                      </a>
                     </li>
                   ))
                 ) : (

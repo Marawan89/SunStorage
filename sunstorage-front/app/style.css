@@ -73,6 +73,8 @@
   padding: 10px;
   margin-top: 10px;
   width: 100%;
+  z-index: 1000; /* Un valore alto per sovrapporre il BentoMenu */
+  position: relative; /* Assicurati che il menu-actions sia posizionato correttamente */
 }
 
 a {

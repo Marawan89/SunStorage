@@ -5,8 +5,8 @@ import { useParams } from "next/navigation";
 import Menu from "../../../parts/menu";
 import Navbar from "../../../parts/navbar";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../../../globals.css";
 import "./style.css";
+import "../../../globals.css";
 import apiendpoint from "../../../../../apiendpoint";
 const formatDate = require('../../../../dateFormatter');
 import { withAuth } from '../../../../../src/server/middleware/withAuth';
@@ -73,9 +73,9 @@ function ViewDevice() {
           <Menu />
           <div className="col-12 col-md-8 nav-container mt-3 mt-md-0 p-0">
             <div className="col-12 bg-content p-3 p-md-5">
-              <div className="d-flex justify-content-between align-items-center">
-                <h3 className="sn">S/N: {device.sn}</h3>
-              </div>
+            <h2 style={{ fontSize: '2em'}}>S/N: {device.sn}</h2>
+            {/* <div className="d-flex justify-content-between align-items-center"> */}
+              {/* </div> */}
               <ul className="list-group">
                 <li className="list-group-item disabled">
                   {device.device_type_name} specifics:

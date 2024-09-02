@@ -30,7 +30,7 @@ router.get("/countByType", async (req, res) => {
 router.get("/totalDeviceTypes", async (req, res) => {
   try {
     const [rows] = await pool.query(
-      "SELECT COUNT(DISTINCT device_type_id) as totalDeviceTypes FROM devices"
+      "SELECT COUNT(*) as totalDeviceTypes FROM devicetypes"
     );
     res.json(rows[0]);
   } catch (error) {
@@ -42,7 +42,7 @@ router.get("/totalDeviceTypes", async (req, res) => {
 router.get("/totalDepartments", async (req, res) => {
   try {
     const [rows] = await pool.query(
-      "SELECT COUNT(DISTINCT id) as totalDepartments FROM departments"
+      "SELECT COUNT(*) as totalDepartments FROM departments"
     );
     res.json(rows[0]);
   } catch (error) {

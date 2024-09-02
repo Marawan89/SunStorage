@@ -61,7 +61,7 @@ function AssignDevice() {
       console.log(selectedDepartment);
       try {
         const res = await fetch(
-          `${apiendpoint}api/departments/` +
+          `${apiendpoint}api/departments` +
             selectedDepartment +
             "/users", {
                credentials: 'include',

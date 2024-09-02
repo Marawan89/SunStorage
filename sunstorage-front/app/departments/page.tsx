@@ -24,9 +24,12 @@ function Departments() {
   useEffect(() => {
     const fetchAdminData = async () => {
       try {
-        const response = await axios.get(`${apiendpoint}api/auth/admin-details`, {
-          withCredentials: true,
-        });
+        const response = await axios.get(
+          `${apiendpoint}api/auth/admin-details`,
+          {
+            withCredentials: true,
+          }
+        );
         setAdmin({ role: response.data.role });
       } catch (error) {
         console.error("Error fetching admin data:", error);
@@ -37,7 +40,7 @@ function Departments() {
   }, []);
 
   useEffect(() => {
-    fetch(`${apiendpoint}api/departments/`, {
+    fetch(`${apiendpoint}api/departments`, {
       credentials: "include",
     })
       .then((res) => res.json())
@@ -52,16 +55,16 @@ function Departments() {
   // method to handle the deletion of a department from the db
   const handleDelete = (id: number) => {
     if (window.confirm("Sei sicuro di eliminare il reparto?")) {
-      fetch(`http://localhost:4000/api/departments/${id}`, {
-        credentials: "include",
-        method: "DELETE",
-      })
-        .then((res) => {
-          if (
-            window.confirm(
-              "Quando elimini un reparto tutti gli utenti di quel reparto vengono eliminati, sei sicuro? L'azione è irreversibile!"
-            )
-          ) {
+      if (
+        window.confirm(
+          "Quando elimini un reparto tutti gli utenti di quel reparto vengono eliminati, sei sicuro? L'azione è irreversibile!"
+        )
+      ) {
+        fetch(`${apiendpoint}api/departments/${id}`, {
+          credentials: "include",
+          method: "DELETE",
+        })
+          .then((res) => {
             if (res.status === 204) {
               alert(
                 "Eliminazione eseguita con successo, se c'erano pc assegnati agli utenti di quel reparto sono passati in stato free"
@@ -72,12 +75,12 @@ function Departments() {
             } else {
               alert("Errore durante l'eliminazione del reparto.");
             }
-          }
-        })
-        .catch((error) => {
-          console.error("Errore:", error);
-          alert("Errore durante l'eliminazione del reparto.");
-        });
+          })
+          .catch((error) => {
+            console.error("Errore:", error);
+            alert("Errore durante l'eliminazione del reparto.");
+          });
+      }
     }
   };
 

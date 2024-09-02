@@ -7,7 +7,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../globals.css";
 import apiendpoint from "../../../../../apiendpoint";
 import { withAuth } from "../../../../../src/server/middleware/withAuth";
-const formatDate = require('../../../../dateFormatter');
+const formatDate = require("../../../../dateFormatter");
 import "./style.css";
 
 interface Device {
@@ -91,7 +91,6 @@ function QrCodePage() {
     return <div>No device data available</div>;
   }
 
-  // Function to dismiss the device
   const dismissDevice = async () => {
     try {
       const response = await fetch(
@@ -111,7 +110,8 @@ function QrCodePage() {
           "Are you sure you want to dismiss this device?"
         );
         if (!confirmDelete) return;
-        window.location.href = "/devices";
+        alert("Device dismissed successfully")
+        window.location.reload();
       } else {
         console.error("Error dismissing the device");
       }
@@ -137,7 +137,7 @@ function QrCodePage() {
 
       if (response.ok) {
         alert("Device is now free!");
-        window.location.href = "/devices";
+        window.location.reload();
       } else {
         console.error("Error setting device to free");
       }
@@ -162,7 +162,7 @@ function QrCodePage() {
 
       if (response.ok) {
         alert("Device sent to repair successfully!");
-        window.location.href = "/devices";
+        window.location.reload();
       } else {
         console.error("Error sending device to repair");
       }
@@ -192,18 +192,23 @@ function QrCodePage() {
               <li className="list-group-item">Status: {device.status}</li>
               {device.devicespecifics.map((devicespecific, index) => (
                 <li key={index} className="list-group-item">
-                  {devicespecific.input_label} : {devicespecific.value} 
+                  {devicespecific.input_label} : {devicespecific.value}
                 </li>
               ))}
-              {device.devicewarranty.start_date && device.devicewarranty.end_date ? (
+              {device.devicewarranty.start_date &&
+              device.devicewarranty.end_date ? (
                 <>
                   <li className="list-group-item">
                     Warranty Start Date:{" "}
-                    {new Date(device.devicewarranty.start_date).toLocaleDateString()}
+                    {new Date(
+                      device.devicewarranty.start_date
+                    ).toLocaleDateString()}
                   </li>
                   <li className="list-group-item">
                     Warranty End Date:{" "}
-                    {new Date(device.devicewarranty.end_date).toLocaleDateString()}
+                    {new Date(
+                      device.devicewarranty.end_date
+                    ).toLocaleDateString()}
                   </li>
                 </>
               ) : (
@@ -212,25 +217,28 @@ function QrCodePage() {
               {device.status === "assigned" && (
                 <>
                   <li className="list-group-item">
-                    Name owner: {device.deviceassignments[0]?.name} {device.deviceassignments[0]?.surname}
+                    Name owner: {device.deviceassignments[0]?.name}{" "}
+                    {device.deviceassignments[0]?.surname}
                   </li>
                   <li className="list-group-item">
                     Email owner: {device.deviceassignments[0]?.email}
                   </li>
                   <li className="list-group-item">
-                    Owner department: {device.deviceassignments[0]?.department_name}
+                    Owner department:{" "}
+                    {device.deviceassignments[0]?.department_name}
                   </li>
                 </>
               )}
               <li className="list-group-item">
                 <h5>Device Logs:</h5>
                 <ul className="list-group scrollable-logs">
-                    {device.devicelogs.map((devicelog, index) => (
-                      <li key={index} className="list-group-item">
-                        [{formatDate(devicelog.event_datetime)}] {devicelog.log_type}: {devicelog.additional_notes} 
-                      </li>
-                    ))}
-                  </ul>
+                  {device.devicelogs.map((devicelog, index) => (
+                    <li key={index} className="list-group-item">
+                      [{formatDate(devicelog.event_datetime)}]{" "}
+                      {devicelog.log_type}: {devicelog.additional_notes}
+                    </li>
+                  ))}
+                </ul>
               </li>
             </ul>
             <div className="d-flex justify-content-between align-items-center">

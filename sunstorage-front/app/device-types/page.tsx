@@ -31,16 +31,16 @@ function Devicetypes() {
   // method to handle the deletion of a devicetypes from the db
   const handleDelete = (id: number) => {
     if (window.confirm("Sei sicuro di eliminare il tipo di device?")) {
-      fetch(`http://localhost:4000/api/devicetypes/${id}`, {
-        method: "DELETE",
-        credentials: "include",
-      })
-        .then((res) => {
-          if (
-            window.confirm(
-              "Quando elimini un tipo di device tutti i device di quel tipo vengono eliminati sei sicuro? L'azione è irreversibile!"
-            )
-          ) {
+      if (
+        window.confirm(
+          "Quando elimini un tipo di device tutti i device di quel tipo vengono eliminati sei sicuro? L'azione è irreversibile!"
+        )
+      ) {
+        fetch(`http://localhost:4000/api/devicetypes/${id}`, {
+          method: "DELETE",
+          credentials: "include",
+        })
+          .then((res) => {
             if (res.status === 204) {
               alert("Eliminazione eseguita con successo");
               setDeviceTypes(
@@ -49,12 +49,12 @@ function Devicetypes() {
             } else {
               alert("Errore durante l'eliminazione del tipo di device.");
             }
-          }
-        })
-        .catch((error) => {
-          console.error("Errore:", error);
-          alert("Errore durante l'eliminazione del tipo di device.");
-        });
+          })
+          .catch((error) => {
+            console.error("Errore:", error);
+            alert("Errore durante l'eliminazione del tipo di device.");
+          });
+      }
     }
   };
 

@@ -113,7 +113,7 @@ router.get("/:id/devicespecifics", async (req, res) => {
   const { id } = req.params;
   try {
     const [rows] = await pool.query(
-      "SELECT devicespecific_input_id, devicespecificsinputs.input_name as name, devicespecifics.value, devicespecificsinputs.input_label FROM devicespecifics INNER JOIN devicespecificsinputs ON devicespecifics.devicespecific_input_id = devicespecificsinputs.id WHERE device_id = ?",
+      "SELECT devicespecifics.id, devicespecific_input_id, devicespecificsinputs.input_name as name, devicespecifics.value, devicespecificsinputs.input_label FROM devicespecifics INNER JOIN devicespecificsinputs ON devicespecifics.devicespecific_input_id = devicespecificsinputs.id WHERE device_id = ?",
       [id]
     );
     if (rows.length === 0) {
@@ -287,22 +287,22 @@ router.patch("/:id/status", async (req, res) => {
 
 // Update the status of a device by qr
 router.patch("/qr/:qr/status", async (req, res) => {
-   const { qr } = req.params;
-   const { status } = req.body;
-   try {
-     const [result] = await pool.query(
-       "UPDATE devices SET status = ? WHERE qr_code_string = ?",
-       [status, qr]
-     );
-     if (result.affectedRows === 0) {
-       return res.status(404).json({ error: "Device not found" });
-     }
-     await writeLog(qr, "DEVICE_STATUS", "Passato in status: " + status);
-     res.status(200).json({ qr, status });
-   } catch (error) {
-     res.status(500).json({ error: error.message });
-   }
- }); 
+  const { qr } = req.params;
+  const { status } = req.body;
+  try {
+    const [result] = await pool.query(
+      "UPDATE devices SET status = ? WHERE qr_code_string = ?",
+      [status, qr]
+    );
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Device not found" });
+    }
+    await writeLog(qr, "DEVICE_STATUS", "Passato in status: " + status);
+    res.status(200).json({ qr, status });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 // route to get a device by sn
 router.get("/search/:query", async (req, res) => {

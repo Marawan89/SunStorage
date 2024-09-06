@@ -48,16 +48,16 @@ router.get("/:id", async (req, res) => {
 // Update a device specific by id
 router.patch("/:id", async (req, res) => {
   const { id } = req.params;
-  const { device_id, name, value } = req.body;
+  const { device_id, devicespecific_input_id, value } = req.body;
   try {
     const [result] = await pool.query(
-      "UPDATE devicespecifics SET device_id = ?, name = ?, value = ? WHERE id = ?",
-      [device_id, name, value, id]
+      "UPDATE devicespecifics SET device_id = ?, devicespecific_input_id = ?, value = ? WHERE id = ?",
+      [device_id, devicespecific_input_id, value, id]
     );
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: "Device specific not found" });
     }
-    res.json({ id, device_id, name, value });
+    res.json({ id, device_id, devicespecific_input_id, value });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

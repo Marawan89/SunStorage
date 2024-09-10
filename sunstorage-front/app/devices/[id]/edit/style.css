@@ -1,3 +1,42 @@
-input, select {
-	color:#000;
+input,
+select {
+  color: #000;
 }
+
+.form-btns button {
+  display: flex;
+  align-items: center;
+  padding: 10px 30px;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.cl-btn {
+  background-color: #f5f5dc;
+  color: black;
+  border: 2px solid black;
+  text-align: right;
+}
+.cl-btn:hover {
+  background-color: #e5e5cc;
+}
+
+.sbmt-btn {
+  background-color: black;
+  color: white;
+}
+.sbmt-btn:hover {
+  background-color: #333333;
+}
+.form-btns .btn-icon {
+  float: right;
+  margin-left: 10px;
+  width: 20px;
+}
+
+.form-btns {
+   margin-top: 50px;
+ }

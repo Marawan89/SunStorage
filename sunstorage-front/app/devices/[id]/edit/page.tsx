@@ -372,15 +372,24 @@ function EditDevice() {
                   </div>
                 )}
               </div>
-              <div className="text-end">
+              <div className="form-btns d-flex flex-md-row justify-content-end align-items-center">
+                <button className="cl-btn" type="reset">
+                  Cancel
+                  <FontAwesomeIcon
+                    className="btn-icon"
+                    icon={faCancel}
+                  ></FontAwesomeIcon>
+                </button>
                 <button
-                  className="btn btn-primary mt-4 mb-4 p-3 ps-4 pe-4"
+                  className="sbmt-btn"
+                  type="button"
                   onClick={submit}
                 >
-                  Update Device <FontAwesomeIcon icon={faArrowRight} />
-                </button>
-                <button className="btn btn-secondary mt-4 mb-4 p-3 ps-4 pe-4">
-                  Cancel <FontAwesomeIcon icon={faCancel} />
+                  Update Device
+                  <FontAwesomeIcon
+                    className="btn-icon"
+                    icon={faArrowRight}
+                  ></FontAwesomeIcon>
                 </button>
               </div>
             </div>

@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2024-09-10 09:48:35
+Date: 2024-09-10 09:50:48
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -117,7 +117,7 @@ CREATE TABLE `devices` (
 -- ----------------------------
 -- Records of devices
 -- ----------------------------
-INSERT INTO `devices` VALUES ('108', '1', '389414618481EDITED', 'SunStorage_DeviceNumber726180', 'under repair');
+INSERT INTO `devices` VALUES ('108', '2', '389414618481EDITEDvo', 'SunStorage_DeviceNumber726180', 'under repair');
 INSERT INTO `devices` VALUES ('109', '3', '56784567896578EDITEDCUIA', 'SunStorage_DeviceNumber233393', 'dismissed');
 INSERT INTO `devices` VALUES ('110', '2', '3275907395025EDITED', 'SunStorage_DeviceNumber727539', 'assigned');
 INSERT INTO `devices` VALUES ('111', '1', '1871941747491041', 'SunStorage_DeviceNumber998426', 'free');
@@ -137,7 +137,7 @@ CREATE TABLE `devicespecifics` (
   KEY `devicespecific_input_id` (`devicespecific_input_id`),
   CONSTRAINT `devicespecific_input_id` FOREIGN KEY (`devicespecific_input_id`) REFERENCES `devicespecificsinputs` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `devicespecifics_ibfk_2` FOREIGN KEY (`device_id`) REFERENCES `devices` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=258 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=260 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of devicespecifics
@@ -150,16 +150,13 @@ INSERT INTO `devicespecifics` VALUES ('236', '109', null, 'ModEDITED', '12');
 INSERT INTO `devicespecifics` VALUES ('237', '109', null, '25', '13');
 INSERT INTO `devicespecifics` VALUES ('243', '110', null, 'EDITED', '6');
 INSERT INTO `devicespecifics` VALUES ('244', '110', null, '', '7');
-INSERT INTO `devicespecifics` VALUES ('247', '108', null, '', '1');
-INSERT INTO `devicespecifics` VALUES ('248', '108', null, '', '2');
-INSERT INTO `devicespecifics` VALUES ('249', '108', null, 'EDITED', '5');
-INSERT INTO `devicespecifics` VALUES ('250', '108', null, '', '3');
-INSERT INTO `devicespecifics` VALUES ('251', '108', null, 'EDITED', '4');
 INSERT INTO `devicespecifics` VALUES ('252', '111', null, 'HDD', '1');
 INSERT INTO `devicespecifics` VALUES ('253', '111', null, '256', '2');
 INSERT INTO `devicespecifics` VALUES ('254', '111', null, '8', '3');
 INSERT INTO `devicespecifics` VALUES ('255', '111', null, 'ciao', '4');
 INSERT INTO `devicespecifics` VALUES ('256', '111', null, 'vsdv', '5');
+INSERT INTO `devicespecifics` VALUES ('258', '108', null, 'fewv', '6');
+INSERT INTO `devicespecifics` VALUES ('259', '108', null, '128', '7');
 
 -- ----------------------------
 -- Table structure for devicespecificsinputs
@@ -176,7 +173,7 @@ CREATE TABLE `devicespecificsinputs` (
   PRIMARY KEY (`id`),
   KEY `device_type_id` (`device_type_id`),
   CONSTRAINT `devicespecificsinputs_ibfk_1` FOREIGN KEY (`device_type_id`) REFERENCES `devicetypes` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of devicespecificsinputs
@@ -194,24 +191,8 @@ INSERT INTO `devicespecificsinputs` VALUES ('10', '3', 'DESKTOP_RAM_SIZE', 'Ram 
 INSERT INTO `devicespecificsinputs` VALUES ('11', '3', 'DESKTOP_PROCESSOR_TYPE', 'Processor Type', 'text', null, 'Processor type');
 INSERT INTO `devicespecificsinputs` VALUES ('12', '3', 'DESKTOP_MODEL', 'Modello', 'text', null, 'Model');
 INSERT INTO `devicespecificsinputs` VALUES ('13', '3', 'DESKTOP_MONITOR_INCHES', 'Monitor inches', 'number', '', 'Monitor inches');
-
--- ----------------------------
--- Table structure for devicespecifics_copy
--- ----------------------------
-DROP TABLE IF EXISTS `devicespecifics_copy`;
-CREATE TABLE `devicespecifics_copy` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `device_id` int(11) DEFAULT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `value` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `devicespecifics_ibfk_1` (`device_id`),
-  CONSTRAINT `devicespecifics_copy_ibfk_2` FOREIGN KEY (`device_id`) REFERENCES `devices` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=226 DEFAULT CHARSET=utf8mb4;
-
--- ----------------------------
--- Records of devicespecifics_copy
--- ----------------------------
+INSERT INTO `devicespecificsinputs` VALUES ('60', '35', 'wv', 'vewv', 'number', '[]', 'vwvw');
+INSERT INTO `devicespecificsinputs` VALUES ('61', '35', 'wjiovw', 'vwpovj', 'select', '[\"gwpèg\",\"gmwopmv\"]', '');
 
 -- ----------------------------
 -- Table structure for devicetypes
@@ -221,7 +202,7 @@ CREATE TABLE `devicetypes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of devicetypes
@@ -229,6 +210,7 @@ CREATE TABLE `devicetypes` (
 INSERT INTO `devicetypes` VALUES ('1', 'Laptop');
 INSERT INTO `devicetypes` VALUES ('2', 'Telefoni');
 INSERT INTO `devicetypes` VALUES ('3', 'Desktop-PC');
+INSERT INTO `devicetypes` VALUES ('35', 'yeahboy');
 
 -- ----------------------------
 -- Table structure for devicewarranties
@@ -242,7 +224,7 @@ CREATE TABLE `devicewarranties` (
   PRIMARY KEY (`id`),
   KEY `devicewarranties_ibfk_1` (`device_id`),
   CONSTRAINT `devicewarranties_ibfk_1` FOREIGN KEY (`device_id`) REFERENCES `devices` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=98 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=99 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of devicewarranties
@@ -252,6 +234,7 @@ INSERT INTO `devicewarranties` VALUES ('93', '109', '2021-05-31', '2024-09-30');
 INSERT INTO `devicewarranties` VALUES ('94', '110', null, null);
 INSERT INTO `devicewarranties` VALUES ('95', '108', '2024-09-10', '2025-05-20');
 INSERT INTO `devicewarranties` VALUES ('96', '111', '2024-08-31', '2028-08-31');
+INSERT INTO `devicewarranties` VALUES ('98', '108', '2024-09-01', '2024-09-02');
 
 -- ----------------------------
 -- Table structure for users

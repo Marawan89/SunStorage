@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2024-08-26 10:41:44
+Date: 2024-09-10 09:48:35
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -24,16 +24,16 @@ CREATE TABLE `admin_users` (
   `name` varchar(255) NOT NULL,
   `surname` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `role` enum('ADMIN_Full','ADMIN') NOT NULL DEFAULT 'ADMIN',
+  `role` enum('ADMIN_FULL','ADMIN') NOT NULL DEFAULT 'ADMIN',
   `password` varchar(512) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of admin_users
 -- ----------------------------
-INSERT INTO `admin_users` VALUES ('1', 'marawn', 'emad', 'marawan@emad.com', 'ADMIN', '$2a$12$iNZNIDdIH17VAQfJ97ZBz.jmZRjsJ942KXAt6xbCHb04DEfzmeYOe\r\n');
-INSERT INTO `admin_users` VALUES ('13', 'marawan', 'emad', 'marawan@e.com', 'ADMIN_Full', '$2a$10$RI5pQrzcocleIjOv3zDgVeKDTrmMDy.hmjSuon2uG0EVTtqJV8wAy');
+INSERT INTO `admin_users` VALUES ('24', 'marawan', 'ciao', 'marawan@ciao.com', 'ADMIN_FULL', '$2a$10$bAa4OkubBBZkKA0f2DkOi.6Ad7S3GxCNMM9JqlD2RXfwo.BsLpJHO');
+INSERT INTO `admin_users` VALUES ('38', 'massimo', 'marion', 'massimo.marion@clubdelsole.com', 'ADMIN', '$2a$10$QgNudhBbk/lkvnEog0R88ecQWCOQyETYLtiv1g1hHmN4vmaxTXlQ.');
 
 -- ----------------------------
 -- Table structure for departments
@@ -43,7 +43,7 @@ CREATE TABLE `departments` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of departments
@@ -66,13 +66,12 @@ CREATE TABLE `deviceassignments` (
   KEY `user_id` (`user_id`),
   CONSTRAINT `deviceassignments_ibfk_1` FOREIGN KEY (`device_id`) REFERENCES `devices` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `deviceassignments_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=55 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of deviceassignments
 -- ----------------------------
-INSERT INTO `deviceassignments` VALUES ('47', '94', '2', '2024-08-23 16:20:59');
-INSERT INTO `deviceassignments` VALUES ('54', '93', '8', '2024-08-25 15:01:57');
+INSERT INTO `deviceassignments` VALUES ('59', '110', '24', '2024-09-10 09:43:00');
 
 -- ----------------------------
 -- Table structure for devicelogs
@@ -87,36 +86,18 @@ CREATE TABLE `devicelogs` (
   PRIMARY KEY (`id`),
   KEY `device_id` (`device_id`),
   CONSTRAINT `devicelogs_ibfk_1` FOREIGN KEY (`device_id`) REFERENCES `devices` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=99 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of devicelogs
 -- ----------------------------
-INSERT INTO `devicelogs` VALUES ('42', '93', 'DEVICE_CREATION', 'Device creato', '2024-08-23 15:57:02');
-INSERT INTO `devicelogs` VALUES ('43', '94', 'DEVICE_CREATION', 'Device creato', '2024-08-23 15:59:00');
-INSERT INTO `devicelogs` VALUES ('44', '95', 'DEVICE_CREATION', 'Device creato', '2024-08-23 16:00:10');
-INSERT INTO `devicelogs` VALUES ('46', '93', 'DEVICE_STATUS', 'Passato in status: under repair', '2024-08-23 16:19:03');
-INSERT INTO `devicelogs` VALUES ('47', '94', 'DEVICE_STATUS', 'Passato in status: under repair', '2024-08-23 16:19:26');
-INSERT INTO `devicelogs` VALUES ('48', '94', 'DEVICE_STATUS', 'Passato in status: free', '2024-08-23 16:19:47');
-INSERT INTO `devicelogs` VALUES ('49', '95', 'DEVICE_STATUS', 'Passato in status: dismissed', '2024-08-23 16:19:53');
-INSERT INTO `devicelogs` VALUES ('50', '95', 'DEVICE_STATUS', 'Passato in status: free', '2024-08-23 16:20:00');
-INSERT INTO `devicelogs` VALUES ('51', '95', 'DEVICE_STATUS', 'Passato in status: dismissed', '2024-08-23 16:20:14');
-INSERT INTO `devicelogs` VALUES ('52', '94', 'DEVICE_ASSIGNMENT', 'Assegnato a Luca del dipartimento IT', '2024-08-23 16:20:59');
-INSERT INTO `devicelogs` VALUES ('54', '93', 'DEVICE_STATUS', 'Passato in status: free', '2024-08-24 17:31:12');
-INSERT INTO `devicelogs` VALUES ('55', '93', 'DEVICE_ASSIGNMENT', 'Assegnato a ciao del dipartimento ciao', '2024-08-24 17:31:30');
-INSERT INTO `devicelogs` VALUES ('56', '93', 'DEVICE_STATUS', 'Passato in status: free', '2024-08-24 17:32:03');
-INSERT INTO `devicelogs` VALUES ('57', '93', 'DEVICE_ASSIGNMENT', 'Assegnato a ciao del dipartimento ciao', '2024-08-24 17:32:12');
-INSERT INTO `devicelogs` VALUES ('58', '94', 'DEVICE_STATUS', 'Passato in status: free', '2024-08-24 17:32:31');
-INSERT INTO `devicelogs` VALUES ('59', '94', 'DEVICE_ASSIGNMENT', 'Assegnato a ciao del dipartimento ciao', '2024-08-24 17:32:46');
-INSERT INTO `devicelogs` VALUES ('61', '93', 'DEVICE_ASSIGNMENT', 'Assegnato a prova del dipartimento prova', '2024-08-24 18:05:23');
-INSERT INTO `devicelogs` VALUES ('62', '94', 'DEVICE_ASSIGNMENT', 'Assegnato a prova2 del dipartimento prova', '2024-08-24 18:05:40');
-INSERT INTO `devicelogs` VALUES ('63', '95', 'DEVICE_STATUS', 'Passato in status: free', '2024-08-24 18:06:07');
-INSERT INTO `devicelogs` VALUES ('64', '95', 'DEVICE_ASSIGNMENT', 'Assegnato a prova3 del dipartimento prova', '2024-08-24 18:06:37');
-INSERT INTO `devicelogs` VALUES ('66', '93', 'DEVICE_STATUS', 'Passato in status: under repair', '2024-08-25 15:01:15');
-INSERT INTO `devicelogs` VALUES ('67', '93', 'DEVICE_ASSIGNMENT', 'Assegnato a Cla del dipartimento IT', '2024-08-25 15:01:57');
-INSERT INTO `devicelogs` VALUES ('68', '94', 'DEVICE_STATUS', 'Passato in status: under repair', '2024-08-25 15:07:38');
-INSERT INTO `devicelogs` VALUES ('69', '95', 'DEVICE_STATUS', 'Passato in status: dismissed', '2024-08-25 15:07:42');
-INSERT INTO `devicelogs` VALUES ('70', '94', 'DEVICE_STATUS', 'Passato in status: dismissed', '2024-08-25 15:07:52');
+INSERT INTO `devicelogs` VALUES ('91', '108', 'DEVICE_CREATION', 'Device creato', '2024-09-10 09:40:02');
+INSERT INTO `devicelogs` VALUES ('92', '109', 'DEVICE_CREATION', 'Device creato', '2024-09-10 09:41:15');
+INSERT INTO `devicelogs` VALUES ('93', '110', 'DEVICE_CREATION', 'Device creato', '2024-09-10 09:42:34');
+INSERT INTO `devicelogs` VALUES ('94', '110', 'DEVICE_ASSIGNMENT', 'Assegnato a ciao del dipartimento IT', '2024-09-10 09:43:00');
+INSERT INTO `devicelogs` VALUES ('95', '108', 'DEVICE_STATUS', 'Passato in status: under repair', '2024-09-10 09:43:06');
+INSERT INTO `devicelogs` VALUES ('96', '109', 'DEVICE_STATUS', 'Passato in status: dismissed', '2024-09-10 09:43:13');
+INSERT INTO `devicelogs` VALUES ('97', '111', 'DEVICE_CREATION', 'Device creato', '2024-09-10 09:45:44');
 
 -- ----------------------------
 -- Table structure for devices
@@ -131,14 +112,15 @@ CREATE TABLE `devices` (
   PRIMARY KEY (`id`),
   KEY `device_type_id` (`device_type_id`),
   CONSTRAINT `devices_ibfk_1` FOREIGN KEY (`device_type_id`) REFERENCES `devicetypes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=113 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of devices
 -- ----------------------------
-INSERT INTO `devices` VALUES ('93', '2', '12345678765432345', 'SunStorage_DeviceNumber628961', 'assigned');
-INSERT INTO `devices` VALUES ('94', '2', 'uihwgioh42t2t02u', 'SunStorage_DeviceNumber143256', 'dismissed');
-INSERT INTO `devices` VALUES ('95', '3', 'gnwignwlfwfnpwefm', 'SunStorage_DeviceNumber418711', 'dismissed');
+INSERT INTO `devices` VALUES ('108', '1', '389414618481EDITED', 'SunStorage_DeviceNumber726180', 'under repair');
+INSERT INTO `devices` VALUES ('109', '3', '56784567896578EDITEDCUIA', 'SunStorage_DeviceNumber233393', 'dismissed');
+INSERT INTO `devices` VALUES ('110', '2', '3275907395025EDITED', 'SunStorage_DeviceNumber727539', 'assigned');
+INSERT INTO `devices` VALUES ('111', '1', '1871941747491041', 'SunStorage_DeviceNumber998426', 'free');
 
 -- ----------------------------
 -- Table structure for devicespecifics
@@ -147,28 +129,37 @@ DROP TABLE IF EXISTS `devicespecifics`;
 CREATE TABLE `devicespecifics` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `device_id` int(11) DEFAULT NULL,
-  `devicespecific_input_id` int(11) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
   `value` varchar(255) DEFAULT NULL,
+  `devicespecific_input_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `devicespecifics_ibfk_1` (`device_id`),
-  KEY `devicespecificinput` (`devicespecific_input_id`),
-  CONSTRAINT `devicespecificinput` FOREIGN KEY (`devicespecific_input_id`) REFERENCES `devicespecificsinputs` (`id`),
-  CONSTRAINT `devicespecifics_ibfk_1` FOREIGN KEY (`device_id`) REFERENCES `devices` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=275 DEFAULT CHARSET=utf8mb4;
+  KEY `devicespecific_input_id` (`devicespecific_input_id`),
+  CONSTRAINT `devicespecific_input_id` FOREIGN KEY (`devicespecific_input_id`) REFERENCES `devicespecificsinputs` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `devicespecifics_ibfk_2` FOREIGN KEY (`device_id`) REFERENCES `devices` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=258 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of devicespecifics
 -- ----------------------------
-INSERT INTO `devicespecifics` VALUES ('254', '93', '6', 'hfvhk');
-INSERT INTO `devicespecifics` VALUES ('255', '93', '7', '128');
-INSERT INTO `devicespecifics` VALUES ('256', '94', '6', 'vwfwf');
-INSERT INTO `devicespecifics` VALUES ('257', '94', '7', '128');
-INSERT INTO `devicespecifics` VALUES ('258', '95', '8', 'SSD');
-INSERT INTO `devicespecifics` VALUES ('259', '95', '9', '128');
-INSERT INTO `devicespecifics` VALUES ('260', '95', '10', '16');
-INSERT INTO `devicespecifics` VALUES ('261', '95', '11', 'I4');
-INSERT INTO `devicespecifics` VALUES ('262', '95', '12', 'Indf');
-INSERT INTO `devicespecifics` VALUES ('263', '95', '13', '14');
+INSERT INTO `devicespecifics` VALUES ('232', '109', null, 'HDD', '8');
+INSERT INTO `devicespecifics` VALUES ('233', '109', null, '256', '9');
+INSERT INTO `devicespecifics` VALUES ('234', '109', null, '8', '10');
+INSERT INTO `devicespecifics` VALUES ('235', '109', null, 'I7EDITEDCiao', '11');
+INSERT INTO `devicespecifics` VALUES ('236', '109', null, 'ModEDITED', '12');
+INSERT INTO `devicespecifics` VALUES ('237', '109', null, '25', '13');
+INSERT INTO `devicespecifics` VALUES ('243', '110', null, 'EDITED', '6');
+INSERT INTO `devicespecifics` VALUES ('244', '110', null, '', '7');
+INSERT INTO `devicespecifics` VALUES ('247', '108', null, '', '1');
+INSERT INTO `devicespecifics` VALUES ('248', '108', null, '', '2');
+INSERT INTO `devicespecifics` VALUES ('249', '108', null, 'EDITED', '5');
+INSERT INTO `devicespecifics` VALUES ('250', '108', null, '', '3');
+INSERT INTO `devicespecifics` VALUES ('251', '108', null, 'EDITED', '4');
+INSERT INTO `devicespecifics` VALUES ('252', '111', null, 'HDD', '1');
+INSERT INTO `devicespecifics` VALUES ('253', '111', null, '256', '2');
+INSERT INTO `devicespecifics` VALUES ('254', '111', null, '8', '3');
+INSERT INTO `devicespecifics` VALUES ('255', '111', null, 'ciao', '4');
+INSERT INTO `devicespecifics` VALUES ('256', '111', null, 'vsdv', '5');
 
 -- ----------------------------
 -- Table structure for devicespecificsinputs
@@ -185,7 +176,7 @@ CREATE TABLE `devicespecificsinputs` (
   PRIMARY KEY (`id`),
   KEY `device_type_id` (`device_type_id`),
   CONSTRAINT `devicespecificsinputs_ibfk_1` FOREIGN KEY (`device_type_id`) REFERENCES `devicetypes` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of devicespecificsinputs
@@ -230,7 +221,7 @@ CREATE TABLE `devicetypes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of devicetypes
@@ -251,14 +242,16 @@ CREATE TABLE `devicewarranties` (
   PRIMARY KEY (`id`),
   KEY `devicewarranties_ibfk_1` (`device_id`),
   CONSTRAINT `devicewarranties_ibfk_1` FOREIGN KEY (`device_id`) REFERENCES `devices` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=83 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=98 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of devicewarranties
 -- ----------------------------
-INSERT INTO `devicewarranties` VALUES ('76', '93', '2024-08-13', '2028-08-13');
-INSERT INTO `devicewarranties` VALUES ('77', '94', null, null);
-INSERT INTO `devicewarranties` VALUES ('78', '95', '2021-06-22', '2022-01-25');
+INSERT INTO `devicewarranties` VALUES ('92', '108', null, null);
+INSERT INTO `devicewarranties` VALUES ('93', '109', '2021-05-31', '2024-09-30');
+INSERT INTO `devicewarranties` VALUES ('94', '110', null, null);
+INSERT INTO `devicewarranties` VALUES ('95', '108', '2024-09-10', '2025-05-20');
+INSERT INTO `devicewarranties` VALUES ('96', '111', '2024-08-31', '2028-08-31');
 
 -- ----------------------------
 -- Table structure for users
@@ -273,7 +266,7 @@ CREATE TABLE `users` (
   PRIMARY KEY (`id`),
   KEY `department_id` (`department_id`),
   CONSTRAINT `users_ibfk_1` FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of users
@@ -289,3 +282,4 @@ INSERT INTO `users` VALUES ('8', '1', 'Cla', 'valentino', 'valentino@cla');
 INSERT INTO `users` VALUES ('9', '2', 'caioa', 'vale', 'vale@caio');
 INSERT INTO `users` VALUES ('15', '1', 'Marawan', 'emad', 'marawa@emad');
 INSERT INTO `users` VALUES ('16', '3', 'mafa', 'raga', 'mafa@raga');
+INSERT INTO `users` VALUES ('24', '1', 'ciao', 'ciao', 'ciao@ciao.com');

@@ -2,11 +2,11 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../../../db");
 
-// Route per contare tutti i devices
-router.get("/", async (req, res) => {
+// Route per contare tutti i devices under repair
+router.get("/totalUnderRepair", async (req, res) => {
   try {
     const [rows] = await pool.query(
-      "SELECT COUNT(*) as totalDevices FROM devices"
+      "SELECT COUNT(*) as totalUnderRepair FROM devices where status = 'under repair'"
     );
     res.json(rows[0]);
   } catch (error) {
@@ -51,10 +51,10 @@ router.get("/totalDepartments", async (req, res) => {
 });
 
 // Route per contare i devices con garanzia valida
-router.get("/validWarranties", async (req, res) => {
+router.get("/expiredWarrantyDevices", async (req, res) => {
   try {
     const [rows] = await pool.query(
-      "SELECT COUNT(*) as validWarrantyDevices FROM devicewarranties WHERE end_date > CURRENT_DATE"
+      "SELECT COUNT(*) as expiredWarrantyDevices FROM devicewarranties WHERE end_date < CURRENT_DATE"
     );
     res.json(rows[0]);
   } catch (error) {

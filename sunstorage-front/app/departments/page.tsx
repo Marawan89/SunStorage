@@ -97,7 +97,7 @@ function Departments() {
           <div className="col-12 col-md-8 nav-container mt-3 mt-md-0 p-0">
             <div className="col-12 bg-content p-3 p-md-5">
               <div className="d-flex mb-3">
-                <a className="btn btn-primary" href="/departments/create">
+                <a className="btn btn-dark" href="/departments/create">
                   Add Department
                 </a>
               </div>
@@ -115,14 +115,14 @@ function Departments() {
                         <td scope="row">{department.name}</td>
                         <td>
                           <a
-                            className="btn btn-primary m-1"
+                            className="btn btn-outline-warning m-1"
                             href={`/departments/update?id=${department.id}`}
                           >
                             Edit
                           </a>
                           {admin.role === "ADMIN_FULL" && (
                             <button
-                              className="btn btn-danger m-1"
+                              className="btn btn-outline-danger m-1"
                               onClick={() => handleDelete(department.id)}
                             >
                               Delete

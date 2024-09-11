@@ -167,13 +167,13 @@ export default function StatusModal({
                   {deviceStatus === "free" && (
                     <>
                       <button
-                        className="p-2 btn btn-info mb-2"
+                        className="p-2 btn btn-outline-secondary mb-2"
                         onClick={assignDevice}
                       >
                         Assegna (status: assigned)
                       </button>
                       <button
-                        className="p-2 btn btn-success mb-2"
+                        className="p-2 btn btn-outline-secondary mb-2"
                         onClick={repairDevice}
                       >
                         Manda in riparazione (status: under repair)
@@ -189,13 +189,13 @@ export default function StatusModal({
                   {deviceStatus === "assigned" && (
                     <>
                       <button
-                        className="p-2 btn btn-primary mb-2"
+                        className="p-2 btn btn-outline-secondary mb-2"
                         onClick={freeDevice}
                       >
                         Rientra (status: free)
                       </button>
                       <button
-                        className="p-2 btn btn-success mb-2"
+                        className="p-2 btn btn-outline-secondary mb-2"
                         onClick={repairDevice}
                       >
                         Manda in riparazione (status: under repair)
@@ -211,7 +211,7 @@ export default function StatusModal({
                   {deviceStatus === "under repair" && (
                     <>
                       <button
-                        className="p-2 btn btn-primary mb-2"
+                        className="p-2 btn btn-outline-secondary mb-2"
                         onClick={freeDevice}
                       >
                         Rientra (status: free)
@@ -227,13 +227,13 @@ export default function StatusModal({
                   {deviceStatus === "dismissed" && (
                     <>
                       <button
-                        className="p-2 btn btn-success mb-2"
+                        className="p-2 btn btn-outline-secondary mb-2"
                         onClick={repairDevice}
                       >
                         Manda in riparazione (status: under repair)
                       </button>
                       <button
-                        className="p-2 btn btn-primary mb-2"
+                        className="p-2 btn btn-outline-secondary mb-2"
                         onClick={freeDevice}
                       >
                         Rientra (status: free)

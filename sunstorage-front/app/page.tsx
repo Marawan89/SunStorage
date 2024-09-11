@@ -174,8 +174,7 @@ function Dashboard() {
                 <p className="top-text mb-0 p-1">
                   {isSearchingSN ? "Results" : "TOP 5 ACTIONS"}
                 </p>
-                <button className="close-button" onClick={handleCloseActions}>
-                  ❌
+                <button className="btn-close" onClick={handleCloseActions}>
                 </button>
               </div>
               <ul className="list-group mt-2">

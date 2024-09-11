@@ -221,7 +221,7 @@ function Devices() {
           <Menu />
           <div className="col-12 col-md-8 nav-container mt-3 mt-md-0 p-0">
             <div className="col-12 bg-content p-md-5">
-              <a href="devices/create" className="btn btn-primary mb-2">
+              <a href="devices/create" className="btn btn-dark mb-2">
                 Add a device
               </a>
               <div className="filtering">
@@ -302,7 +302,7 @@ function Devices() {
                             <td>
                               <a
                                 href={`devices/${device.id}/show`}
-                                className="btn view-btn"
+                                className="btn btn-outline-warning"
                               >
                                 View
                               </a>
@@ -311,7 +311,7 @@ function Devices() {
                               <div className="btn-group drop">
                                 <button
                                   type="button"
-                                  className="btn action-btn btn-secondary dropdown-toggle"
+                                  className="btn btn-outline-dark dropdown-toggle"
                                   data-bs-toggle="dropdown"
                                   aria-haspopup="true"
                                   aria-expanded="false"
@@ -326,22 +326,24 @@ function Devices() {
                                     href={`devices/${device.id}/edit`}
                                     className="dropdown-item"
                                   >
-                                    Edit
+                                    Edit Device Data
                                   </a>
+                                  <hr className="dropdown-divider"/>
                                   <a
                                     className="dropdown-item"
                                     href="#"
                                     onClick={() => handleOpenModal(device.id)}
                                   >
-                                    Status
+                                    Change Device Status
                                   </a>
+                                  <hr className="dropdown-divider"/>
                                   {admin.role === "ADMIN_FULL" && (
                                     <a
                                       className="dropdown-item"
                                       href="#"
                                       onClick={() => handleDelete(device.id)}
                                     >
-                                      Delete
+                                      Delete Device
                                     </a>
                                   )}
                                 </div>

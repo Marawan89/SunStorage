@@ -71,7 +71,7 @@ function Devicetypes() {
           <div className="col-12 col-md-8 nav-container mt-3 mt-md-0 p-0">
             <div className="col-12 bg-content p-3 p-md-5">
               <div className="d-flex mb-3">
-                <a className="btn btn-primary" href="/device-types/create">
+                <a className="btn btn-dark" href="/device-types/create">
                   Add a Device Type
                 </a>
               </div>
@@ -89,13 +89,13 @@ function Devicetypes() {
                         <td scope="row">{devicetypes.name}</td>
                         <td>
                           <a
-                            className="btn btn-primary m-1"
+                            className="btn btn-outline-warning m-1"
                             href={`/device-types/update?id=${devicetypes.id}`}
                           >
                             Edit
                           </a>
                           <button
-                            className="btn btn-danger m-1"
+                            className="btn btn-outline-danger m-1"
                             onClick={() => handleDelete(devicetypes.id)}
                           >
                             Delete

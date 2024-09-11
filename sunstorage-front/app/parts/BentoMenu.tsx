@@ -14,10 +14,10 @@ export default function BentoMenu() {
   const [totalUnderRepairDevices, setTotalUnderRepairDevices] = useState(0);
   const [deviceCounts, setDeviceCounts] = useState<DeviceCount[]>([]);
   const [totalDeviceTypes, setTotalDeviceTypes] = useState(0);
-  const [totalDepartments, setTotalDepartments] = useState(0);
+  const [validWarrantyDevices, setvalidWarrantyDevices] = useState(0);
   const [expiredWarrantyDevices, setExpiredWarrantyDevices] = useState(0);
   const [cameraActive, setCameraActive] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);          
 
   useEffect(() => {
     // Fetch dati dashboard (come prima)
@@ -59,7 +59,7 @@ export default function BentoMenu() {
       .then((data) => setTotalDeviceTypes(data.totalDeviceTypes))
       .catch((error) => console.error("Errore:", error.message));
 
-    fetch(`${apiendpoint}api/devices/dashboard/totalDepartments`, {
+    fetch(`${apiendpoint}api/devices/dashboard/validWarrantyDevices`, {
       credentials: "include",
     })
       .then((res) => {
@@ -68,7 +68,7 @@ export default function BentoMenu() {
         }
         return res.json();
       })
-      .then((data) => setTotalDepartments(data.totalDepartments))
+      .then((data) => setvalidWarrantyDevices(data.validWarrantyDevices))
       .catch((error) => console.error("Errore:", error.message));
 
     fetch(`${apiendpoint}api/devices/dashboard/expiredWarrantyDevices`, {
@@ -124,12 +124,12 @@ export default function BentoMenu() {
         <div className="bento-box col-span-2 row-span-1 rounded-xl bg-gradient-to-b from-yellow-300 via-white-200 to-orange-500 p-2 sm:p-4 flex flex-col justify-center">
           <div className="flex justify-between">
             <div className="flex flex-col items-center justify-center flex-1 text-center">
-              <p className="bento-title font-bold">DEVICE TYPES</p>
+              <p className="bento-title font-bold">Total Device Types</p>
               <p className="bento-number sm:text-4xl">{totalDeviceTypes}</p>
             </div>
             <div className="flex flex-col items-center justify-center flex-1 text-center">
-              <p className="bento-title font-bold">DEPARTMENTS</p>
-              <p className="bento-number sm:text-4xl">{totalDepartments}</p>
+              <p className="bento-title font-bold">Devices with valid warranty not assigned</p>
+              <p className="bento-number sm:text-4xl">{validWarrantyDevices}</p>
             </div>
           </div>
         </div>
@@ -166,7 +166,7 @@ export default function BentoMenu() {
           onClick={redirectToDevices}
         >
           <div className="text-center p-2 sm:p-4">
-            <p className="bento-title font-bold sm:text-2xl">DEVICES WITH EXPIRED WARRANTY</p>
+            <p className="bento-title font-bold sm:text-2xl">DEVICES WITH EXPIRED WARRANTY NOT DISMISSED</p>
             <p className="bento-number text-4xl sm:text-6xl">
               {expiredWarrantyDevices}
             </p>

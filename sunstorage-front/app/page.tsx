@@ -7,7 +7,7 @@ import { faCircleUser } from "@fortawesome/free-solid-svg-icons";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./globals.css";
 import "./style.css";
-import "./parts/styleBento.css"
+import "./parts/styleBento.css";
 import { withAuth } from "../../src/server/middleware/withAuth";
 import apiendpoint from "../../apiendpoint";
 import CreateAdminModal from "./parts/CreateAdminModal";
@@ -148,7 +148,7 @@ function Dashboard() {
           </DropdownButton>
         </div>
       </div>
-      <div className="container d-flex flex-column align-items-center pt-3">
+      <div className="container d-flex flex-column align-items-center pt-3 position-relative">
         <div className="text-center">
           <h1 className="logo-dashboard">
             Sun<span>Storage</span>
@@ -169,13 +169,12 @@ function Dashboard() {
             <button className="search-button">search ✨</button>
           </div>
           {showActions && (
-            <div className="actions-menu d-flex flex-column">
+            <div className="actions-menu position-absolute start-50 translate-middle-x w-50 p-3 shadow-lg bg-light rounded">
               <div className="d-flex justify-content-between">
                 <p className="top-text mb-0 p-1">
                   {isSearchingSN ? "Results" : "TOP 5 ACTIONS"}
                 </p>
-                <button className="btn-close" onClick={handleCloseActions}>
-                </button>
+                <button className="btn-close" onClick={handleCloseActions}></button>
               </div>
               <ul className="list-group mt-2">
                 {!isSearchingSN ? (
@@ -194,10 +193,7 @@ function Dashboard() {
                         <a href="/device-types">📱 View Device Types</a>
                       </li>
                     )}
-                    <li
-                      className="list-group-item"
-                      onClick={handleSearchSNClick}
-                    >
+                    <li className="list-group-item" onClick={handleSearchSNClick}>
                       🔢 Search S/N
                     </li>
                   </>
@@ -219,6 +215,7 @@ function Dashboard() {
         </div>
       </div>
       <BentoMenu />
+
       <CreateAdminModal
         showModal={showCreateAdminModal}
         onClose={handleCloseCreateAdminModal}

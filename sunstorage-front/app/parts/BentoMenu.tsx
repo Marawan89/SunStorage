@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQrcode } from "@fortawesome/free-solid-svg-icons";
 import "./../globals.css";
+import "./styleBento.css"
 import apiendpoint from "../../../apiendpoint";
 
 // Definisci il tipo per deviceCounts
@@ -106,6 +107,10 @@ export default function BentoMenu() {
     window.location.href = "/devices";
   };
 
+  const redirectToDeviceTypes = () => {
+   window.location.href = "/device-types";
+ };
+
   return (
     <div className="bento-box-large h-screen w-full flex items-center justify-center">
       <div className="grid h-full w-full grid-cols-3 grid-rows-2 gap-2 p-4 xl:m-64 lg:m-32 md:m-16">
@@ -123,11 +128,11 @@ export default function BentoMenu() {
 
         <div className="bento-box col-span-2 row-span-1 rounded-xl bg-gradient-to-b from-yellow-300 via-white-200 to-orange-500 p-2 sm:p-4 flex flex-col justify-center">
           <div className="flex justify-between">
-            <div className="flex flex-col items-center justify-center flex-1 text-center">
+            <div className="flex flex-col items-center justify-center flex-1 text-center" onClick={redirectToDeviceTypes}>
               <p className="bento-title font-bold">Total Device Types</p>
               <p className="bento-number sm:text-4xl">{totalDeviceTypes}</p>
             </div>
-            <div className="flex flex-col items-center justify-center flex-1 text-center">
+            <div className="flex flex-col items-center justify-center flex-1 text-center" onClick={redirectToDevices}>
               <p className="bento-title font-bold">Devices with valid warranty not assigned</p>
               <p className="bento-number sm:text-4xl">{validWarrantyDevices}</p>
             </div>

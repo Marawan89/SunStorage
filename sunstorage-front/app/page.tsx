@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
 import { Dropdown, DropdownButton } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -75,6 +74,7 @@ function Dashboard() {
 
   const handleSearchClick = () => {
     setShowActions(true);
+    setIsSearchingSN(false);
   };
 
   const handleCloseActions = () => {
@@ -84,28 +84,21 @@ function Dashboard() {
     setSearchResults([]);
   };
 
-  const handleSearchSNClick = () => {
-    setIsSearchingSN(true);
-    setSearchResults([]);
-    setSearchTerm("");
-  };
-
-  const handleSearchInputChange = async (event: { target: { value: any } }) => {
+  const handleSearchInputChange = async (event: { target: { value: string } }) => {
     const value = event.target.value;
     setSearchTerm(value);
 
     if (value) {
+      // quando viene digitato qualcosa, avvia la ricerca
       try {
-        const response = await fetch(
-          `${apiendpoint}api/devices/search/${value}`,
-          {
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`${apiendpoint}api/devices/search/${value}`, {
+          credentials: "include",
+        });
         const data = await response.json();
 
         if (Array.isArray(data)) {
           setSearchResults(data);
+          setIsSearchingSN(true);
         } else {
           setSearchResults([]);
         }
@@ -115,6 +108,7 @@ function Dashboard() {
       }
     } else {
       setSearchResults([]);
+      setIsSearchingSN(false);
     }
   };
 
@@ -161,7 +155,7 @@ function Dashboard() {
             <input
               type="text"
               className="form-control search-input"
-              placeholder={isSearchingSN ? "Write the S/N of the device" : ""}
+              placeholder={showActions ? "Choose or type a serial number" : ""}
               value={searchTerm}
               onClick={handleSearchClick}
               onChange={handleSearchInputChange}
@@ -172,7 +166,7 @@ function Dashboard() {
             <div className="actions-menu position-absolute start-50 translate-middle-x w-50 p-3 shadow-lg bg-light rounded">
               <div className="d-flex justify-content-between">
                 <p className="top-text mb-0 p-1">
-                  {isSearchingSN ? "Results" : "TOP 5 ACTIONS"}
+                  {isSearchingSN ? "Results" : "TOP 4 ACTIONS"}
                 </p>
                 <button className="btn-close" onClick={handleCloseActions}></button>
               </div>
@@ -193,15 +187,11 @@ function Dashboard() {
                         <a href="/device-types">📱 View Device Types</a>
                       </li>
                     )}
-                    <li className="list-group-item" onClick={handleSearchSNClick}>
-                      🔢 Search S/N
-                    </li>
                   </>
                 ) : searchResults.length > 0 ? (
                   searchResults.map((device) => (
                     <li key={device.id} className="list-group-item">
                       <a href={`/devices/${device.id}/show`}>
-                        {" "}
                         Device S/N: {device.sn} - Click to visit
                       </a>
                     </li>

@@ -8,8 +8,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../../globals.css";
 import "./style.css";
 import apiendpoint from "../../../../apiendpoint";
-import { withAuth } from '../../../../src/server/middleware/withAuth';
-
+import { withAuth } from "../../../../src/server/middleware/withAuth";
 
 interface DeviceType {
   id: number;
@@ -29,8 +28,8 @@ function AddDevice() {
   useEffect(() => {
     async function fetchDeviceTypes() {
       try {
-        const res = await fetch(`${apiendpoint}api/devicetypes` , {
-         credentials:'include',
+        const res = await fetch(`${apiendpoint}api/devicetypes`, {
+          credentials: "include",
         });
         if (!res.ok) {
           throw new Error("Failed to fetch device types");
@@ -47,12 +46,15 @@ function AddDevice() {
 
   useEffect(() => {
     async function fetchDeviceTypeInputs() {
-      if (selectedDeviceType){
+      if (selectedDeviceType) {
         try {
-          console.log('download = '+selectedDeviceType);
-          const res = await fetch(`${apiendpoint}api/devicespecificsinputs/`+selectedDeviceType, {
-            credentials: 'include',
-          });
+          console.log("download = " + selectedDeviceType);
+          const res = await fetch(
+            `${apiendpoint}api/devicespecificsinputs/` + selectedDeviceType,
+            {
+              credentials: "include",
+            }
+          );
           if (!res.ok) {
             throw new Error("Failed to fetch device types");
           }
@@ -76,20 +78,26 @@ function AddDevice() {
     const warrantyEndDefault = new Date(warrantyStartDefault);
     warrantyEndDefault.setFullYear(warrantyStartDefault.getFullYear() + 4);
 
-    setWarrantyStart(warrantyStartDefault.toISOString().split('T')[0]);
-    setWarrantyEnd(warrantyEndDefault.toISOString().split('T')[0]);
+    setWarrantyStart(warrantyStartDefault.toISOString().split("T")[0]);
+    setWarrantyEnd(warrantyEndDefault.toISOString().split("T")[0]);
   }, []);
 
   // function that start when the submit button is clicked
   async function submit() {
-   // regEx to allow only letters and numbers
-   const serialNumberPattern = /^[A-Za-z0-9]+$/;
+    // regEx to allow only letters and numbers
+    const serialNumberPattern = /^[A-Za-z0-9]+$/;
 
-   // check if the serial number field is blank, less than 10 characters or contains special characters
-   if (!serialNumber || serialNumber.length < 10 || !serialNumberPattern.test(serialNumber)) {
-     alert("Serial Number must be at least 10 characters long and contain only letters and numbers.");
-     return;
-   }
+    // check if the serial number field is blank, less than 10 characters or contains special characters
+    if (
+      !serialNumber ||
+      serialNumber.length < 10 ||
+      !serialNumberPattern.test(serialNumber)
+    ) {
+      alert(
+        "Serial Number must be at least 10 characters long and contain only letters and numbers."
+      );
+      return;
+    }
 
     // check if the device type is selected
     if (!selectedDeviceType) {
@@ -99,7 +107,11 @@ function AddDevice() {
 
     try {
       for (const field of deviceTypeInputs) {
-        if (document.getElementById(field.id).value == 'Choose an option...' || document.getElementById(field.id).value == null || document.getElementById(field.id).value == '') {
+        if (
+          document.getElementById(field.id).value == "Choose an option..." ||
+          document.getElementById(field.id).value == null ||
+          document.getElementById(field.id).value == ""
+        ) {
           alert("Please fill " + field.input_name + " field");
           return;
         }
@@ -115,9 +127,11 @@ function AddDevice() {
         body: JSON.stringify({
           device_type_id: parseInt(selectedDeviceType),
           sn: serialNumber,
-          qr_code_string: `SunStorage_DeviceNumber${Math.floor(Math.random() * 1000000)}`,
+          qr_code_string: `SunStorage_DeviceNumber${Math.floor(
+            Math.random() * 1000000
+          )}`,
         }),
-        credentials: 'include',
+        credentials: "include",
       });
 
       if (!deviceRes.ok) {
@@ -128,22 +142,19 @@ function AddDevice() {
       const deviceData = await deviceRes.json();
 
       // insert new device warranty or NULL if no warranty
-      const warrantyRes = await fetch(
-        `${apiendpoint}api/devicewarranties`,
-        {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            device_id: deviceData.id,
-            start_date: hasWarranty ? warrantyStart : null,
-            end_date: hasWarranty ? warrantyEnd : null,
-          }),
-          credentials:'include',
-        }
-      );
+      const warrantyRes = await fetch(`${apiendpoint}api/devicewarranties`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          device_id: deviceData.id,
+          start_date: hasWarranty ? warrantyStart : null,
+          end_date: hasWarranty ? warrantyEnd : null,
+        }),
+        credentials: "include",
+      });
 
       if (!warrantyRes.ok) {
         const errorData = await warrantyRes.json();
@@ -165,7 +176,7 @@ function AddDevice() {
               devicespecific_input_id: field.id,
               value: document.getElementById(field.id).value || null,
             }),
-            credentials: 'include',
+            credentials: "include",
           }
         );
         if (!insertSpecific.ok) {
@@ -186,6 +197,10 @@ function AddDevice() {
         alert("Unknown error adding device");
       }
     }
+  }
+
+  const redirectDevices = async() =>{
+   window.location.href = "/devices"
   }
 
   return (
@@ -216,9 +231,7 @@ function AddDevice() {
                     onChange={(e) => setSelectedDeviceType(e.target.value)}
                     required
                   >
-                    <option>
-                      Choose an option...
-                    </option>
+                    <option>Choose an option...</option>
                     {deviceTypes.map((type) => (
                       <option key={type.id} value={type.id.toString()}>
                         {type.name}
@@ -228,55 +241,50 @@ function AddDevice() {
                 </div>
                 <div>
                   {deviceTypeInputs.map((input) => {
-                    if (input.input_type == 'select'){
+                    if (input.input_type == "select") {
                       const options = JSON.parse(input.input_values);
                       return (
                         <>
-                        <p>{input.input_label}:</p>
-                        <select
-                          id={input.id}
-                          name={input.id}
-                          required
-                        >
-                          <option>
-                            Choose an option...
-                          </option>
-                          {options.map((option) => (<option value={option}>{option}</option>))}
-                        </select>
+                          <p>{input.input_label}:</p>
+                          <select id={input.id} name={input.id} required>
+                            <option>Choose an option...</option>
+                            {options.map((option) => (
+                              <option value={option}>{option}</option>
+                            ))}
+                          </select>
                         </>
-                      )
+                      );
                     }
 
-                    if (input.input_type == 'text'){
+                    if (input.input_type == "text") {
                       return (
                         <>
-                        <p>{input.input_label}:</p>
-                        <input
-                          type="text"
-                          id={input.id}
-                          name={input.id}
-                          placeholder={input.input_placeholder}
-                          required
-                        />
+                          <p>{input.input_label}:</p>
+                          <input
+                            type="text"
+                            id={input.id}
+                            name={input.id}
+                            placeholder={input.input_placeholder}
+                            required
+                          />
                         </>
-                      )
+                      );
                     } else if (input.input_type === "number") {
-                     return (
-                       <div key={input.id}>
-                         <p>{input.input_label}:</p>
-                         <input
-                           type="number"
-                           id={input.id}
-                           name={input.id}
-                           min={10}
-                           placeholder={input.input_label}
-                           required
-                         />
-                       </div>
-                     );
-                   }
-                  }
-                  )}
+                      return (
+                        <div key={input.id}>
+                          <p>{input.input_label}:</p>
+                          <input
+                            type="number"
+                            id={input.id}
+                            name={input.id}
+                            min={10}
+                            placeholder={input.input_label}
+                            required
+                          />
+                        </div>
+                      );
+                    }
+                  })}
                 </div>
                 <p>Ha la garanzia?</p>
                 <div className="form-check form-switch">
@@ -308,18 +316,18 @@ function AddDevice() {
                 )}
               </div>
               <div className="form-btns d-flex flex-md-row justify-content-end align-items-center">
-                <button className="cl-btn" type="reset">
+                <button
+                  className="cl-btn"
+                  type="reset"
+                  onClick={redirectDevices}
+                >
                   Cancel
                   <FontAwesomeIcon
                     className="btn-icon"
                     icon={faCancel}
                   ></FontAwesomeIcon>
                 </button>
-                <button
-                  className="sbmt-btn"
-                  type="button"
-                  onClick={submit}
-                >
+                <button className="sbmt-btn" type="button" onClick={submit}>
                   Save and Generate Qr code
                   <FontAwesomeIcon
                     className="btn-icon"

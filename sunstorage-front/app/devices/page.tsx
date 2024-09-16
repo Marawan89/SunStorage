@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
 import Menu from "../parts/menu";
 import Navbar from "../parts/navbar";
@@ -65,13 +64,15 @@ function Devices() {
   const [selectedDeviceId, setSelectedDeviceId] = useState<number>(0);
   const [admin, setAdmin] = useState({ role: "" });
 
-  // apro il modal con l'ID del dispostivo selezionato
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const devicesPerPage = 5; // Number of devices per page
+
   const handleOpenModal = (deviceId: number) => {
     setSelectedDeviceId(deviceId);
     setIsModalOpen(true);
   };
 
-  // quando chiudo il modal resetto l'id
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedDeviceId(0);
@@ -81,13 +82,15 @@ function Devices() {
     return Array.from(new Set(array.map((item) => item[key] as string)));
   }
 
-  // fetch per ottenere i dati dell'admin loggato
   useEffect(() => {
     const fetchAdminData = async () => {
       try {
-        const response = await axios.get(`${apiendpoint}api/auth/admin-details`, {
-          withCredentials: true,
-        });
+        const response = await axios.get(
+          `${apiendpoint}api/auth/admin-details`,
+          {
+            withCredentials: true,
+          }
+        );
         setAdmin({ role: response.data.role });
       } catch (error) {
         console.error("Error fetching admin data:", error);
@@ -97,7 +100,6 @@ function Devices() {
     fetchAdminData();
   }, []);
 
-  // fetch per ottenere una panoramica di tutti i dispositivi
   function fetchDevices() {
     fetch(`${apiendpoint}api/devices/details`, {
       credentials: "include",
@@ -168,7 +170,6 @@ function Devices() {
     return <div>Loading...</div>;
   }
 
-  // Function to check if warranty is active
   const isWarrantyActive = (
     start_date: string | null,
     end_date: string | null
@@ -183,7 +184,6 @@ function Devices() {
     return warrantyEndDate >= currentDate ? "Valid" : "Expired";
   };
 
-  // Function to handle device deletion
   const handleDelete = async (deviceId: number) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this device?"
@@ -206,12 +206,25 @@ function Devices() {
     } catch (error) {
       console.error("Error deleting device:", error);
     }
-    alert("device deleted successfuly");
+    alert("Device deleted successfully");
   };
 
   const filteredDevices = devices.filter((device) =>
     device.sn.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // pagination
+  const indexOfLastDevice = currentPage * devicesPerPage;
+  const indexOfFirstDevice = indexOfLastDevice - devicesPerPage;
+  const currentDevices = filteredDevices.slice(
+    indexOfFirstDevice,
+    indexOfLastDevice
+  );
+  const totalPages = Math.ceil(filteredDevices.length / devicesPerPage);
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
 
   return (
     <>
@@ -229,7 +242,7 @@ function Devices() {
                   <input
                     className="form-control me-2"
                     type="search"
-                    placeholder="Search for a Serial Number "
+                    placeholder="Search for a Serial Number"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
@@ -282,9 +295,9 @@ function Devices() {
                     </tr>
                   </thead>
                   <tbody className="table-group-divider">
-                    {filteredDevices.filter((device) => device.show === true)
+                    {currentDevices.filter((device) => device.show === true)
                       .length > 0 ? (
-                      filteredDevices
+                      currentDevices
                         .filter((device) => device.show === true)
                         .map((device, index) => (
                           <tr key={index}>
@@ -319,7 +332,7 @@ function Devices() {
                                   Actions
                                 </button>
                                 <div
-                                  className="dropdown-menu"
+                                  className="dropdown-menu dropdown-menu-end position-absolute"
                                   aria-labelledby="dropdownMenuButton"
                                 >
                                   <a
@@ -328,7 +341,7 @@ function Devices() {
                                   >
                                     Edit Device Data
                                   </a>
-                                  <hr className="dropdown-divider"/>
+                                  <hr className="dropdown-divider" />
                                   <a
                                     className="dropdown-item"
                                     href="#"
@@ -336,7 +349,7 @@ function Devices() {
                                   >
                                     Change Device Status
                                   </a>
-                                  <hr className="dropdown-divider"/>
+                                  <hr className="dropdown-divider" />
                                   {admin.role === "ADMIN_FULL" && (
                                     <a
                                       className="dropdown-item"
@@ -359,6 +372,23 @@ function Devices() {
                   </tbody>
                 </table>
               </div>
+              <nav>
+                <ul className="pagination justify-content-center">
+                  {Array.from({ length: totalPages }, (_, i) => (
+                    <li
+                      key={i}
+                      className={`page-item ${
+                        i + 1 === currentPage ? "active" : ""
+                      }`}
+                      onClick={() => handlePageChange(i + 1)}
+                    >
+                      <a className="page-link" href="#">
+                        {i + 1}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
             </div>
           </div>
         </div>

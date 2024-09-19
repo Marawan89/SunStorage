@@ -20,6 +20,15 @@ interface DeviceType {
   name: string;
 }
 
+interface DeviceSpecificInput {
+  id: string;
+  input_name: string;
+  input_type: string;
+  input_label: string;
+  input_placeholder: string;
+  input_values: string;
+}
+
 function AddDevice() {
   const [deviceTypes, setDeviceTypes] = useState<DeviceType[]>([]);
   const [serialNumber, setSerialNumber] = useState("");
@@ -30,15 +39,17 @@ function AddDevice() {
   const [warrantyStart, setWarrantyStart] = useState<string>("");
   const [warrantyEnd, setWarrantyEnd] = useState<string>("");
   const [hasWarranty, setHasWarranty] = useState<boolean>(false);
-  const [deviceTypeInputs, setDeviceTypeInputs] = useState([]);
+  const [deviceTypeInputs, setDeviceTypeInputs] = useState<
+    DeviceSpecificInput[]
+  >([]);
   const [isMultipleDevices, setIsMultipleDevices] = useState<boolean>(false);
 
-  // Funzione per aggiungere un nuovo campo seriale
+  // aggiunge un nuovo campo seriale
   const addSerialNumberField = () => {
     setMultipleSerialNumbers([...multipleSerialNumbers, ""]);
   };
 
-  // Funzione per rimuovere un campo seriale
+  // rimuove un campo seriale
   const removeSerialNumberField = (index: number) => {
     const updatedSerialNumbers = multipleSerialNumbers.filter(
       (_, i) => i !== index
@@ -46,7 +57,7 @@ function AddDevice() {
     setMultipleSerialNumbers(updatedSerialNumbers);
   };
 
-  // Funzione per aggiornare il valore dei serial number dinamici
+  // aggiorna il valore dei serial number dinamici
   const updateSerialNumber = (index: number, value: string) => {
     const updatedSerialNumbers = multipleSerialNumbers.map((serial, i) =>
       i === index ? value : serial
@@ -74,25 +85,25 @@ function AddDevice() {
     fetchDeviceTypes();
   }, []);
 
+  // to get all device specific inputs
   useEffect(() => {
     async function fetchDeviceTypeInputs() {
       if (selectedDeviceType) {
         try {
-          console.log("download = " + selectedDeviceType);
           const res = await fetch(
-            `${apiendpoint}api/devicespecificsinputs/` + selectedDeviceType,
+            `${apiendpoint}api/devicespecificsinputs/${selectedDeviceType}`,
             {
               credentials: "include",
             }
           );
           if (!res.ok) {
-            throw new Error("Failed to fetch device types");
+            throw new Error("Failed to fetch device specific inputs");
           }
-          const data: DeviceType[] = await res.json();
+          const data: DeviceSpecificInput[] = await res.json();
           setDeviceTypeInputs(data);
           console.log(data);
         } catch (error) {
-          console.error("Error fetching device types:", error);
+          console.error("Error fetching device specific inputs:", error);
         }
       }
     }
@@ -112,7 +123,6 @@ function AddDevice() {
     setWarrantyEnd(warrantyEndDefault.toISOString().split("T")[0]);
   }, []);
 
-  // function that start when the submit button is clicked
   // function that starts when the submit button is clicked
   async function submit() {
     // regEx to allow only letters and numbers
@@ -145,17 +155,16 @@ function AddDevice() {
 
     try {
       for (const field of deviceTypeInputs) {
-        if (
-          document.getElementById(field.id).value == "Choose an option..." ||
-          document.getElementById(field.id).value == null ||
-          document.getElementById(field.id).value == ""
-        ) {
-          alert("Please fill " + field.input_name + " field");
+        const fieldValue = (
+          document.getElementById(field.id) as HTMLInputElement
+        )?.value;
+        if (!fieldValue || fieldValue === "Choose an option...") {
+          alert(`Please fill the ${field.input_label} field`);
           return;
         }
       }
 
-      // insert new device-s
+      // insert new device or devices
       for (const sn of serialNumbersToValidate) {
         // Inserimento di ogni dispositivo nel database
         const deviceRes = await fetch(`${apiendpoint}api/devices`, {
@@ -216,7 +225,9 @@ function AddDevice() {
               body: JSON.stringify({
                 device_id: deviceData.id,
                 devicespecific_input_id: field.id,
-                value: document.getElementById(field.id).value || null,
+                value:
+                  (document.getElementById(field.id) as HTMLInputElement)
+                    ?.value || null,
               }),
               credentials: "include",
             }
@@ -345,7 +356,7 @@ function AddDevice() {
                           <p>{input.input_label}:</p>
                           <select id={input.id} name={input.id} required>
                             <option>Choose an option...</option>
-                            {options.map((option) => (
+                            {options.map((option: string) => (
                               <option value={option}>{option}</option>
                             ))}
                           </select>

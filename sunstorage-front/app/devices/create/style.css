@@ -3,8 +3,8 @@
   margin: 0;
 }
 
-.bg-content input,
-select, textarea {
+input,
+select {
   border: none;
   border-radius: 10px;
   padding: 8px;
@@ -110,7 +110,9 @@ select, textarea {
     padding: 8px 20px;
   }
 
-  .bg-content input, select, textarea{
+  .bg-content input,
+  select,
+  textarea {
     width: 100%;
     margin-bottom: 7px;
   }

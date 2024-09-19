@@ -1,7 +1,12 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCancel, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCancel,
+  faArrowRight,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import Menu from "../../parts/menu";
 import Navbar from "../../parts/navbar";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -18,11 +23,36 @@ interface DeviceType {
 function AddDevice() {
   const [deviceTypes, setDeviceTypes] = useState<DeviceType[]>([]);
   const [serialNumber, setSerialNumber] = useState("");
+  const [multipleSerialNumbers, setMultipleSerialNumbers] = useState<string[]>([
+    "",
+  ]);
   const [selectedDeviceType, setSelectedDeviceType] = useState<string>("");
   const [warrantyStart, setWarrantyStart] = useState<string>("");
   const [warrantyEnd, setWarrantyEnd] = useState<string>("");
   const [hasWarranty, setHasWarranty] = useState<boolean>(false);
   const [deviceTypeInputs, setDeviceTypeInputs] = useState([]);
+  const [isMultipleDevices, setIsMultipleDevices] = useState<boolean>(false);
+
+  // Funzione per aggiungere un nuovo campo seriale
+  const addSerialNumberField = () => {
+    setMultipleSerialNumbers([...multipleSerialNumbers, ""]);
+  };
+
+  // Funzione per rimuovere un campo seriale
+  const removeSerialNumberField = (index: number) => {
+    const updatedSerialNumbers = multipleSerialNumbers.filter(
+      (_, i) => i !== index
+    );
+    setMultipleSerialNumbers(updatedSerialNumbers);
+  };
+
+  // Funzione per aggiornare il valore dei serial number dinamici
+  const updateSerialNumber = (index: number, value: string) => {
+    const updatedSerialNumbers = multipleSerialNumbers.map((serial, i) =>
+      i === index ? value : serial
+    );
+    setMultipleSerialNumbers(updatedSerialNumbers);
+  };
 
   // to get all device types
   useEffect(() => {
@@ -83,20 +113,28 @@ function AddDevice() {
   }, []);
 
   // function that start when the submit button is clicked
+  // function that starts when the submit button is clicked
   async function submit() {
     // regEx to allow only letters and numbers
     const serialNumberPattern = /^[A-Za-z0-9]+$/;
 
-    // check if the serial number field is blank, less than 10 characters or contains special characters
-    if (
-      !serialNumber ||
-      serialNumber.length < 10 ||
-      !serialNumberPattern.test(serialNumber)
-    ) {
-      alert(
-        "Serial Number must be at least 10 characters long and contain only letters and numbers."
-      );
+    if (isMultipleDevices && multipleSerialNumbers.length < 2) {
+      alert("Devi inserire almeno due numeri seriali.");
       return;
+    }
+
+    const serialNumbersToValidate = isMultipleDevices
+      ? multipleSerialNumbers
+      : [serialNumber];
+
+    // check if the serial number field is blank, less than 10 characters, or contains special characters
+    for (const sn of serialNumbersToValidate) {
+      if (!sn || sn.length < 10 || !serialNumberPattern.test(sn)) {
+        alert(
+          "Il Serial number deve essere lungo almeno 10 caratteri e contenere solo lettere e numeri."
+        );
+        return;
+      }
     }
 
     // check if the device type is selected
@@ -117,76 +155,80 @@ function AddDevice() {
         }
       }
 
-      // insert new device
-      const deviceRes = await fetch(`${apiendpoint}api/devices`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          device_type_id: parseInt(selectedDeviceType),
-          sn: serialNumber,
-          qr_code_string: `SunStorage_DeviceNumber${Math.floor(
-            Math.random() * 1000000
-          )}`,
-        }),
-        credentials: "include",
-      });
+      // insert new device-s
+      for (const sn of serialNumbersToValidate) {
+        // Inserimento di ogni dispositivo nel database
+        const deviceRes = await fetch(`${apiendpoint}api/devices`, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            device_type_id: parseInt(selectedDeviceType),
+            sn: sn,
+            qr_code_string: `SunStorage_DeviceNumber${Math.floor(
+              Math.random() * 1000000
+            )}`,
+          }),
+          credentials: "include",
+        });
 
-      if (!deviceRes.ok) {
-        const errorData = await deviceRes.json();
-        throw new Error(errorData.error || "Failed to create device");
-      }
+        if (!deviceRes.ok) {
+          const errorData = await deviceRes.json();
+          throw new Error(errorData.error || "Failed to create device");
+        }
 
-      const deviceData = await deviceRes.json();
+        const deviceData = await deviceRes.json();
 
-      // insert new device warranty or NULL if no warranty
-      const warrantyRes = await fetch(`${apiendpoint}api/devicewarranties`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          device_id: deviceData.id,
-          start_date: hasWarranty ? warrantyStart : null,
-          end_date: hasWarranty ? warrantyEnd : null,
-        }),
-        credentials: "include",
-      });
+        // insert new device warranty or NULL if no warranty
+        const warrantyRes = await fetch(`${apiendpoint}api/devicewarranties`, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            device_id: deviceData.id,
+            start_date: hasWarranty ? warrantyStart : null,
+            end_date: hasWarranty ? warrantyEnd : null,
+          }),
+          credentials: "include",
+        });
 
-      if (!warrantyRes.ok) {
-        const errorData = await warrantyRes.json();
-        throw new Error(errorData.error || "Failed to create device warranty");
-      }
-
-      // insert of device specifics
-      for (const field of deviceTypeInputs) {
-        const insertSpecific = await fetch(
-          `${apiendpoint}api/devicespecifics`,
-          {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              device_id: deviceData.id,
-              devicespecific_input_id: field.id,
-              value: document.getElementById(field.id).value || null,
-            }),
-            credentials: "include",
-          }
-        );
-        if (!insertSpecific.ok) {
-          const errorData = await insertSpecific.json();
+        if (!warrantyRes.ok) {
+          const errorData = await warrantyRes.json();
           throw new Error(
-            errorData.error || "Failed to create device specific"
+            errorData.error || "Failed to create device warranty"
           );
         }
-      }
 
+        // insert of device specifics
+        for (const field of deviceTypeInputs) {
+          const insertSpecific = await fetch(
+            `${apiendpoint}api/devicespecifics`,
+            {
+              method: "POST",
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                device_id: deviceData.id,
+                devicespecific_input_id: field.id,
+                value: document.getElementById(field.id).value || null,
+              }),
+              credentials: "include",
+            }
+          );
+          if (!insertSpecific.ok) {
+            const errorData = await insertSpecific.json();
+            throw new Error(
+              errorData.error || "Failed to create device specific"
+            );
+          }
+        }
+      }
       // after successful insertion redirect to devices page
       alert("Device added successfully!");
       window.location.href = "/devices";
@@ -199,9 +241,9 @@ function AddDevice() {
     }
   }
 
-  const redirectDevices = async() =>{
-   window.location.href = "/devices"
-  }
+  const redirectDevices = async () => {
+    window.location.href = "/devices";
+  };
 
   return (
     <>
@@ -214,14 +256,69 @@ function AddDevice() {
               <p>Add Device</p>
               <div className="spacer"></div>
               <div className="add-device-data">
-                <p>Serial number</p>
-                <input
-                  type="text"
-                  value={serialNumber}
-                  onChange={(e) => setSerialNumber(e.target.value)}
-                  placeholder="Enter serial number"
-                  required
-                />
+                {!isMultipleDevices && (
+                  <>
+                    <p>Serial number</p>
+                    <input
+                      type="text"
+                      value={serialNumber}
+                      onChange={(e) => setSerialNumber(e.target.value)}
+                      placeholder="Enter serial number"
+                      required
+                    />
+                  </>
+                )}
+
+                <p>
+                  Vuoi aggiungere tanti dispositivi con le stesse specifiche?
+                </p>
+                <div className="form-check form-switch">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    id="flexSwitchCheckDefault"
+                    checked={isMultipleDevices}
+                    onChange={(e) => setIsMultipleDevices(e.target.checked)}
+                  />
+                </div>
+                {isMultipleDevices && (
+                  <>
+                    {multipleSerialNumbers.map((serial, index) => (
+                      <>
+                        <p>Type a Serial number</p>
+                        <div className="input-group mb-2" key={index}>
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={serial}
+                            onChange={(e) =>
+                              updateSerialNumber(index, e.target.value)
+                            }
+                            placeholder="Enter serial number"
+                            required
+                          />
+                          <div className="input-group-append">
+                            <button
+                              className="btn btn-danger"
+                              type="button"
+                              onClick={() => removeSerialNumberField(index)}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      </>
+                    ))}
+                    <button
+                      className="btn btn-light mb-2"
+                      type="button"
+                      onClick={addSerialNumberField}
+                    >
+                      Add another Serial number
+                    </button>
+                  </>
+                )}
+
                 <p>Device Type</p>
                 <div className="input-group">
                   <select

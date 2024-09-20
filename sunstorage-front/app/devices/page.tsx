@@ -223,7 +223,31 @@ function Devices() {
   const totalPages = Math.ceil(filteredDevices.length / devicesPerPage);
 
   const handlePageChange = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
+
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    if (totalPages <= 4) {
+      for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(i);
+      }
+    } else {
+      pageNumbers.push(1);
+      if (currentPage > 2) {
+        pageNumbers.push("...");
+      }
+      if (currentPage > 1 && currentPage < totalPages) {
+        pageNumbers.push(currentPage);
+      }
+      if (currentPage < totalPages - 1) {
+        pageNumbers.push("...");
+      }
+      pageNumbers.push(totalPages);
+    }
+    return pageNumbers;
   };
 
   return (
@@ -374,19 +398,54 @@ function Devices() {
               </div>
               <nav>
                 <ul className="pagination justify-content-center">
-                  {Array.from({ length: totalPages }, (_, i) => (
-                    <li
-                      key={i}
-                      className={`page-item ${
-                        i + 1 === currentPage ? "active" : ""
-                      }`}
-                      onClick={() => handlePageChange(i + 1)}
+                  <li
+                    className={`page-item ${
+                      currentPage === 1 ? "disabled" : ""
+                    }`}
+                  >
+                    <a
+                      className="page-link"
+                      href="#"
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      tabIndex={currentPage === 1 ? -1 : 0}
                     >
-                      <a className="page-link" href="#">
-                        {i + 1}
-                      </a>
+                      Previous
+                    </a>
+                  </li>
+                  {getPageNumbers().map((number, index) => (
+                    <li
+                      key={index}
+                      className={`page-item ${
+                        currentPage === number ? "active" : ""
+                      } ${number === "..." ? "disabled" : ""}`}
+                    >
+                      {number === "..." ? (
+                        <span className="page-link">...</span>
+                      ) : (
+                        <a
+                          className="page-link"
+                          href="#"
+                          onClick={() => handlePageChange(number as number)}
+                        >
+                          {number}
+                        </a>
+                      )}
                     </li>
                   ))}
+                  <li
+                    className={`page-item ${
+                      currentPage === totalPages ? "disabled" : ""
+                    }`}
+                  >
+                    <a
+                      className="page-link"
+                      href="#"
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      tabIndex={currentPage === totalPages ? -1 : 0}
+                    >
+                      Next
+                    </a>
+                  </li>
                 </ul>
               </nav>
             </div>

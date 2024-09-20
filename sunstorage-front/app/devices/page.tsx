@@ -50,23 +50,18 @@ interface DeviceLog {
 
 function Devices() {
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [devices, setDevices] = useState<Device[]>();
+  const [allDevices, setAllDevices] = useState<Device[]>([]);
+  const [filteredDevices, setFilteredDevices] = useState<Device[]>([]);
   const [deviceTypeFilter, setDeviceTypeFilter] = useState<string>("");
-  const [filterDeviceTypeOptions, setFilterDeviceTypeOptions] = useState<
-    string[]
-  >([]);
+  const [filterDeviceTypeOptions, setFilterDeviceTypeOptions] = useState<string[]>([]);
   const [deviceStatusFilter, setDeviceStatusFilter] = useState<string>("");
-  const [filterDeviceStatusOption, setFilterDeviceStatusOption] = useState<
-    string[]
-  >([]);
+  const [filterDeviceStatusOption, setFilterDeviceStatusOption] = useState<string[]>([]);
   const [deviceWarrantyFilter, setDeviceWarrantyFilter] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDeviceId, setSelectedDeviceId] = useState<number>(0);
   const [admin, setAdmin] = useState({ role: "" });
-
-  // Pagination states
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const devicesPerPage = 5; // Number of devices per page
+  const devicesPerPage = 5;
 
   const handleOpenModal = (deviceId: number) => {
     setSelectedDeviceId(deviceId);
@@ -99,6 +94,14 @@ function Devices() {
 
     fetchAdminData();
   }, []);
+  
+   useEffect(() => {
+      fetchDevices();
+   }, []);
+
+   useEffect(() => {
+      applyFilters();
+   }, [allDevices, searchTerm, deviceTypeFilter, deviceStatusFilter, deviceWarrantyFilter]);
 
   function fetchDevices() {
     fetch(`${apiendpoint}api/devices/details`, {
@@ -108,72 +111,50 @@ function Devices() {
       .then((data) => {
         setFilterDeviceTypeOptions(uniqueValues(data, "device_type_name"));
         setFilterDeviceStatusOption(uniqueValues(data, "status"));
-        const updatedDevices = data.map((item: any) => ({
-          ...item,
-          show: true,
-        }));
-        setDevices(updatedDevices);
+        setAllDevices(data);
+        setFilteredDevices(data);
       })
       .catch((error) => {
         console.error("Errore nel fetch dei dispositivi:", error);
       });
   }
 
-  useEffect(() => {
-    if (!devices) {
-      fetchDevices();
-    } else {
-      let updatedDevices = devices.map((item: Device) => ({
-        ...item,
-        show: true,
-      }));
+  const applyFilters = () => {
+   let result = allDevices;
 
-      // filtro per deviceTypeFilter
-      if (deviceTypeFilter !== "") {
-        updatedDevices = updatedDevices.map((item: Device) => ({
-          ...item,
-          show:
-            item.show &&
-            item.device_type_name.toLowerCase() ===
-              deviceTypeFilter.toLowerCase(),
-        }));
-      }
+   if (searchTerm) {
+     result = result.filter((device) =>
+       device.sn.toLowerCase().includes(searchTerm.toLowerCase())
+     );
+   }
 
-      // filtro per deviceStatusFilter
-      if (deviceStatusFilter !== "") {
-        updatedDevices = updatedDevices.map((item: Device) => ({
-          ...item,
-          show:
-            item.show &&
-            item.status.toLowerCase() === deviceStatusFilter.toLowerCase(),
-        }));
-      }
+   if (deviceTypeFilter) {
+     result = result.filter(
+       (device) => device.device_type_name.toLowerCase() === deviceTypeFilter.toLowerCase()
+     );
+   }
 
-      // filtro per deviceWarrantyFilter
-      if (deviceWarrantyFilter !== "") {
-        updatedDevices = updatedDevices.map((item: Device) => ({
-          ...item,
-          show:
-            item.show &&
-            isWarrantyActive(
-              item.devicewarranty.start_date,
-              item.devicewarranty.end_date
-            ).toLowerCase() === deviceWarrantyFilter.toLowerCase(),
-        }));
-      }
-
-      setDevices(updatedDevices);
+   if (deviceStatusFilter) {
+      result = result.filter(
+        (device) => device.status.toLowerCase() === deviceStatusFilter.toLowerCase()
+      );
     }
-  }, [deviceTypeFilter, deviceStatusFilter, deviceWarrantyFilter]);
 
-  if (!devices || !admin.role) {
-    return <div>Loading...</div>;
-  }
+    if (deviceWarrantyFilter) {
+      result = result.filter(
+        (device) =>
+          isWarrantyActive(
+            device.devicewarranty.start_date,
+            device.devicewarranty.end_date
+          ).toLowerCase() === deviceWarrantyFilter.toLowerCase()
+      );
+    }
 
-  const isWarrantyActive = (
-    start_date: string | null,
-    end_date: string | null
-  ) => {
+    setFilteredDevices(result);
+    setCurrentPage(1);
+  };
+
+    const isWarrantyActive = (start_date: string | null, end_date: string | null) => {
     if (!start_date || !end_date) {
       return "Not available";
     }
@@ -197,9 +178,8 @@ function Devices() {
       });
 
       if (response.ok) {
-        setDevices((prevDevices) =>
-          prevDevices?.filter((device) => device.id !== deviceId)
-        );
+        setAllDevices((prevDevices) => prevDevices.filter((device) => device.id !== deviceId));
+        setFilteredDevices((prevDevices) => prevDevices.filter((device) => device.id !== deviceId));
       } else {
         console.error("Failed to delete device:", response.statusText);
       }
@@ -209,17 +189,10 @@ function Devices() {
     alert("Device deleted successfully");
   };
 
-  const filteredDevices = devices.filter((device) =>
-    device.sn.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   // pagination
   const indexOfLastDevice = currentPage * devicesPerPage;
   const indexOfFirstDevice = indexOfLastDevice - devicesPerPage;
-  const currentDevices = filteredDevices.slice(
-    indexOfFirstDevice,
-    indexOfLastDevice
-  );
+  const currentDevices = filteredDevices.slice(indexOfFirstDevice, indexOfLastDevice);
   const totalPages = Math.ceil(filteredDevices.length / devicesPerPage);
 
   const handlePageChange = (pageNumber: number) => {
@@ -281,7 +254,7 @@ function Devices() {
                   >
                     <option value="">Device Type...</option>
                     {filterDeviceTypeOptions.map((item) => (
-                      <option value={item}>{item}</option>
+                      <option key={item} value={item}>{item}</option>
                     ))}
                   </select>
                 </div>
@@ -292,7 +265,7 @@ function Devices() {
                   >
                     <option value="">Device Status...</option>
                     {filterDeviceStatusOption.map((item) => (
-                      <option value={item}>{item}</option>
+                      <option key={item} value={item}>{item}</option>
                     ))}
                   </select>
                 </div>
@@ -319,11 +292,8 @@ function Devices() {
                     </tr>
                   </thead>
                   <tbody className="table-group-divider">
-                    {currentDevices.filter((device) => device.show === true)
-                      .length > 0 ? (
-                      currentDevices
-                        .filter((device) => device.show === true)
-                        .map((device, index) => (
+                    {currentDevices.length > 0 ? (
+                      currentDevices.map((device, index) => (
                           <tr key={index}>
                             <th scope="row">{device.sn}</th>
                             <td>{device.device_type_name}</td>
@@ -389,20 +359,16 @@ function Devices() {
                           </tr>
                         ))
                     ) : (
-                      <div>
-                        <p>No record found</p>
-                      </div>
+                     <tr>
+                     <td colSpan={6}>No record found</td>
+                   </tr>
                     )}
                   </tbody>
                 </table>
               </div>
               <nav>
                 <ul className="pagination justify-content-center">
-                  <li
-                    className={`page-item ${
-                      currentPage === 1 ? "disabled" : ""
-                    }`}
-                  >
+                <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
                     <a
                       className="page-link"
                       href="#"
@@ -433,9 +399,7 @@ function Devices() {
                     </li>
                   ))}
                   <li
-                    className={`page-item ${
-                      currentPage === totalPages ? "disabled" : ""
-                    }`}
+                    className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}
                   >
                     <a
                       className="page-link"

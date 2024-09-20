@@ -53,9 +53,13 @@ function Devices() {
   const [allDevices, setAllDevices] = useState<Device[]>([]);
   const [filteredDevices, setFilteredDevices] = useState<Device[]>([]);
   const [deviceTypeFilter, setDeviceTypeFilter] = useState<string>("");
-  const [filterDeviceTypeOptions, setFilterDeviceTypeOptions] = useState<string[]>([]);
+  const [filterDeviceTypeOptions, setFilterDeviceTypeOptions] = useState<
+    string[]
+  >([]);
   const [deviceStatusFilter, setDeviceStatusFilter] = useState<string>("");
-  const [filterDeviceStatusOption, setFilterDeviceStatusOption] = useState<string[]>([]);
+  const [filterDeviceStatusOption, setFilterDeviceStatusOption] = useState<
+    string[]
+  >([]);
   const [deviceWarrantyFilter, setDeviceWarrantyFilter] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDeviceId, setSelectedDeviceId] = useState<number>(0);
@@ -94,14 +98,20 @@ function Devices() {
 
     fetchAdminData();
   }, []);
-  
-   useEffect(() => {
-      fetchDevices();
-   }, []);
 
-   useEffect(() => {
-      applyFilters();
-   }, [allDevices, searchTerm, deviceTypeFilter, deviceStatusFilter, deviceWarrantyFilter]);
+  useEffect(() => {
+    fetchDevices();
+  }, []);
+
+  useEffect(() => {
+    applyFilters();
+  }, [
+    allDevices,
+    searchTerm,
+    deviceTypeFilter,
+    deviceStatusFilter,
+    deviceWarrantyFilter,
+  ]);
 
   function fetchDevices() {
     fetch(`${apiendpoint}api/devices/details`, {
@@ -120,23 +130,26 @@ function Devices() {
   }
 
   const applyFilters = () => {
-   let result = allDevices;
+    let result = allDevices;
 
-   if (searchTerm) {
-     result = result.filter((device) =>
-       device.sn.toLowerCase().includes(searchTerm.toLowerCase())
-     );
-   }
+    if (searchTerm) {
+      result = result.filter((device) =>
+        device.sn.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
 
-   if (deviceTypeFilter) {
-     result = result.filter(
-       (device) => device.device_type_name.toLowerCase() === deviceTypeFilter.toLowerCase()
-     );
-   }
-
-   if (deviceStatusFilter) {
+    if (deviceTypeFilter) {
       result = result.filter(
-        (device) => device.status.toLowerCase() === deviceStatusFilter.toLowerCase()
+        (device) =>
+          device.device_type_name.toLowerCase() ===
+          deviceTypeFilter.toLowerCase()
+      );
+    }
+
+    if (deviceStatusFilter) {
+      result = result.filter(
+        (device) =>
+          device.status.toLowerCase() === deviceStatusFilter.toLowerCase()
       );
     }
 
@@ -154,7 +167,10 @@ function Devices() {
     setCurrentPage(1);
   };
 
-    const isWarrantyActive = (start_date: string | null, end_date: string | null) => {
+  const isWarrantyActive = (
+    start_date: string | null,
+    end_date: string | null
+  ) => {
     if (!start_date || !end_date) {
       return "Not available";
     }
@@ -178,8 +194,12 @@ function Devices() {
       });
 
       if (response.ok) {
-        setAllDevices((prevDevices) => prevDevices.filter((device) => device.id !== deviceId));
-        setFilteredDevices((prevDevices) => prevDevices.filter((device) => device.id !== deviceId));
+        setAllDevices((prevDevices) =>
+          prevDevices.filter((device) => device.id !== deviceId)
+        );
+        setFilteredDevices((prevDevices) =>
+          prevDevices.filter((device) => device.id !== deviceId)
+        );
       } else {
         console.error("Failed to delete device:", response.statusText);
       }
@@ -192,7 +212,10 @@ function Devices() {
   // pagination
   const indexOfLastDevice = currentPage * devicesPerPage;
   const indexOfFirstDevice = indexOfLastDevice - devicesPerPage;
-  const currentDevices = filteredDevices.slice(indexOfFirstDevice, indexOfLastDevice);
+  const currentDevices = filteredDevices.slice(
+    indexOfFirstDevice,
+    indexOfLastDevice
+  );
   const totalPages = Math.ceil(filteredDevices.length / devicesPerPage);
 
   const handlePageChange = (pageNumber: number) => {
@@ -221,6 +244,15 @@ function Devices() {
       pageNumbers.push(totalPages);
     }
     return pageNumbers;
+  };
+
+  const resetFilters = () => {
+    setSearchTerm("");
+    setDeviceTypeFilter("");
+    setDeviceStatusFilter("");
+    setDeviceWarrantyFilter("");
+    setFilteredDevices(allDevices);
+    setCurrentPage(1);
   };
 
   return (
@@ -254,7 +286,9 @@ function Devices() {
                   >
                     <option value="">Device Type...</option>
                     {filterDeviceTypeOptions.map((item) => (
-                      <option key={item} value={item}>{item}</option>
+                      <option key={item} value={item}>
+                        {item}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -265,11 +299,13 @@ function Devices() {
                   >
                     <option value="">Device Status...</option>
                     {filterDeviceStatusOption.map((item) => (
-                      <option key={item} value={item}>{item}</option>
+                      <option key={item} value={item}>
+                        {item}
+                      </option>
                     ))}
                   </select>
                 </div>
-                <div className="col-4">
+                <div className="col-4 d-flex align-items-center">
                   <select
                     className="form-control"
                     onChange={(e) => setDeviceWarrantyFilter(e.target.value)}
@@ -279,6 +315,13 @@ function Devices() {
                     <option value="Expired">Expired</option>
                     <option value="Not available">Not available</option>
                   </select>
+                  <button 
+                    className="btn btn-outline-danger ms-2" 
+                    title="Reset Filters"
+                    onClick={resetFilters}
+                  >
+                    ❌
+                  </button>
                 </div>
               </div>
               <div className="table-responsive">
@@ -294,81 +337,85 @@ function Devices() {
                   <tbody className="table-group-divider">
                     {currentDevices.length > 0 ? (
                       currentDevices.map((device, index) => (
-                          <tr key={index}>
-                            <th scope="row">{device.sn}</th>
-                            <td>{device.device_type_name}</td>
-                            <td>
-                              {device.devicewarranty
-                                ? isWarrantyActive(
-                                    device.devicewarranty.start_date,
-                                    device.devicewarranty.end_date
-                                  )
-                                : "Not available"}
-                            </td>
-                            <td>{device.status}</td>
-                            <td>
-                              <a
-                                href={`devices/${device.id}/show`}
-                                className="btn btn-outline-warning"
+                        <tr key={index}>
+                          <th scope="row">{device.sn}</th>
+                          <td>{device.device_type_name}</td>
+                          <td>
+                            {device.devicewarranty
+                              ? isWarrantyActive(
+                                  device.devicewarranty.start_date,
+                                  device.devicewarranty.end_date
+                                )
+                              : "Not available"}
+                          </td>
+                          <td>{device.status}</td>
+                          <td>
+                            <a
+                              href={`devices/${device.id}/show`}
+                              className="btn btn-outline-warning"
+                            >
+                              View
+                            </a>
+                          </td>
+                          <td>
+                            <div className="btn-group drop">
+                              <button
+                                type="button"
+                                className="btn btn-outline-dark dropdown-toggle"
+                                data-bs-toggle="dropdown"
+                                aria-haspopup="true"
+                                aria-expanded="false"
                               >
-                                View
-                              </a>
-                            </td>
-                            <td>
-                              <div className="btn-group drop">
-                                <button
-                                  type="button"
-                                  className="btn btn-outline-dark dropdown-toggle"
-                                  data-bs-toggle="dropdown"
-                                  aria-haspopup="true"
-                                  aria-expanded="false"
+                                Actions
+                              </button>
+                              <div
+                                className="dropdown-menu dropdown-menu-end position-absolute"
+                                aria-labelledby="dropdownMenuButton"
+                              >
+                                <a
+                                  href={`devices/${device.id}/edit`}
+                                  className="dropdown-item"
                                 >
-                                  Actions
-                                </button>
-                                <div
-                                  className="dropdown-menu dropdown-menu-end position-absolute"
-                                  aria-labelledby="dropdownMenuButton"
+                                  Edit Device Data
+                                </a>
+                                <hr className="dropdown-divider" />
+                                <a
+                                  className="dropdown-item"
+                                  href="#"
+                                  onClick={() => handleOpenModal(device.id)}
                                 >
-                                  <a
-                                    href={`devices/${device.id}/edit`}
-                                    className="dropdown-item"
-                                  >
-                                    Edit Device Data
-                                  </a>
-                                  <hr className="dropdown-divider" />
+                                  Change Device Status
+                                </a>
+                                <hr className="dropdown-divider" />
+                                {admin.role === "ADMIN_FULL" && (
                                   <a
                                     className="dropdown-item"
                                     href="#"
-                                    onClick={() => handleOpenModal(device.id)}
+                                    onClick={() => handleDelete(device.id)}
                                   >
-                                    Change Device Status
+                                    Delete Device
                                   </a>
-                                  <hr className="dropdown-divider" />
-                                  {admin.role === "ADMIN_FULL" && (
-                                    <a
-                                      className="dropdown-item"
-                                      href="#"
-                                      onClick={() => handleDelete(device.id)}
-                                    >
-                                      Delete Device
-                                    </a>
-                                  )}
-                                </div>
+                                )}
                               </div>
-                            </td>
-                          </tr>
-                        ))
+                            </div>
+                          </td>
+                        </tr>
+                      ))
                     ) : (
-                     <tr>
-                     <td colSpan={6}>No record found</td>
-                   </tr>
+                      <tr>
+                        <td colSpan={6}>No record found</td>
+                      </tr>
                     )}
                   </tbody>
                 </table>
               </div>
               <nav>
                 <ul className="pagination justify-content-center">
-                <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                  <li
+                    className={`page-item ${
+                      currentPage === 1 ? "disabled" : ""
+                    }`}
+                  >
                     <a
                       className="page-link"
                       href="#"
@@ -399,7 +446,9 @@ function Devices() {
                     </li>
                   ))}
                   <li
-                    className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}
+                    className={`page-item ${
+                      currentPage === totalPages ? "disabled" : ""
+                    }`}
                   >
                     <a
                       className="page-link"

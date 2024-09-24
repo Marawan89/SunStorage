@@ -84,16 +84,21 @@ function Dashboard() {
     setSearchResults([]);
   };
 
-  const handleSearchInputChange = async (event: { target: { value: string } }) => {
+  const handleSearchInputChange = async (event: {
+    target: { value: string };
+  }) => {
     const value = event.target.value;
     setSearchTerm(value);
 
     if (value) {
       // quando viene digitato qualcosa, avvia la ricerca
       try {
-        const response = await fetch(`${apiendpoint}api/devices/search/${value}`, {
-          credentials: "include",
-        });
+        const response = await fetch(
+          `${apiendpoint}api/devices/search/${value}`,
+          {
+            credentials: "include",
+          }
+        );
         const data = await response.json();
 
         if (Array.isArray(data)) {
@@ -166,9 +171,16 @@ function Dashboard() {
             <div className="actions-menu position-absolute start-50 translate-middle-x w-50 p-3 shadow-lg bg-light rounded">
               <div className="d-flex justify-content-between">
                 <p className="top-text mb-0 p-1">
-                  {isSearchingSN ? "Results" : "TOP 4 ACTIONS"}
+                  {isSearchingSN
+                    ? "Results"
+                    : admin.role === "ADMIN"
+                    ? "TOP 3 ACTIONS"
+                    : "TOP 4 ACTIONS"}
                 </p>
-                <button className="btn-close" onClick={handleCloseActions}></button>
+                <button
+                  className="btn-close"
+                  onClick={handleCloseActions}
+                ></button>
               </div>
               <ul className="list-group mt-2">
                 {!isSearchingSN ? (

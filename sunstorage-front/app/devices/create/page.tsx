@@ -137,6 +137,13 @@ function AddDevice() {
       ? multipleSerialNumbers
       : [serialNumber];
 
+    // controllo duplicati
+    const serialsSet = new Set(serialNumbersToValidate);
+    if (serialsSet.size !== serialNumbersToValidate.length) {
+      alert("Non ci possono essere numeri seriali uguali.");
+      return;
+    }
+
     // check if the serial number field is blank, less than 10 characters, or contains special characters
     for (const sn of serialNumbersToValidate) {
       if (!sn || sn.length < 10 || !serialNumberPattern.test(sn)) {

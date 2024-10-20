@@ -40,13 +40,25 @@ function UpdateDeviceType() {
 
     const handleInputChange = (index: number, field: keyof InputField, value: string) => {
       const updatedInputs = [...inputs];
-      updatedInputs[index][field] = value;
+    
+      // Se stiamo cambiando il tipo di input a 'select', inizializziamo `values` come array vuoto
+      if (field === "type" && value === "select") {
+        updatedInputs[index].values = updatedInputs[index].values || []; // Inizializziamo solo se non esiste già
+      }
+    
+      // Se il campo è "name", lo trasformiamo in maiuscolo e sostituiamo gli spazi con "_"
+      if (field === "name") {
+        updatedInputs[index][field] = value.toUpperCase().replace(/\s+/g, "_");
+      } else {
+        updatedInputs[index][field] = value;
+      }
+    
       setInputs(updatedInputs);
     };
+    
 
     const handleValueChange = (index: number, valueIndex: number, value: string) => {
       const updatedInputs = [...inputs];
-      // Aggiorna solo se il valore non è vuoto
       if (value.trim() !== "") {
         updatedInputs[index].values[valueIndex] = value;
       }
@@ -54,14 +66,13 @@ function UpdateDeviceType() {
     };
 
     const handleAddValue = (index: number) => {
-      // Aggiungi solo se l'ultimo valore non è vuoto
       const updatedInputs = [...inputs];
       const lastValue = updatedInputs[index].values[updatedInputs[index].values.length - 1];
       if (lastValue?.trim() !== "") {
         updatedInputs[index].values.push("");
         setInputs(updatedInputs);
       } else {
-        alert("Non puoi aggiungere un valore vuoto.");
+        alert("Hai lasciato il valore prima vuoto");
       }
     };
 
@@ -83,50 +94,45 @@ function UpdateDeviceType() {
     };
 
     const handleUpdate = () => {
-      // Controllo che il nome non sia vuoto e non contenga caratteri speciali
       const regex = /^[a-zA-Z0-9\s]+$/;
       if (!name || !regex.test(name)) {
         alert("Il nome del tipo di device non può essere vuoto o contenere caratteri speciali.");
         return;
       }
 
-      // Controllo che ci sia almeno un input
       if (inputs.length === 0) {
         alert("Devi aggiungere almeno un input per il tipo di device.");
         return;
       }
 
-      // Controlli sugli input
       for (let input of inputs) {
-         if (!input.name || !input.label) {
-           alert("Ogni input deve avere un nome e un'etichetta.");
-           return;
-         }
-         if (input.type === "choose") {
-           alert("Devi scegliere un tipo di input valido (text, number, select).");
-           return;
-         }
-         if (input.type === "select" && input.values.length < 2) {
-           alert(
-             "Se il tipo di input è 'select', devi aggiungere almeno due valori."
-           );
-           return;
-         }
-         if (input.type === "select" && input.values.some(v => v.trim() === "")) {
-           alert("I valori per il tipo di input 'select' non possono essere vuoti.");
-           return;
-         }
-         if (
-           (input.type === "text" || input.type === "number") &&
-           !input.placeholder
-         ) {
-           alert(
-             "I campi di tipo 'text' e 'number' non possono essere lasciati vuoti."
-           );
-           return;
-         }
-       }
-       
+        // Controllo che il nome dell'input inizi con il nome del tipo di device
+        if (!input.name.startsWith(name.toUpperCase() + "_")) {
+          alert(`Il nome dell'input deve essere composto da "${name.toUpperCase()}" seguito dal nome dell'input separato da "_"`);
+          return;
+        }
+
+        if (!input.name || !input.label) {
+          alert("Ogni input deve avere un nome e un'etichetta.");
+          return;
+        }
+        if (input.type === "choose") {
+          alert("Devi scegliere un tipo di input valido (text, number, select).");
+          return;
+        }
+        if (input.type === "select" && input.values.length < 2) {
+          alert("Se il tipo di input è 'select', devi aggiungere almeno due valori.");
+          return;
+        }
+        if (input.type === "select" && input.values.some(v => v.trim() === "")) {
+          alert("I valori per il tipo di input 'select' non possono essere vuoti.");
+          return;
+        }
+        if ((input.type === "text" || input.type === "number") && !input.placeholder) {
+          alert("I campi di tipo 'text' e 'number' non possono essere lasciati vuoti.");
+          return;
+        }
+      }
 
       if (id) {
         fetch(`${apiendpoint}api/devicetypes/${id}`, {
@@ -153,6 +159,10 @@ function UpdateDeviceType() {
       }
     };
 
+    const resetPage = () => {
+      window.location.href = '/device-types';
+    }
+ 
   return (
     <>
       <Navbar />
@@ -164,6 +174,7 @@ function UpdateDeviceType() {
               <div className="row">
                 <div className="col-12">
                   <h3>Edit Device Type</h3>
+                  Nome del tipo di device
                   <input
                     type="text"
                     name="name"
@@ -173,30 +184,25 @@ function UpdateDeviceType() {
                     onChange={(e) => setName(e.target.value)}
                   />
 
-                  <button
-                    className="btn btn-light mt-3"
-                    type="button"
-                    onClick={handleAddInput}
-                  >
-                    Add Input
-                  </button>
-
                   {inputs.map((input, index) => (
                     <div key={index} className="mt-4 border p-3">
+                     Scrivere il nome dell'input che sarà visibile nel db (es. LAPTOP_DISK_TYPE)
                       <input
                         type="text"
                         className="form-control mb-2"
-                        placeholder="Input Name"
+                        placeholder="Nome dell'input"
                         value={input.name}
                         onChange={(e) => handleInputChange(index, 'name', e.target.value)}
                       />
+                      Scrivere la label dell'input che sarà visibile nella pagina
                       <input
                         type="text"
                         className="form-control mb-2"
-                        placeholder="Input Label"
+                        placeholder="Label dell'input"
                         value={input.label}
                         onChange={(e) => handleInputChange(index, 'label', e.target.value)}
                       />
+                      Scegli il tipo dell'input
                       <select
                         className="form-control mb-2"
                         value={input.type}
@@ -208,6 +214,8 @@ function UpdateDeviceType() {
                       </select>
 
                       {(input.type === "text" || input.type === "number") && (
+                        <>
+                        Scrivere il placeholder
                         <input
                           type="text"
                           className="form-control mb-2"
@@ -215,14 +223,15 @@ function UpdateDeviceType() {
                           value={input.placeholder}
                           onChange={(e) => handleInputChange(index, 'placeholder', e.target.value)}
                         />
+                        </>
                       )}
-
                       {input.type === "select" && input.values.map((value, valueIndex) => (
+                        <>
                         <div key={valueIndex} className="input-group mb-2">
                           <input
                             type="text"
                             className="form-control"
-                            placeholder="Value"
+                            placeholder="Add value of select"
                             value={value}
                             onChange={(e) => handleValueChange(index, valueIndex, e.target.value)}
                           />
@@ -236,6 +245,7 @@ function UpdateDeviceType() {
                             </button>
                           </div>
                         </div>
+                        </>
                       ))}
 
                       {input.type === "select" && (
@@ -259,13 +269,28 @@ function UpdateDeviceType() {
                     </div>
                   ))}
                 </div>
+                
                 <div className="col-12 mt-3">
+                  <button
+                    className="btn btn-light m-2"
+                    type="button"
+                    onClick={handleAddInput}
+                  >
+                    Add Input
+                  </button>
                   <button
                     type="submit"
                     className="btn btn-success"
                     onClick={handleUpdate}
                   >
                     Save
+                  </button>
+                  <button
+                     type="reset"
+                     className="btn btn-secondary m-2"
+                     onClick={resetPage}
+                  >
+                     Cancel
                   </button>
                 </div>
               </div>

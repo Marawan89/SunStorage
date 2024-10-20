@@ -56,11 +56,16 @@ function Devices() {
   const [filterDeviceTypeOptions, setFilterDeviceTypeOptions] = useState<
     string[]
   >([]);
+  const [deviceModelFilter, setDeviceModelFilter] = useState<string>("");
+  const [filterDeviceModelOptions, setFilterDeviceModelOptions] = useState<
+    string[]
+  >([]);
   const [deviceStatusFilter, setDeviceStatusFilter] = useState<string>("");
   const [filterDeviceStatusOption, setFilterDeviceStatusOption] = useState<
     string[]
   >([]);
   const [deviceWarrantyFilter, setDeviceWarrantyFilter] = useState<string>("");
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDeviceId, setSelectedDeviceId] = useState<number>(0);
   const [admin, setAdmin] = useState({ role: "" });
@@ -109,6 +114,7 @@ function Devices() {
     allDevices,
     searchTerm,
     deviceTypeFilter,
+    deviceModelFilter,
     deviceStatusFilter,
     deviceWarrantyFilter,
   ]);
@@ -119,7 +125,11 @@ function Devices() {
     })
       .then((response) => response.json())
       .then((data) => {
-        setFilterDeviceTypeOptions(uniqueValues(data, "device_type_name"));
+        setFilterDeviceTypeOptions(
+          Array.from(
+            new Set(data.map((device: Device) => device.device_type_name))
+          )
+        );
         setFilterDeviceStatusOption(uniqueValues(data, "status"));
         setAllDevices(data);
         setFilteredDevices(data);
@@ -140,9 +150,18 @@ function Devices() {
 
     if (deviceTypeFilter) {
       result = result.filter(
-        (device) =>
-          device.device_type_name.toLowerCase() ===
-          deviceTypeFilter.toLowerCase()
+        (device) => device.device_type_name === deviceTypeFilter
+      );
+      setFilterDeviceModelOptions(
+        Array.from(
+          new Set(
+            result.flatMap((device) =>
+              device.devicespecifics
+                .filter((spec) => spec.input_label === "Modello")
+                .map((spec) => spec.value)
+            )
+          )
+        )
       );
     }
 
@@ -150,6 +169,15 @@ function Devices() {
       result = result.filter(
         (device) =>
           device.status.toLowerCase() === deviceStatusFilter.toLowerCase()
+      );
+    }
+
+    if (deviceModelFilter) {
+      result = result.filter((device) =>
+        device.devicespecifics.some(
+          (spec) =>
+            spec.input_label === "Modello" && spec.value === deviceModelFilter
+        )
       );
     }
 
@@ -250,6 +278,7 @@ function Devices() {
     setSearchTerm("");
     setDeviceTypeFilter("");
     setDeviceStatusFilter("");
+    setDeviceModelFilter("");
     setDeviceWarrantyFilter("");
     setFilteredDevices(allDevices);
     setCurrentPage(1);
@@ -279,52 +308,76 @@ function Devices() {
               </div>
               <div className="row my-2">
                 <div className="col-12">Filters:</div>
-                <div className="col-4">
-                  <select
-                    className="form-control"
-                    onChange={(e) => setDeviceTypeFilter(e.target.value)}
-                  >
-                    <option value="">Device Type...</option>
-                    {filterDeviceTypeOptions.map((item) => (
-                      <option key={item} value={item}>
-                        {item}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="col-4">
-                  <select
-                    className="form-control"
-                    onChange={(e) => setDeviceStatusFilter(e.target.value)}
-                  >
-                    <option value="">Device Status...</option>
-                    {filterDeviceStatusOption.map((item) => (
-                      <option key={item} value={item}>
-                        {item}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="col-4 d-flex align-items-center">
-                  <select
-                    className="form-control"
-                    onChange={(e) => setDeviceWarrantyFilter(e.target.value)}
-                  >
-                    <option value="">Warranty Status...</option>
-                    <option value="Valid">Valid</option>
-                    <option value="Expired">Expired</option>
-                    <option value="Not available">Not available</option>
-                  </select>
-                  <button 
-                    className="btn btn-outline-danger ms-2" 
-                    title="Reset Filters"
-                    onClick={resetFilters}
-                  >
-                    ❌
-                  </button>
+                <div
+                  className="d-flex flex-wrap align-items-center w-100 justify-content-start"
+                  style={{ width: "100%" }}
+                >
+                  <div className="me-1 flex-grow-1">
+                    <select
+                      className="form-control"
+                      value={deviceTypeFilter}
+                      onChange={(e) => setDeviceTypeFilter(e.target.value)}
+                    >
+                      <option value="">Device Type...</option>
+                      {filterDeviceTypeOptions.map((type) => (
+                        <option key={type} value={type}>
+                          {type}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  {deviceTypeFilter && (
+                    <div className="me-1 flex-grow-1">
+                      <select
+                        className="form-control"
+                        value={deviceModelFilter}
+                        onChange={(e) => setDeviceModelFilter(e.target.value)}
+                      >
+                        <option value="">Device Model...</option>
+                        {filterDeviceModelOptions.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  <div className="me-1 flex-grow-1">
+                    <select
+                      className="form-control"
+                      value={deviceStatusFilter}
+                      onChange={(e) => setDeviceStatusFilter(e.target.value)}
+                    >
+                      <option value="">Device Status...</option>
+                      {filterDeviceStatusOption.map((item) => (
+                        <option key={item} value={item}>
+                          {item}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="d-flex align-items-center flex-grow-1">
+                    <select
+                      className="form-control"
+                      value={deviceWarrantyFilter}
+                      onChange={(e) => setDeviceWarrantyFilter(e.target.value)}
+                    >
+                      <option value="">Warranty Status...</option>
+                      <option value="Valid">Valid</option>
+                      <option value="Expired">Expired</option>
+                      <option value="Not available">Not available</option>
+                    </select>
+                    <button
+                      className="btn btn-primary ms-2"
+                      title="Reset Filters"
+                      onClick={resetFilters}
+                    >
+                      X
+                    </button>
+                  </div>
                 </div>
               </div>
-              <div className="table-responsive">
+              <div className="table">
                 <table className="table">
                   <thead>
                     <tr>

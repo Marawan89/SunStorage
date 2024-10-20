@@ -429,7 +429,7 @@ function Devices() {
                                   href={`devices/${device.id}/edit`}
                                   className="dropdown-item"
                                 >
-                                  Edit Device Data
+                                  Modifica dati
                                 </a>
                                 <hr className="dropdown-divider" />
                                 <a
@@ -437,7 +437,7 @@ function Devices() {
                                   href="#"
                                   onClick={() => handleOpenModal(device.id)}
                                 >
-                                  Change Device Status
+                                  Modifica Status
                                 </a>
                                 <hr className="dropdown-divider" />
                                 {admin.role === "ADMIN_FULL" && (
@@ -446,7 +446,7 @@ function Devices() {
                                     href="#"
                                     onClick={() => handleDelete(device.id)}
                                   >
-                                    Delete Device
+                                    Elimina Dispositivo
                                   </a>
                                 )}
                               </div>

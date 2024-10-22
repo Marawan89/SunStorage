@@ -47,14 +47,14 @@ export default function Menu() {
           <button className="nav-item btn p-0 mb-2">
             <a href="/devices" className="d-flex align-items-center">
               <FontAwesomeIcon icon={faLaptop} className="menuIcons mr-2" />
-              <p className="mb-0">Devices</p>
+              <p className="mb-0">Dispositivi</p>
             </a>
           </button>
           <div className="spacer"></div>
           <button className="nav-item btn p-0 mb-2">
             <a href="/departments" className="d-flex align-items-center">
               <FontAwesomeIcon icon={faUsers} className="menuIcons mr-2" />
-              <p className="mb-0">Departments</p>
+              <p className="mb-0">Reparti</p>
             </a>
           </button>
           {admin.role === "ADMIN_FULL" && (
@@ -67,7 +67,7 @@ export default function Menu() {
                     icon={faComputer}
                     className="menuIcons mr-2"
                   />
-                  <p className="mb-0">Device Types</p>
+                  <p className="mb-0">Tipi di dispositivi</p>
                 </a>
               </button>
             </>

@@ -62,7 +62,7 @@ export default function Login() {
                 />
               </div>
               <div className="text-end">
-                <button type="submit" className="btn btn-success m-2">Sign in</button>
+                <button type="submit" className="btn btn-dark m-2">Sign in</button>
               </div>
             </form>
           </div>

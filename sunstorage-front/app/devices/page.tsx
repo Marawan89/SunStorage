@@ -206,7 +206,7 @@ function Devices() {
     const currentDate = new Date();
     const warrantyEndDate = new Date(end_date);
 
-    return warrantyEndDate >= currentDate ? "Valid" : "Expired";
+    return warrantyEndDate >= currentDate ? "Valida" : "Scaduta";
   };
 
   const handleDelete = async (deviceId: number) => {
@@ -293,21 +293,20 @@ function Devices() {
           <div className="col-12 col-md-8 nav-container mt-3 mt-md-0 p-0">
             <div className="col-12 bg-content p-md-5">
               <a href="devices/create" className="btn btn-dark mb-2">
-                Add a device
+                Aggiungi un dispositivo
               </a>
               <div className="filtering">
                 <div className="d-flex mb-3">
                   <input
                     className="form-control me-2"
                     type="search"
-                    placeholder="Search for a Serial Number"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
               </div>
               <div className="row my-2">
-                <div className="col-12">Filters:</div>
+                <div className="col-12">Filtri:</div>
                 <div
                   className="d-flex flex-wrap align-items-center w-100 justify-content-start"
                   style={{ width: "100%" }}
@@ -318,7 +317,7 @@ function Devices() {
                       value={deviceTypeFilter}
                       onChange={(e) => setDeviceTypeFilter(e.target.value)}
                     >
-                      <option value="">Device Type...</option>
+                      <option value="">Tipo di dispositivo...</option>
                       {filterDeviceTypeOptions.map((type) => (
                         <option key={type} value={type}>
                           {type}
@@ -333,7 +332,7 @@ function Devices() {
                         value={deviceModelFilter}
                         onChange={(e) => setDeviceModelFilter(e.target.value)}
                       >
-                        <option value="">Device Model...</option>
+                        <option value="">Modello dispositivo...</option>
                         {filterDeviceModelOptions.map((model) => (
                           <option key={model} value={model}>
                             {model}
@@ -348,7 +347,7 @@ function Devices() {
                       value={deviceStatusFilter}
                       onChange={(e) => setDeviceStatusFilter(e.target.value)}
                     >
-                      <option value="">Device Status...</option>
+                      <option value="">Stato dispositvo...</option>
                       {filterDeviceStatusOption.map((item) => (
                         <option key={item} value={item}>
                           {item}
@@ -362,7 +361,7 @@ function Devices() {
                       value={deviceWarrantyFilter}
                       onChange={(e) => setDeviceWarrantyFilter(e.target.value)}
                     >
-                      <option value="">Warranty Status...</option>
+                      <option value="">Stato garanzia...</option>
                       <option value="Valid">Valid</option>
                       <option value="Expired">Expired</option>
                       <option value="Not available">Not available</option>
@@ -382,9 +381,9 @@ function Devices() {
                   <thead>
                     <tr>
                       <th scope="col">Serial Number</th>
-                      <th scope="col">Device Type</th>
-                      <th scope="col">Warranty</th>
-                      <th scope="col">Status</th>
+                      <th scope="col">Tipo di dispositvo</th>
+                      <th scope="col">Garanzia</th>
+                      <th scope="col">Stato</th>
                     </tr>
                   </thead>
                   <tbody className="table-group-divider">
@@ -399,7 +398,7 @@ function Devices() {
                                   device.devicewarranty.start_date,
                                   device.devicewarranty.end_date
                                 )
-                              : "Not available"}
+                              : "Non disponibile"}
                           </td>
                           <td>{device.status}</td>
                           <td>

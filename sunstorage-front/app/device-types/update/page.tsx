@@ -173,7 +173,7 @@ function UpdateDeviceType() {
             <div className="col-12 bg-content p-3 p-md-5">
               <div className="row">
                 <div className="col-12">
-                  <h3>Edit Device Type</h3>
+                  <h3>Modifica tipo di dispositivo</h3>
                   Nome del tipo di device
                   <input
                     type="text"

@@ -166,7 +166,7 @@ function AddDevice() {
           document.getElementById(field.id) as HTMLInputElement
         )?.value;
         if (!fieldValue || fieldValue === "Choose an option...") {
-          alert(`Please fill the ${field.input_label} field`);
+          alert(`Perfavore completa il campo ${field.input_label}`);
           return;
         }
       }
@@ -248,7 +248,7 @@ function AddDevice() {
         }
       }
       // after successful insertion redirect to devices page
-      alert("Device added successfully!");
+      alert("Dispositivo aggiunto!");
       window.location.href = "/devices";
     } catch (error) {
       if (error instanceof Error) {
@@ -271,7 +271,7 @@ function AddDevice() {
           <Menu />
           <div className="col-12 col-md-8 nav-container mt-3 mt-md-0">
             <div className="col-12 bg-content p-5">
-              <p>Add Device</p>
+              <p>Aggiungi Dispositivo</p>
               <div className="spacer"></div>
               <div className="add-device-data">
                 {!isMultipleDevices && (
@@ -281,14 +281,13 @@ function AddDevice() {
                       type="text"
                       value={serialNumber}
                       onChange={(e) => setSerialNumber(e.target.value)}
-                      placeholder="Enter serial number"
                       required
                     />
                   </>
                 )}
 
                 <p>
-                  Vuoi aggiungere tanti dispositivi con le stesse specifiche?
+                  Dispositivi multipli?
                 </p>
                 <div className="form-check form-switch">
                   <input
@@ -303,7 +302,7 @@ function AddDevice() {
                   <>
                     {multipleSerialNumbers.map((serial, index) => (
                       <>
-                        <p>Type a Serial number</p>
+                        <p>Serial number</p>
                         <div className="input-group mb-2" key={index}>
                           <input
                             type="text"
@@ -312,7 +311,6 @@ function AddDevice() {
                             onChange={(e) =>
                               updateSerialNumber(index, e.target.value)
                             }
-                            placeholder="Enter serial number"
                             required
                           />
                           <div className="input-group-append">
@@ -321,7 +319,7 @@ function AddDevice() {
                               type="button"
                               onClick={() => removeSerialNumberField(index)}
                             >
-                              Delete
+                              Elimina
                             </button>
                           </div>
                         </div>
@@ -332,12 +330,12 @@ function AddDevice() {
                       type="button"
                       onClick={addSerialNumberField}
                     >
-                      Add another Serial number
+                      Aggiungi un'altro dispositivo
                     </button>
                   </>
                 )}
 
-                <p>Device Type</p>
+                <p>Tipo del dispositivo</p>
                 <div className="input-group">
                   <select
                     className="custom-select"
@@ -346,7 +344,7 @@ function AddDevice() {
                     onChange={(e) => setSelectedDeviceType(e.target.value)}
                     required
                   >
-                    <option>Choose an option...</option>
+                    <option>Scegli una opzione...</option>
                     {deviceTypes.map((type) => (
                       <option key={type.id} value={type.id.toString()}>
                         {type.name}
@@ -413,13 +411,13 @@ function AddDevice() {
                 </div>
                 {hasWarranty && (
                   <>
-                    <p>Warranty Start</p>
+                    <p>Data nizio</p>
                     <input
                       type="date"
                       value={warrantyStart}
                       onChange={(e) => setWarrantyStart(e.target.value)}
                     />
-                    <p>Warranty End</p>
+                    <p>Data Fine</p>
                     <input
                       type="date"
                       value={warrantyEnd}
@@ -436,14 +434,14 @@ function AddDevice() {
                   type="reset"
                   onClick={redirectDevices}
                 >
-                  Cancel
+                  Cancella
                   <FontAwesomeIcon
                     className="btn-icon"
                     icon={faCancel}
                   ></FontAwesomeIcon>
                 </button>
                 <button className="sbmt-btn" type="button" onClick={submit}>
-                  Save and Generate Qr code
+                  Salva Dispositvo
                   <FontAwesomeIcon
                     className="btn-icon"
                     icon={faArrowRight}

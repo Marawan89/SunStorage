@@ -46,16 +46,16 @@ router.get("/:id", async (req, res) => {
 // route to update a user by id
 router.patch("/:id", async (req, res) => {
   const { id } = req.params;
-  const { department_id, name, surname, email } = req.body;
+  const { name, surname, email } = req.body;
   try {
     const [result] = await pool.query(
-      "UPDATE users SET department_id = ?, name = ?, surname = ?, email = ?, password = ?, is_admin = ?, insert_datetime = ?, update_datetime = ? WHERE id = ?",
-      [department_id, name, surname, email, id]
+      "UPDATE users SET name = ?, surname = ?, email = ? WHERE id = ?",
+      [name, surname, email, id]
     );
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: "User not found" });
     }
-    res.json({ id, department_id, name, surname, email });
+    res.json({ id, name, surname, email });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

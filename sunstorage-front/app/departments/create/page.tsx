@@ -47,7 +47,7 @@ function CreateDepartment() {
 
     setUsers([...users, newUser]);
     setNewUser({ name: "", surname: "", email: "" });
-    setIsUserFormVisible(false); // Nascondi il form una volta salvato l'utente
+    setIsUserFormVisible(false);
   };
 
   const handleRemoveUser = (index: number) => {
@@ -187,7 +187,7 @@ function CreateDepartment() {
               )}
 
               <button
-                className="btn btn-light m-3"
+                className="btn btn-light mt-3"
                 type="button"
                 onClick={handleAddUserForm}
               >

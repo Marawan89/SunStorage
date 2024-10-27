@@ -300,6 +300,7 @@ function Devices() {
                   <input
                     className="form-control me-2"
                     type="search"
+                    placeholder="Scrivi un serial number"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />

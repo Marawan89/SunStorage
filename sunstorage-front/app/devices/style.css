@@ -3,6 +3,11 @@
   border-radius: 10px;
 }
 
+.deleteDevice-btn {
+  color: white;
+  background-color: red;
+}
+
 .table th,
 td {
   vertical-align: middle;

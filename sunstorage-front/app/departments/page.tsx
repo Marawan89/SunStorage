@@ -115,14 +115,14 @@ function Departments() {
                         <td scope="row">{department.name}</td>
                         <td>
                           <a
-                            className="btn btn-outline-warning m-1"
+                            className="btn btn-warning m-1"
                             href={`/departments/update?id=${department.id}`}
                           >
                             Edit
                           </a>
                           {admin.role === "ADMIN_FULL" && (
                             <button
-                              className="btn btn-outline-danger m-1"
+                              className="btn btn-danger m-1"
                               onClick={() => handleDelete(department.id)}
                             >
                               Delete

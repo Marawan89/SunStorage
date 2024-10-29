@@ -89,13 +89,13 @@ function Devicetypes() {
                         <td scope="row">{devicetypes.name}</td>
                         <td>
                           <a
-                            className="btn btn-outline-warning m-1"
+                            className="btn btn-warning m-1"
                             href={`/device-types/update?id=${devicetypes.id}`}
                           >
                             Edit
                           </a>
                           <button
-                            className="btn btn-outline-danger m-1"
+                            className="btn btn-danger m-1"
                             onClick={() => handleDelete(devicetypes.id)}
                           >
                             Delete

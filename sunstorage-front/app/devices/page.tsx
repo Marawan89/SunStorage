@@ -119,7 +119,7 @@ function Devices() {
     deviceWarrantyFilter,
   ]);
 
-  function fetchDevices() {
+  function fetchDevices(updatedDeviceId?: number) {
     fetch(`${apiendpoint}api/devices/details`, {
       credentials: "include",
     })
@@ -131,8 +131,24 @@ function Devices() {
           )
         );
         setFilterDeviceStatusOption(uniqueValues(data, "status"));
-        setAllDevices(data);
-        setFilteredDevices(data);
+
+        // Porta il dispositivo aggiornato in cima, se specificato
+        if (updatedDeviceId) {
+          const updatedDeviceIndex = data.findIndex(
+            (device: Device) => device.id === updatedDeviceId
+          );
+
+          if (updatedDeviceIndex !== -1) {
+            const [updatedDevice] = data.splice(updatedDeviceIndex, 1);
+            data.unshift(updatedDevice); // Sposta in cima il dispositivo aggiornato
+          }
+        }
+
+        // Ordina i dispositivi (con il dispositivo aggiornato eventualmente in cima)
+        const sortedData = data.sort((a: Device, b: Device) => b.id - a.id);
+
+        setAllDevices(sortedData);
+        setFilteredDevices(sortedData);
       })
       .catch((error) => {
         console.error("Errore nel fetch dei dispositivi:", error);
@@ -442,7 +458,7 @@ function Devices() {
                                 <hr className="dropdown-divider" />
                                 {admin.role === "ADMIN_FULL" && (
                                   <a
-                                    className="dropdown-item"
+                                    className="dropdown-item deleteDevice-btn"
                                     href="#"
                                     onClick={() => handleDelete(device.id)}
                                   >

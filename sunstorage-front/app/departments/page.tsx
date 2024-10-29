@@ -66,12 +66,14 @@ function Departments() {
         })
           .then((res) => {
             if (res.status === 204) {
-              alert(
-                "Eliminazione eseguita con successo, se c'erano pc assegnati agli utenti di quel reparto sono passati in stato free"
-              );
+              alert("Eliminazione eseguita con successo.");
               setDepartments(
                 departments.filter((department) => department.id !== id)
               );
+            } else if (res.status === 400) {
+              return res.json().then((data) => {
+                alert(data.error); // Show the error message
+              });
             } else {
               alert("Errore durante l'eliminazione del reparto.");
             }
@@ -98,15 +100,15 @@ function Departments() {
             <div className="col-12 bg-content p-3 p-md-5">
               <div className="d-flex mb-3">
                 <a className="btn btn-dark" href="/departments/create">
-                  Add Department
+                  Aggiungi reparto
                 </a>
               </div>
               <div className="table-responsive">
                 <table className="table">
                   <thead>
                     <tr>
-                      <th scope="col">Department Name</th>
-                      <th scope="col">Actions</th>
+                      <th scope="col">Nome reparto</th>
+                      <th scope="col">Azioni</th>
                     </tr>
                   </thead>
                   <tbody className="table-group-divider">
@@ -118,14 +120,14 @@ function Departments() {
                             className="btn btn-warning m-1"
                             href={`/departments/update?id=${department.id}`}
                           >
-                            Edit
+                            Modifica
                           </a>
                           {admin.role === "ADMIN_FULL" && (
                             <button
                               className="btn btn-danger m-1"
                               onClick={() => handleDelete(department.id)}
                             >
-                              Delete
+                              Elimina
                             </button>
                           )}
                         </td>

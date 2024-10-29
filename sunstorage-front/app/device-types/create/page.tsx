@@ -57,10 +57,10 @@ function CreateDeviceTypes() {
   };
 
   const handleAddValue = (index: number) => {
-
     // solo se l'ultimo valore non è vuoto
     const updatedInputs = [...inputs];
-    const lastValue = updatedInputs[index].values[updatedInputs[index].values.length - 1];
+    const lastValue =
+      updatedInputs[index].values[updatedInputs[index].values.length - 1];
     if (lastValue?.trim() !== "") {
       updatedInputs[index].values.push("");
       setInputs(updatedInputs);
@@ -77,7 +77,7 @@ function CreateDeviceTypes() {
     setInputs(updatedInputs);
   };
 
-  async function activateLasers() {
+  async function submit() {
     const regex = /^[a-zA-Z0-9\s]+$/;
     if (!deviceTypeName || !regex.test(deviceTypeName)) {
       alert(
@@ -107,8 +107,13 @@ function CreateDeviceTypes() {
         );
         return;
       }
-      if (input.type === "select" && input.values.some(v => v.trim() === "")) {
-        alert("I valori per il tipo di input 'select' non possono essere vuoti.");
+      if (
+        input.type === "select" &&
+        input.values.some((v) => v.trim() === "")
+      ) {
+        alert(
+          "I valori per il tipo di input 'select' non possono essere vuoti."
+        );
         return;
       }
       if (
@@ -121,7 +126,6 @@ function CreateDeviceTypes() {
         return;
       }
     }
-    
 
     try {
       const resAdd = await fetch(`${apiendpoint}api/devicetypes`, {
@@ -147,6 +151,10 @@ function CreateDeviceTypes() {
     }
   }
 
+  const resetPage = () => {
+    window.location.href = "/device-types";
+  };
+
   return (
     <>
       <Navbar />
@@ -157,45 +165,40 @@ function CreateDeviceTypes() {
             <div className="col-12 bg-content p-3 p-md-5">
               <div className="row">
                 <div className="col-12">
-                  <h3>Add Device Type</h3>
+                  <h2>Aggiungi tipo di dispositivo</h2>
+                  <div className="spacer"></div>
+                  Nome del tipo di device
                   <input
                     type="text"
                     name="name"
                     className="form-control"
                     id="device_type_name"
-                    placeholder="Device type name"
                     value={deviceTypeName}
                     onChange={(e) => setDeviceTypeName(e.target.value)}
                   />
-
-                  <button
-                    className="btn btn-light mt-3"
-                    type="button"
-                    onClick={handleAddInput}
-                  >
-                    Add Input
-                  </button>
-
                   {inputs.map((input, index) => (
                     <div key={index} className="mt-4 border p-3">
+                      Scrivere il nome dell'input che sarà visibile nel db (es.
+                      LAPTOP_DISK_TYPE)
                       <input
                         type="text"
                         className="form-control mb-2"
-                        placeholder="Input Name"
                         value={input.name}
                         onChange={(e) =>
                           handleInputChange(index, "name", e.target.value)
                         }
                       />
+                      Scrivere la label dell'input che sarà visibile nella
+                      pagina
                       <input
                         type="text"
                         className="form-control mb-2"
-                        placeholder="Input Label"
                         value={input.label}
                         onChange={(e) =>
                           handleInputChange(index, "label", e.target.value)
                         }
                       />
+                      Scegli il tipo dell'input
                       <select
                         className="form-control mb-2"
                         value={input.type}
@@ -203,28 +206,28 @@ function CreateDeviceTypes() {
                           handleInputChange(index, "type", e.target.value)
                         }
                       >
-                        <option value="choose">Choose an input type...</option>
-                        <option value="text">Text</option>
-                        <option value="number">Number</option>
+                        <option value="choose">Scegli un'opzione...</option>
+                        <option value="text">Testo</option>
+                        <option value="number">Numero</option>
                         <option value="select">Select</option>
                       </select>
-
                       {(input.type === "text" || input.type === "number") && (
-                        <input
-                          type="text"
-                          className="form-control mb-2"
-                          placeholder="Placeholder"
-                          value={input.placeholder}
-                          onChange={(e) =>
-                            handleInputChange(
-                              index,
-                              "placeholder",
-                              e.target.value
-                            )
-                          }
-                        />
+                        <>
+                          Scrivere il placeholder
+                          <input
+                            type="text"
+                            className="form-control mb-2"
+                            value={input.placeholder}
+                            onChange={(e) =>
+                              handleInputChange(
+                                index,
+                                "placeholder",
+                                e.target.value
+                              )
+                            }
+                          />
+                        </>
                       )}
-
                       {input.type === "select" &&
                         input.values.map((value, valueIndex) => (
                           <div key={valueIndex} className="input-group mb-2">
@@ -249,19 +252,18 @@ function CreateDeviceTypes() {
                                   handleRemoveValue(index, valueIndex)
                                 }
                               >
-                                Delete
+                                Elimina
                               </button>
                             </div>
                           </div>
                         ))}
-
                       {input.type === "select" && (
                         <button
                           className="btn btn-light"
                           type="button"
                           onClick={() => handleAddValue(index)}
                         >
-                          Add Value
+                          Aggiungi valore
                         </button>
                       )}
                       <div>
@@ -270,7 +272,7 @@ function CreateDeviceTypes() {
                           type="button"
                           onClick={() => handleRemoveInput(index)}
                         >
-                          Delete Input
+                          Elimina input
                         </button>
                       </div>
                     </div>
@@ -278,11 +280,25 @@ function CreateDeviceTypes() {
                 </div>
                 <div className="col-12 mt-3">
                   <button
-                    type="submit"
-                    className="btn btn-success"
-                    onClick={activateLasers}
+                    className="btn btn-light"
+                    type="button"
+                    onClick={handleAddInput}
                   >
-                    Save
+                    Aggiungi input
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn btn-success m-2"
+                    onClick={submit}
+                  >
+                    Salva dati
+                  </button>
+                  <button
+                    type="reset"
+                    className="btn btn-secondary"
+                    onClick={resetPage}
+                  >
+                    Cancella
                   </button>
                 </div>
               </div>

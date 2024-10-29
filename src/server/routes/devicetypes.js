@@ -107,41 +107,50 @@ router.get("/:id", async (req, res) => {
 
 // route to update a device type by id, including specific inputs
 router.patch("/:id", async (req, res) => {
-   const { id } = req.params;
-   const { name, inputs } = req.body;
- 
-   try {
-     // Update the device type name
-     const [result] = await pool.query("UPDATE devicetypes SET name = ? WHERE id = ?", [name, id]);
-     if (result.affectedRows === 0) {
-       return res.status(404).json({ error: "Device type not found" });
-     }
- 
-     // Delete existing inputs for the device type
-     await pool.query("DELETE FROM devicespecificsinputs WHERE device_type_id = ?", [id]);
- 
-     // Insert updated inputs
-     for (const input of inputs) {
-       await pool.query(
-         "INSERT INTO devicespecificsinputs (device_type_id, input_name, input_label, input_type, input_values, input_placeholder) VALUES (?, ?, ?, ?, ?, ?)",
-         [
-           id,
-           input.name,
-           input.label,
-           input.type,
-           JSON.stringify(input.values),
-           input.placeholder,
-         ]
-       );
-     }
- 
-     await writeLog(id, "DEVICE_MODIFICATION", `Modifica del tipo di dispositivo: ${name}`);
-     res.json({ message: "Device type updated successfully" });
-   } catch (error) {
-     res.status(500).json({ error: error.message });
-   }
- });
- 
+  const { id } = req.params;
+  const { name, inputs } = req.body;
+
+  try {
+    // Update the device type name
+    const [result] = await pool.query(
+      "UPDATE devicetypes SET name = ? WHERE id = ?",
+      [name, id]
+    );
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Device type not found" });
+    }
+
+    // Delete existing inputs for the device type
+    await pool.query(
+      "DELETE FROM devicespecificsinputs WHERE device_type_id = ?",
+      [id]
+    );
+
+    // Insert updated inputs
+    for (const input of inputs) {
+      await pool.query(
+        "INSERT INTO devicespecificsinputs (device_type_id, input_name, input_label, input_type, input_values, input_placeholder) VALUES (?, ?, ?, ?, ?, ?)",
+        [
+          id,
+          input.name,
+          input.label,
+          input.type,
+          JSON.stringify(input.values),
+          input.placeholder,
+        ]
+      );
+    }
+
+    await writeLog(
+      id,
+      "DEVICE_MODIFICATION",
+      `Modifica del tipo di dispositivo: ${name}`
+    );
+    res.json({ message: "Device type updated successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 // route to delete a device type by id
 router.delete("/:id", async (req, res) => {
@@ -155,6 +164,27 @@ router.delete("/:id", async (req, res) => {
     }
     res.status(204).send();
   } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// route to check if a device type has assigned devices
+router.get("/:id/devices", async (req, res) => {
+  const { id } = req.params;
+  try {
+    // Controllo se ci sono dispositivi associati a questo tipo di dispositivo
+    const [assignedDevices] = await pool.query(
+      "SELECT * FROM devices WHERE device_type_id = ?",
+      [id]
+    );
+
+    // Restituisci i dispositivi assegnati
+    res.json(assignedDevices);
+  } catch (error) {
+    console.error(
+      "Errore durante il controllo dei dispositivi assegnati:",
+      error
+    );
     res.status(500).json({ error: error.message });
   }
 });

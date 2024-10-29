@@ -26,6 +26,7 @@ function UpdateDepartment() {
     email: "",
   });
   const [isUserFormVisible, setIsUserFormVisible] = useState<boolean>(false);
+  const [usersToRemove, setUsersToRemove] = useState<number[]>([]); // Track users marked for removal
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -83,9 +84,7 @@ function UpdateDepartment() {
 
   const handleSaveNewUser = () => {
     if (!validateUser(newUser)) {
-      alert(
-        "Per favore, riempi tutti i campi per il nuovo utente con un'email valida."
-      );
+      alert("Per favore, riempi tutti i campi per il nuovo utente con un'email valida.");
       return;
     }
 
@@ -94,19 +93,13 @@ function UpdateDepartment() {
     setIsUserFormVisible(false);
   };
 
-  const handleRemoveUser = async (index: number) => {
+  const handleRemoveUser = (index: number) => {
     if (window.confirm("Sei sicuro di voler rimuovere questo utente?")) {
       const userId = users[index].id;
 
       if (userId) {
-        try {
-          await fetch(`${apiendpoint}api/users/${userId}`, {
-            method: "DELETE",
-            credentials: "include",
-          });
-        } catch (error) {
-          console.error("Errore durante la rimozione dell'utente:", error);
-        }
+        // Mark user for removal instead of deleting immediately
+        setUsersToRemove((prev) => [...prev, userId]);
       }
 
       setUsers(users.filter((_, i) => i !== index));
@@ -124,26 +117,19 @@ function UpdateDepartment() {
       return;
     }
 
-    // Validazione degli utenti
     for (const user of users) {
       if (!validateUser(user)) {
-        alert(
-          "Tutti i campi devono essere riempiti e l'email deve essere valida."
-        );
+        alert("Tutti i campi devono essere riempiti e l'email deve essere valida.");
         return;
       }
     }
 
-    // Validazione del nuovo utente, se il modulo è visibile
     if (isUserFormVisible && !validateUser(newUser)) {
-      alert(
-        "Per favore, riempi tutti i campi per il nuovo utente con un'email valida."
-      );
+      alert("Per favore, riempi tutti i campi per il nuovo utente con un'email valida.");
       return;
     }
 
     try {
-      // Aggiorna il dipartimento
       await fetch(`${apiendpoint}api/departments/${departmentId}`, {
         method: "PATCH",
         headers: {
@@ -153,7 +139,6 @@ function UpdateDepartment() {
         credentials: "include",
       });
 
-      // Aggiorna gli utenti
       for (const user of users) {
         if (user.id) {
           await fetch(`${apiendpoint}api/users/${user.id}`, {
@@ -181,12 +166,24 @@ function UpdateDepartment() {
         }
       }
 
+      // Now handle removal of marked users
+      for (const userId of usersToRemove) {
+        await fetch(`${apiendpoint}api/users/${userId}`, {
+          method: "DELETE",
+          credentials: "include",
+        });
+      }
+
       alert("Reparto e utenti aggiornati con successo!");
       window.location.href = "/departments";
     } catch (error) {
       console.error("Errore durante l'aggiornamento del reparto:", error);
       alert("Errore durante l'aggiornamento del reparto");
     }
+  };
+
+  const resetPage = () => {
+    window.location.href = "/departments";
   };
 
   return (
@@ -197,7 +194,9 @@ function UpdateDepartment() {
           <Menu />
           <div className="col-12 col-md-8 nav-container mt-3 mt-md-0 p-0">
             <div className="col-12 bg-content p-3 p-md-5">
-              <h3>Modifica Reparto</h3>
+              <h2>Modifica Reparto</h2>
+              <div className="spacer"></div>
+              Nome del reparto
               <input
                 type="text"
                 name="department_name"
@@ -205,29 +204,28 @@ function UpdateDepartment() {
                 value={departmentName}
                 onChange={(e) => setDepartmentName(e.target.value)}
               />
-
               <h4 className="mt-4">Utenti nel reparto</h4>
               {users.map((user, index) => (
                 <div key={index} className="mt-4 border p-3">
                   <h5>Dati dell'utente</h5>
+                  Nome
                   <input
                     type="text"
                     className="form-control mb-2"
-                    placeholder="Nome"
                     value={user.name}
                     onChange={(e) => handleInputChange(e, "name", index)}
                   />
+                  Cognome
                   <input
                     type="text"
                     className="form-control mb-2"
-                    placeholder="Cognome"
                     value={user.surname}
                     onChange={(e) => handleInputChange(e, "surname", index)}
                   />
+                  Email
                   <input
                     type="email"
                     className="form-control mb-2"
-                    placeholder="Email"
                     value={user.email}
                     onChange={(e) => handleInputChange(e, "email", index)}
                   />
@@ -239,7 +237,6 @@ function UpdateDepartment() {
                   </button>
                 </div>
               ))}
-
               {isUserFormVisible && (
                 <div className="mt-4 border p-3">
                   <h5>Aggiungi un nuovo utente</h5>
@@ -278,20 +275,18 @@ function UpdateDepartment() {
                   </button>
                 </div>
               )}
-
-              <button
-                className="btn btn-light mt-4"
-                onClick={handleAddUserForm}
-              >
-                Aggiungi Nuovo Utente
-              </button>
-
-              <div className="mt-4">
+              <div className="col-12 mt-3">
+                <button className="btn btn-light" onClick={handleAddUserForm}>
+                  Aggiungi Nuovo Utente
+                </button>
                 <button
-                  className="btn btn-success"
+                  className="btn btn-success m-2"
                   onClick={handleSaveDepartment}
                 >
                   Salva dati inseriti
+                </button>
+                <button className="btn btn-secondary" onClick={resetPage}>
+                  Cancella
                 </button>
               </div>
             </div>

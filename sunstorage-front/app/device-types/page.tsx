@@ -8,7 +8,6 @@ import "../globals.css";
 import "./style.css";
 import apiendpoint from "../../../apiendpoint";
 import { withAuth } from "../../../src/server/middleware/withAuth";
-import axios from "axios";
 
 interface Devicetypes {
   id: number;
@@ -30,32 +29,53 @@ function Devicetypes() {
 
   // method to handle the deletion of a devicetypes from the db
   const handleDelete = (id: number) => {
-    if (window.confirm("Sei sicuro di eliminare il tipo di device?")) {
-      if (
-        window.confirm(
-          "Quando elimini un tipo di device tutti i device di quel tipo vengono eliminati sei sicuro? L'azione è irreversibile!"
-        )
-      ) {
-        fetch(`http://localhost:4000/api/devicetypes/${id}`, {
-          method: "DELETE",
-          credentials: "include",
-        })
-          .then((res) => {
-            if (res.status === 204) {
-              alert("Eliminazione eseguita con successo");
-              setDeviceTypes(
-                devicetypes.filter((devicetypes) => devicetypes.id !== id)
-              );
-            } else {
-              alert("Errore durante l'eliminazione del tipo di device.");
-            }
+    // Controllo per dispositivi assegnati
+    fetch(`${apiendpoint}api/devicetypes/${id}/devices`, {
+      method: "GET",
+      credentials: "include",
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Network response was not ok");
+        return res.json();
+      })
+      .then((data) => {
+        if (data.length > 0) {
+          // Se ci sono dispositivi assegnati, mostra un messaggio di errore
+          alert(
+            "Questo Tipo di dispositivo ha almeno 1 dispositivo assegnato, non può essere cancellato."
+          );
+          return; // Interrompe l'eliminazione
+        }
+
+        // Prima conferma per l'eliminazione
+        if (window.confirm("Sei sicuro di eliminare il tipo di device?")) {
+          fetch(`http://localhost:4000/api/devicetypes/${id}`, {
+            method: "DELETE",
+            credentials: "include",
           })
-          .catch((error) => {
-            console.error("Errore:", error);
-            alert("Errore durante l'eliminazione del tipo di device.");
-          });
-      }
-    }
+            .then((res) => {
+              if (res.status === 204) {
+                alert("Eliminazione eseguita con successo");
+                setDeviceTypes(
+                  devicetypes.filter((devicetype) => devicetype.id !== id)
+                );
+              } else {
+                alert("Errore durante l'eliminazione del tipo di device.");
+              }
+            })
+            .catch((error) => {
+              console.error("Errore durante l'eliminazione:", error);
+              alert("Errore durante l'eliminazione del tipo di device.");
+            });
+        }
+      })
+      .catch((error) => {
+        console.error(
+          "Errore durante il controllo dei dispositivi assegnati:",
+          error
+        );
+        alert("Errore durante il controllo dei dispositivi assegnati.");
+      });
   };
 
   if (!devicetypes) {
@@ -72,33 +92,33 @@ function Devicetypes() {
             <div className="col-12 bg-content p-3 p-md-5">
               <div className="d-flex mb-3">
                 <a className="btn btn-dark" href="/device-types/create">
-                  Add a Device Type
+                  Aggiungi un tipo di dispositivo
                 </a>
               </div>
               <div className="table-responsive">
                 <table className="table">
                   <thead>
                     <tr>
-                      <th scope="col">Device type Name</th>
-                      <th scope="col">Actions</th>
+                      <th scope="col">Tipo di dispositivo</th>
+                      <th scope="col">Azioni</th>
                     </tr>
                   </thead>
                   <tbody className="table-group-divider">
-                    {devicetypes.map((devicetypes) => (
-                      <tr key={devicetypes.id}>
-                        <td scope="row">{devicetypes.name}</td>
+                    {devicetypes.map((devicetype) => (
+                      <tr key={devicetype.id}>
+                        <td scope="row">{devicetype.name}</td>
                         <td>
                           <a
                             className="btn btn-warning m-1"
-                            href={`/device-types/update?id=${devicetypes.id}`}
+                            href={`/device-types/update?id=${devicetype.id}`}
                           >
-                            Edit
+                            Modifica
                           </a>
                           <button
                             className="btn btn-danger m-1"
-                            onClick={() => handleDelete(devicetypes.id)}
+                            onClick={() => handleDelete(devicetype.id)}
                           >
-                            Delete
+                            Elimina
                           </button>
                         </td>
                       </tr>

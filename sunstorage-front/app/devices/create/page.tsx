@@ -271,7 +271,7 @@ function AddDevice() {
           <Menu />
           <div className="col-12 col-md-8 nav-container mt-3 mt-md-0">
             <div className="col-12 bg-content p-5">
-              <p>Aggiungi Dispositivo</p>
+              <h2>Aggiungi Dispositivo</h2>
               <div className="spacer"></div>
               <div className="add-device-data">
                 {!isMultipleDevices && (

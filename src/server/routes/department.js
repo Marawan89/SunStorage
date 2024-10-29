@@ -97,22 +97,21 @@ router.delete("/:id", async (req, res) => {
     );
 
     if (users.length > 0) {
-      // get all Devices assigned to these users
+      // Check if any users have assigned devices
       const userIds = users.map((user) => user.id);
-      const [devices] = await pool.query(
+      const [assignedDevices] = await pool.query(
         "SELECT DISTINCT device_id FROM deviceassignments WHERE user_id IN (?)",
         [userIds]
       );
 
-      // update the status of Devices assigned to these users
-      if (devices.length > 0) {
-        const pcIds = devices.map((pc) => pc.device_id);
-        await pool.query("UPDATE devices SET status = 'free' WHERE id IN (?)", [
-          pcIds,
-        ]);
+      if (assignedDevices.length > 0) {
+        return res.status(400).json({
+          error:
+            "Questo reparto contiene almeno una persona a cui è assegnato un dispositivo, quindi non può essere cancellato.",
+        });
       }
 
-      // delete users in the department
+      // If no devices are assigned, you can proceed to delete users
       await pool.query("DELETE FROM users WHERE department_id = ?", [id]);
     }
 

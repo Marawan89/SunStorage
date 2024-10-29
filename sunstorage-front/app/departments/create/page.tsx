@@ -114,6 +114,10 @@ function CreateDepartment() {
     }
   };
 
+  const resetPage = () => {
+    window.location.href = "/departments";
+  };
+
   return (
     <>
       <Navbar />
@@ -122,8 +126,9 @@ function CreateDepartment() {
           <Menu />
           <div className="col-12 col-md-8 nav-container mt-3 mt-md-0 p-0">
             <div className="col-12 bg-content p-3 p-md-5">
-              <h3>Aggiungi un reparto</h3>
-              Inserisci il nome del reparto
+              <h2>Aggiungi un reparto</h2>
+              <div className="spacer"></div>
+              Nome del reparto
               <input
                 type="text"
                 name="department_name"
@@ -131,7 +136,6 @@ function CreateDepartment() {
                 value={departmentName}
                 onChange={(e) => setDepartmentName(e.target.value)}
               />
-
               {/* Elenco degli utenti aggiunti */}
               {users.map((user, index) => (
                 <div key={index} className="mt-4 border p-3">
@@ -150,7 +154,6 @@ function CreateDepartment() {
                   </button>
                 </div>
               ))}
-
               {/* Form per aggiungere un nuovo utente */}
               {isUserFormVisible && (
                 <div className="mt-4 border p-3">
@@ -185,22 +188,27 @@ function CreateDepartment() {
                   </button>
                 </div>
               )}
-
-              <button
-                className="btn btn-light mt-3"
+            <div className="col-12 mt-3">
+            <button
+                className="btn btn-light"
                 type="button"
                 onClick={handleAddUserForm}
               >
                 Aggiungi un nuovo utente
               </button>
-
-              <div className="col-12 mt-3">
                 <button
                   type="submit"
-                  className="btn btn-success"
+                  className="btn btn-success m-2"
                   onClick={handleSaveDepartment}
                 >
                   Salva reparto
+                </button>
+                <button
+                  type="reset"
+                  className="btn btn-secondary"
+                  onClick={resetPage}
+                >
+                  Cancella
                 </button>
               </div>
             </div>

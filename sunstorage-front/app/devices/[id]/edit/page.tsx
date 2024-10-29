@@ -275,8 +275,9 @@ function EditDevice() {
           <Menu />
           <div className="col-12 col-md-8 nav-container mt-3 mt-md-0">
             <div className="col-12 bg-content p-5">
-              <p>Edit Device</p>
-              <div className="add-device-data">
+              <h2>Modifica Dispositivo</h2>
+              <div className="spacer"></div>
+              <div className="edit-device-data">
                 <p>Serial number</p>
                 <input
                   className="form-control"
@@ -286,7 +287,7 @@ function EditDevice() {
                   placeholder="Enter serial number"
                   required
                 />
-                <p>Device Type</p>
+                <p>Tipo del dispositivo</p>
                 <select
                   className="form-select"
                   onChange={(e) => setSelectedDeviceType(e.target.value)}
@@ -340,7 +341,7 @@ function EditDevice() {
                 ))}
                 <div>
                   <label>
-                    Has warranty?
+                    <p>Ha la garanzia</p>
                     <div className="form-check form-switch">
                       <input
                         className="form-check-input"
@@ -354,14 +355,14 @@ function EditDevice() {
                 </div>
                 {hasWarranty && (
                   <div className="form-group">
-                    <p>Warranty start date:</p>
+                    <p>Data inizio</p>
                     <input
                       className="form-control"
                       type="date"
                       value={warrantyStart}
                       onChange={(e) => setWarrantyStart(e.target.value)}
                     />
-                    <p>Warranty end date:</p>
+                    <p>Data fine</p>
                     <input
                       className="form-control"
                       type="date"
@@ -374,18 +375,14 @@ function EditDevice() {
               </div>
               <div className="form-btns d-flex flex-md-row justify-content-end align-items-center">
                 <button className="cl-btn" type="reset">
-                  Cancel
+                  Cancella
                   <FontAwesomeIcon
                     className="btn-icon"
                     icon={faCancel}
                   ></FontAwesomeIcon>
                 </button>
-                <button
-                  className="sbmt-btn"
-                  type="button"
-                  onClick={submit}
-                >
-                  Update Device
+                <button className="sbmt-btn" type="button" onClick={submit}>
+                  Aggiorna Dati
                   <FontAwesomeIcon
                     className="btn-icon"
                     icon={faArrowRight}
@@ -398,6 +395,6 @@ function EditDevice() {
       </div>
     </>
   );
-};
+}
 
 export default withAuth(EditDevice);

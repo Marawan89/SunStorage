@@ -286,9 +286,7 @@ function AddDevice() {
                   </>
                 )}
 
-                <p>
-                  Dispositivi multipli?
-                </p>
+                <p>Dispositivi multipli?</p>
                 <div className="form-check form-switch">
                   <input
                     className="form-check-input"
@@ -438,6 +436,7 @@ function AddDevice() {
                   <FontAwesomeIcon
                     className="btn-icon"
                     icon={faCancel}
+                    onClick={redirectDevices}
                   ></FontAwesomeIcon>
                 </button>
                 <button className="sbmt-btn" type="button" onClick={submit}>

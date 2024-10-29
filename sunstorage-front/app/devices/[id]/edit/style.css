@@ -1,6 +1,16 @@
-input,
+.edit-device-data input,
 select {
   color: #000;
+  border: none;
+  border-radius: 10px;
+  padding: 8px;
+  width: 50% !important;
+  margin-bottom: 7px;
+}
+
+.edit-device-data p {
+  font-size: 20px;
+  margin: 0; 
 }
 
 .form-btns button {
@@ -38,5 +48,5 @@ select {
 }
 
 .form-btns {
-   margin-top: 50px;
- }
+  margin-top: 50px;
+}

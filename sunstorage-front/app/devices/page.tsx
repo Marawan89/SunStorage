@@ -216,7 +216,7 @@ function Devices() {
     end_date: string | null
   ) => {
     if (!start_date || !end_date) {
-      return "Not available";
+      return "Non Disponibile";
     }
 
     const currentDate = new Date();
@@ -379,9 +379,9 @@ function Devices() {
                       onChange={(e) => setDeviceWarrantyFilter(e.target.value)}
                     >
                       <option value="">Stato garanzia...</option>
-                      <option value="Valid">Valid</option>
-                      <option value="Expired">Expired</option>
-                      <option value="Not available">Not available</option>
+                      <option value="Valid">Valida</option>
+                      <option value="Expired">Scaduta</option>
+                      <option value="Not available">Non disponibile</option>
                     </select>
                     <button
                       className="btn btn-primary ms-2"
@@ -393,7 +393,7 @@ function Devices() {
                   </div>
                 </div>
               </div>
-              <div className="table">
+              <div className="table-responsive">
                 <table className="table">
                   <thead>
                     <tr>

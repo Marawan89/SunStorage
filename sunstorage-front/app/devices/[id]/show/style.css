@@ -1,4 +1,100 @@
+h2 {
+  color: #333;
+  font-size: 2.5em;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.list-group-item {
+  border: none;
+  padding: 15px 20px;
+  margin-bottom: 5px;
+  background-color: #fff;
+  border-radius: 8px;
+  color: #333;
+  font-size: 1.1em;
+}
+
+.list-group-item.disabled {
+  background-color: #acac47 !important;
+  font-weight: bold;
+  font-size: 1.2em;
+  color: white !important;
+}
+
+strong {
+  color: #444;
+  font-weight: 600;
+}
+
+#qr-code {
+  text-align: center;
+  padding: 20px;
+}
+
+#qr-code img {
+  width: 200px;
+  height: 200px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #fff;
+}
+
 .scrollable-logs {
   max-height: 200px;
   overflow-y: auto;
+  margin-top: 10px;
+  background-color: #f7f7f7;
+  border-radius: 8px;
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+.btn-outline-dark {
+  background-color: #333;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1em;
+  font-weight: bold;
+  transition: background-color 0.3s;
+  margin-top: 20px;
+}
+
+.btn-outline-dark:hover {
+  background-color: #555;
+  color: #fff;
+}
+
+/* Device assignment information styling */
+.device-assignment-info {
+  background-color: #eef2f7;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+
+  h2 {
+    font-size: 1.5em !important;
+  }
+
+  .list-group-item {
+    font-size: 1em;
+  }
+
+  .btn-outline-dark {
+    width: 100%;
+  }
+
+  #qr-code img {
+    width: 150px;
+    height: 150px;
+  }
 }

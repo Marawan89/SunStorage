@@ -91,10 +91,10 @@ function ViewDevice() {
               <h2 style={{ fontSize: "2em" }}>S/N: {device.sn}</h2>
               <ul className="list-group">
                 <li className="list-group-item disabled">
-                  <strong>{device.device_type_name} specifics:</strong>
+                  <strong>Scheda del dispositivo di tipo: {device.device_type_name}</strong>
                 </li>
                 <li className="list-group-item">
-                  <strong>Status:</strong> {device.status}
+                  <strong>Stato:</strong> {device.status}
                 </li>
                 {device.devicespecifics.map((devicespecific, index) => (
                   <li key={index} className="list-group-item">
@@ -107,21 +107,21 @@ function ViewDevice() {
                 device.devicewarranty.end_date ? (
                   <>
                     <li className="list-group-item">
-                      <strong>Warranty Start Date:</strong>{" "}
+                    <strong>Data inizio garanzia: </strong>
                       {new Date(
                         device.devicewarranty.start_date
                       ).toLocaleDateString()}
                     </li>
                     <li className="list-group-item">
-                      <strong>Warranty End Date:</strong>{" "}
-                      {new Date(
+                    <strong>Data fine garanzia: </strong>
+                    {new Date(
                         device.devicewarranty.end_date
                       ).toLocaleDateString()}
                     </li>
                   </>
                 ) : (
                   <li className="list-group-item">
-                    <strong>Warranty not available</strong>
+                    <strong>Garanzia non disponibile</strong>
                   </li>
                 )}
                 <li className="list-group-item" id="qr-code">

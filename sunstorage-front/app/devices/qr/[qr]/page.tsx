@@ -110,7 +110,7 @@ function QrCodePage() {
           "Are you sure you want to dismiss this device?"
         );
         if (!confirmDelete) return;
-        alert("Device dismissed successfully")
+        alert("Device dismissed successfully");
         window.location.reload();
       } else {
         console.error("Error dismissing the device");
@@ -187,32 +187,34 @@ function QrCodePage() {
             </div>
             <ul className="list-group">
               <li className="list-group-item disabled">
-                {device.device_type_name} specifics:
+                <strong>
+                  Scheda del dispositivo di tipo: {device.device_type_name}
+                </strong>
               </li>
-              <li className="list-group-item">Status: {device.status}</li>
+              <li className="list-group-item"><strong>Stato:</strong> {device.status}</li>
               {device.devicespecifics.map((devicespecific, index) => (
                 <li key={index} className="list-group-item">
-                  {devicespecific.input_label} : {devicespecific.value}
+                  <strong>{devicespecific.input_label}</strong> : {devicespecific.value}
                 </li>
               ))}
               {device.devicewarranty.start_date &&
               device.devicewarranty.end_date ? (
                 <>
                   <li className="list-group-item">
-                    Warranty Start Date:{" "}
+                    <strong>Data inizio garanzia: </strong>
                     {new Date(
                       device.devicewarranty.start_date
                     ).toLocaleDateString()}
                   </li>
                   <li className="list-group-item">
-                    Warranty End Date:{" "}
+                  <strong>Data fine garanzia: </strong>
                     {new Date(
                       device.devicewarranty.end_date
                     ).toLocaleDateString()}
                   </li>
                 </>
               ) : (
-                <li className="list-group-item">Warranty not available</li>
+                <li className="list-group-item"><strong>Garanzia non disponibile</strong></li>
               )}
               {device.status === "assigned" && (
                 <>
@@ -241,14 +243,17 @@ function QrCodePage() {
                 </ul>
               </li>
             </ul>
-            <div className="d-flex justify-content-between align-items-center">
+            <div className="d-flex justify-content-between align-items-center mt-3">
               {device.status === "free" && (
                 <>
-                  <button className="p-3 btn btn-info" onClick={assignDevice}>
+                  <button
+                    className="p-3 btn btn-secondary"
+                    onClick={assignDevice}
+                  >
                     Assegna (status: assigned)
                   </button>
                   <button
-                    className="p-3 btn btn-success"
+                    className="p-3 btn btn-secondary"
                     onClick={repairDevice}
                   >
                     Manda in riparazione (status: under repair)
@@ -263,11 +268,14 @@ function QrCodePage() {
               )}
               {device.status === "assigned" && (
                 <>
-                  <button className="p-3 btn btn-primary" onClick={freeDevice}>
+                  <button
+                    className="p-3 btn btn-secondary"
+                    onClick={freeDevice}
+                  >
                     Rientra (status: free)
                   </button>
                   <button
-                    className="p-3 btn btn-success"
+                    className="p-3 btn btn-secondary"
                     onClick={repairDevice}
                   >
                     Manda in riparazione (status: under repair)
@@ -282,10 +290,16 @@ function QrCodePage() {
               )}
               {device.status === "under repair" && (
                 <>
-                  <button className="p-3 btn btn-info" onClick={assignDevice}>
+                  <button
+                    className="p-3 btn btn-secondary"
+                    onClick={assignDevice}
+                  >
                     Assegna (status: assigned)
                   </button>
-                  <button className="p-3 btn btn-primary" onClick={freeDevice}>
+                  <button
+                    className="p-3 btn btn-secondary"
+                    onClick={freeDevice}
+                  >
                     Rientra (status: free)
                   </button>
                   <button
@@ -299,12 +313,15 @@ function QrCodePage() {
               {device.status === "dismissed" && (
                 <>
                   <button
-                    className="p-3 btn btn-success"
+                    className="p-3 btn btn-secondary"
                     onClick={repairDevice}
                   >
                     Manda in riparazione (status: under repair)
                   </button>
-                  <button className="p-3 btn btn-primary" onClick={freeDevice}>
+                  <button
+                    className="p-3 btn btn-secondary"
+                    onClick={freeDevice}
+                  >
                     Rientra (status: free)
                   </button>
                 </>

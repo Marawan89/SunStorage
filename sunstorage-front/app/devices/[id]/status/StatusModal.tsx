@@ -201,7 +201,7 @@ export default function StatusModal({
                         Manda in riparazione (status: under repair)
                       </button>
                       <button
-                        className="p-2 btn btn-danger mb-2"
+                        className="p-2 btn btn-outline-danger mb-2"
                         onClick={dismissDevice}
                       >
                         Dismetti (status: dismissed)
@@ -217,7 +217,7 @@ export default function StatusModal({
                         Rientra (status: free)
                       </button>
                       <button
-                        className="p-2 btn btn-danger mb-2"
+                        className="p-2 btn btn-outline-danger mb-2"
                         onClick={dismissDevice}
                       >
                         Dismetti (status: dismissed)

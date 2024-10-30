@@ -110,3 +110,33 @@ a {
     font-size: 20px;
   }
 }
+
+@media (min-width: 1600px) {
+   .logo-dashboard {
+     font-size: 150px;
+   }
+ 
+   .userText-dashboard p {
+     font-size: 40px;
+   }
+ 
+   .search-emoji {
+     font-size: 1.5rem; 
+   }
+ 
+   .search-input,
+   .search-input:active,
+   .search-input:focus {
+     height: 70px;
+     font-size: 1.25rem;
+   }
+ 
+   .search-button {
+     font-size: 1.25rem;
+     padding: 1rem 2rem;
+   }
+ 
+   .text-center p {
+     font-size: 1.5rem; 
+   }
+ }

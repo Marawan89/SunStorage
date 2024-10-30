@@ -38,6 +38,18 @@ router.get("/totalDeviceTypes", async (req, res) => {
   }
 });
 
+// Route per contare il numero totale di devices
+router.get("/totalDevices", async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      "SELECT COUNT(*) as totalDevices FROM devices"
+    );
+    res.json(rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Route per contare i devices con garanzia scaduta e stato non dismissed
 router.get("/expiredWarrantyDevices", async (req, res) => {
   try {
@@ -52,14 +64,14 @@ router.get("/expiredWarrantyDevices", async (req, res) => {
 
 // Route per contare i devices con garanzia valida che possono essere assegnati a qualcuno
 router.get("/validWarrantyDevices", async (req, res) => {
-   try {
-     const [rows] = await pool.query(
-       "SELECT COUNT(*) AS validWarrantyDevices FROM devicewarranties JOIN devices ON devices.id = devicewarranties.device_id WHERE devicewarranties.end_date > CURRENT_DATE AND devices. STATUS = 'free';"
-     );
-     res.json(rows[0]);
-   } catch (error) {
-     res.status(500).json({ error: error.message });
-   }
- });
+  try {
+    const [rows] = await pool.query(
+      "SELECT COUNT(*) AS validWarrantyDevices FROM devicewarranties JOIN devices ON devices.id = devicewarranties.device_id WHERE devicewarranties.end_date > CURRENT_DATE AND devices. STATUS = 'free';"
+    );
+    res.json(rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 module.exports = router;

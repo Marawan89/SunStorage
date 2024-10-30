@@ -1,8 +1,40 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap");
+
+.bento-box {
+   cursor: pointer;
+ }
+
+@media (min-width: 768px) and (max-width: 1599px) {
+  .bento-title,
+  .bento-number {
+    font-family: "Montserrat", sans-serif;
+    text-align: center;
+    color: #333;
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .bento-number {
+    font-size: 3rem;
+  }
+}
 
 @media (max-width: 767px) {
+  .bento-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .bento-number {
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1.1;
+  }
   .bento-title {
     font-size: 10px;
   }
@@ -12,9 +44,9 @@
   }
 
   .bento-box {
-    padding: 0.5rem; 
-    width: 100%;  
-    height: auto; 
+    padding: 0.5rem;
+    width: 100%;
+    height: auto;
   }
 
   .bento-box-large {
@@ -23,10 +55,7 @@
   }
 
   .grid-cols-3 {
-    grid-template-columns: repeat(
-      2,
-      minmax(0, 1fr)
-    ); 
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .lg\\:hidden {
@@ -34,11 +63,23 @@
   }
 
   .bento-box {
-    height: 100px; 
+    height: 100px;
   }
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1600px) {
+  .bento-title,
+  .bento-number {
+    font-family: "Montserrat", sans-serif;
+    line-height: 1.2 !important;
+  }
+  .bento-title {
+    font-size: 5rem !important;
+  }
+
+  .bento-number {
+    font-size: 6rem !important;
+  }
   .lg\\:hidden {
     display: none;
   }

@@ -191,10 +191,13 @@ function QrCodePage() {
                   Scheda del dispositivo di tipo: {device.device_type_name}
                 </strong>
               </li>
-              <li className="list-group-item"><strong>Stato:</strong> {device.status}</li>
+              <li className="list-group-item">
+                <strong>Stato:</strong> {device.status}
+              </li>
               {device.devicespecifics.map((devicespecific, index) => (
                 <li key={index} className="list-group-item">
-                  <strong>{devicespecific.input_label}</strong> : {devicespecific.value}
+                  <strong>{devicespecific.input_label}</strong> :{" "}
+                  {devicespecific.value}
                 </li>
               ))}
               {device.devicewarranty.start_date &&
@@ -207,26 +210,30 @@ function QrCodePage() {
                     ).toLocaleDateString()}
                   </li>
                   <li className="list-group-item">
-                  <strong>Data fine garanzia: </strong>
+                    <strong>Data fine garanzia: </strong>
                     {new Date(
                       device.devicewarranty.end_date
                     ).toLocaleDateString()}
                   </li>
                 </>
               ) : (
-                <li className="list-group-item"><strong>Garanzia non disponibile</strong></li>
+                <li className="list-group-item">
+                  <strong>Garanzia non disponibile</strong>
+                </li>
               )}
               {device.status === "assigned" && (
                 <>
                   <li className="list-group-item">
-                    Name owner: {device.deviceassignments[0]?.name}{" "}
+                    <strong> Nome proprietario:</strong>{" "}
+                    {device.deviceassignments[0]?.name}{" "}
                     {device.deviceassignments[0]?.surname}
                   </li>
                   <li className="list-group-item">
-                    Email owner: {device.deviceassignments[0]?.email}
+                    <strong>Email proprietario:</strong>{" "}
+                    {device.deviceassignments[0]?.email}
                   </li>
                   <li className="list-group-item">
-                    Owner department:{" "}
+                      <strong>Reparto proprietario:</strong>{" "}
                     {device.deviceassignments[0]?.department_name}
                   </li>
                 </>

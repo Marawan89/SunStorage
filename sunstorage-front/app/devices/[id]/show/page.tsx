@@ -91,7 +91,9 @@ function ViewDevice() {
               <h2 style={{ fontSize: "2em" }}>S/N: {device.sn}</h2>
               <ul className="list-group">
                 <li className="list-group-item disabled">
-                  <strong>Scheda del dispositivo di tipo: {device.device_type_name}</strong>
+                  <strong>
+                    Scheda del dispositivo di tipo: {device.device_type_name}
+                  </strong>
                 </li>
                 <li className="list-group-item">
                   <strong>Stato:</strong> {device.status}
@@ -107,14 +109,14 @@ function ViewDevice() {
                 device.devicewarranty.end_date ? (
                   <>
                     <li className="list-group-item">
-                    <strong>Data inizio garanzia: </strong>
+                      <strong>Data inizio garanzia: </strong>
                       {new Date(
                         device.devicewarranty.start_date
                       ).toLocaleDateString()}
                     </li>
                     <li className="list-group-item">
-                    <strong>Data fine garanzia: </strong>
-                    {new Date(
+                      <strong>Data fine garanzia: </strong>
+                      {new Date(
                         device.devicewarranty.end_date
                       ).toLocaleDateString()}
                     </li>
@@ -132,16 +134,16 @@ function ViewDevice() {
                 {device.status === "assigned" && (
                   <>
                     <li className="list-group-item">
-                      <strong> Name owner:</strong>{" "}
-                      {device.deviceassignments[0].name}{" "}
+                      <strong> Nome proprietario:</strong>
+                      {device.deviceassignments[0].name}
                       {device.deviceassignments[0].surname}
                     </li>
                     <li className="list-group-item">
-                      <strong>Email owner:</strong>{" "}
+                      <strong>Email proprietario:</strong>
                       {device.deviceassignments[0].email}
                     </li>
                     <li className="list-group-item">
-                      <strong>Owner department:</strong>{" "}
+                      <strong>Reparto proprietario:</strong>
                       {device.deviceassignments[0].department_name}
                     </li>
                   </>
@@ -158,8 +160,11 @@ function ViewDevice() {
                   </ul>
                 </li>
               </ul>
-              <button className="btn btn-outline-dark mt-4" onClick={printQRCode}>
-                Print QR Code
+              <button
+                className="btn btn-outline-dark mt-4"
+                onClick={printQRCode}
+              >
+                Stampa codice QR
               </button>
             </div>
           </div>

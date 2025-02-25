@@ -25,6 +25,18 @@ type DeviceCount = {
 
 const COLORS = ["#FFA500", "#FFD700", "#FFFFFF", "#FF8C00"];
 
+const CustomTooltip = ({ active, payload, label }: any) => {
+   if (active && payload && payload.length) {
+     return (
+       <div className="custom-tooltip bg-white p-3 border border-gray-200 rounded shadow-lg">
+         <p className="label font-bold">{`${label}`}</p>
+         <p className="value text-orange-600">{`Count: ${payload[0].value}`}</p>
+       </div>
+     );
+   }
+   return null;
+ };
+
 export default function BentoMenu() {
   const [totalDevices, settotalDevices] = useState(0);
   const [totalUnderRepairDevices, setTotalUnderRepairDevices] = useState(0);
@@ -226,7 +238,7 @@ export default function BentoMenu() {
                   <BarChart data={warrantyData}>
                     <XAxis dataKey="name" fontSize={10} />
                     <YAxis fontSize={10} />
-                    <Tooltip />
+                    <Tooltip content={<CustomTooltip />} />
                     <Bar
                       dataKey="value"
                       fill={COLORS[2]}
@@ -257,7 +269,7 @@ export default function BentoMenu() {
                   interval={0}
                 />
                 <YAxis fontSize={10} />
-                <Tooltip />
+                <Tooltip content={<CustomTooltip />} />
                 <Bar
                   dataKey="count"
                   fill={COLORS[2]}

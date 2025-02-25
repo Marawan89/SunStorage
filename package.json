@@ -3,6 +3,7 @@
     "@camped-ui/bento-grid": "^1.0.1",
     "@tabler/icons-react": "^3.14.0",
     "axios": "^1.7.2",
+    "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
     "bootstrap": "^5.3.3",
@@ -19,6 +20,7 @@
     "next": "^14.2.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "recharts": "^2.15.1",
     "tailwind-merge": "^2.5.2",
     "tailwindcss": "^3.4.10"
   }

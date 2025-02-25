@@ -135,10 +135,10 @@ function Dashboard() {
             {admin.role === "ADMIN_FULL" && (
               <>
                 <Dropdown.Item onClick={handleShowCreateAdminModal}>
-                  Create new admin
+                  Crea nuovo Admin
                 </Dropdown.Item>
                 <Dropdown.Item onClick={handleShowAdminsListModal}>
-                  Admins
+                  Lista Admin
                 </Dropdown.Item>
               </>
             )}
@@ -165,7 +165,7 @@ function Dashboard() {
               onClick={handleSearchClick}
               onChange={handleSearchInputChange}
             />
-            <button className="search-button">search ✨</button>
+            <button className="search-button">cerca ✨</button>
           </div>
           {showActions && (
             <div className="actions-menu position-absolute start-50 translate-middle-x w-50 p-3 shadow-lg bg-light rounded">
@@ -186,17 +186,17 @@ function Dashboard() {
                 {!isSearchingSN ? (
                   <>
                     <li className="list-group-item">
-                      <a href="/devices/create">➕ Add new device</a>
+                      <a href="/devices/create">➕ Aggiungi nuovo dispositivo</a>
                     </li>
                     <li className="list-group-item">
-                      <a href="/devices">💻 View all devices</a>
+                      <a href="/devices">💻 Visualizza tutti i dispositivi</a>
                     </li>
                     <li className="list-group-item">
-                      <a href="/departments">👥 View departments</a>
+                      <a href="/departments">👥 Visualizza reparto</a>
                     </li>
                     {admin.role === "ADMIN_FULL" && (
                       <li className="list-group-item">
-                        <a href="/device-types">📱 View Device Types</a>
+                        <a href="/device-types">📱 Visualizza i tipi di dispositivi</a>
                       </li>
                     )}
                   </>

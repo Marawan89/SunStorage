@@ -10,10 +10,10 @@ import apiendpoint from "../../../apiendpoint";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);  
   const router = useRouter();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
 
     try {
@@ -26,7 +26,7 @@ export default function Login() {
 
     } catch (err) {
       // Se ci sono errori, mostra un messaggio all'utente
-      setError("Invalid credentials");
+      setError("Credenziali errate");
     }
   };
 

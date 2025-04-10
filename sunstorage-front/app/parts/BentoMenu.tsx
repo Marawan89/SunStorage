@@ -26,16 +26,16 @@ type DeviceCount = {
 const COLORS = ["#FFA500", "#FFD700", "#FFFFFF", "#FF8C00"];
 
 const CustomTooltip = ({ active, payload, label }: any) => {
-   if (active && payload && payload.length) {
-     return (
-       <div className="custom-tooltip bg-white p-3 border border-gray-200 rounded shadow-lg">
-         <p className="label font-bold">{`${label}`}</p>
-         <p className="value text-orange-600">{`Count: ${payload[0].value}`}</p>
-       </div>
-     );
-   }
-   return null;
- };
+  if (active && payload && payload.length) {
+    return (
+      <div className="custom-tooltip bg-white p-3 border border-gray-200 rounded shadow-lg">
+        <p className="label font-bold">{`${label}`}</p>
+        <p className="value text-orange-600">{`Count: ${payload[0].value}`}</p>
+      </div>
+    );
+  }
+  return null;
+};
 
 export default function BentoMenu() {
   const [totalDevices, settotalDevices] = useState(0);
@@ -253,11 +253,11 @@ export default function BentoMenu() {
         </div>
 
         {/* Seconda riga */}
-        <div className="bento-box col-span-3 lg:col-span-2 row-span-1 rounded-xl bg-gradient-to-t from-yellow-300 via-white-200 to-orange-500 p-2">
-          <p className="bento-title font-bold text-center mb-4 mt-2">
+        <div className="bento-box col-span-3 lg:col-span-2 row-span-1 rounded-xl bg-gradient-to-t from-yellow-300 via-white-200 to-orange-500 p-2 flex flex-col">
+          <p className="bento-title font-bold text-center text-xl mb-1">
             Distribuzione per tipo
           </p>
-          <div className="h-48">
+          <div className="flex-grow">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={deviceCounts}>
                 <XAxis
@@ -303,9 +303,7 @@ export default function BentoMenu() {
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={[
-                    { name: "Totale", value: totalDevices },
-                  ]}
+                  data={[{ name: "Totale", value: totalDevices }]}
                   innerRadius={60}
                   outerRadius={80}
                   startAngle={90}

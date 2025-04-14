@@ -22,7 +22,7 @@ export default function Login() {
       
       // Se la risposta è positiva, reindirizza l'utente
       alert("Login successo");
-      router.push("/");
+      router.push("/dashboard");
 
     } catch (err) {
       // Se ci sono errori, mostra un messaggio all'utente

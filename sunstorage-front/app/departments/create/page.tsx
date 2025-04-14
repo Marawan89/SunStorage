@@ -61,6 +61,11 @@ function CreateDepartment() {
     setNewUser({ ...newUser, [field]: e.target.value });
   };
 
+  const handleCancelNewUserForm = () => {
+   setIsUserFormVisible(false);
+   setNewUser({ name: "", surname: "", email: "" });
+ };
+
   const handleSaveDepartment = async () => {
     if (!departmentName) {
       alert("Il nome del dipartimento non può essere vuoto.");
@@ -138,7 +143,7 @@ function CreateDepartment() {
               />
               {/* Elenco degli utenti aggiunti */}
               {users.map((user, index) => (
-                <div key={index} className="mt-4 border p-3">
+                <div key={index} className="mt-4 border border-3 border-white p-3">
                   <p>
                     <strong>
                       {user.name} {user.surname}
@@ -156,7 +161,7 @@ function CreateDepartment() {
               ))}
               {/* Form per aggiungere un nuovo utente */}
               {isUserFormVisible && (
-                <div className="mt-4 border p-3">
+                <div className="mt-4 border border-3 border-white p-3">
                   <h5>Aggiungi un nuovo utente</h5>
                   Nome
                   <input
@@ -185,6 +190,12 @@ function CreateDepartment() {
                     onClick={handleSaveUser}
                   >
                     Salva utente
+                  </button>
+                  <button
+                    className="btn btn-secondary m-2"
+                    onClick={handleCancelNewUserForm}
+                  >
+                    Cancella
                   </button>
                 </div>
               )}

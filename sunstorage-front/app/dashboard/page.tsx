@@ -4,14 +4,14 @@ import { Dropdown, DropdownButton } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleUser } from "@fortawesome/free-solid-svg-icons";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./globals.css";
+import "../globals.css";
 import "./style.css";
-import "./parts/styleBento.css";
-import { withAuth } from "../../src/server/middleware/withAuth";
-import apiendpoint from "../../apiendpoint";
-import CreateAdminModal from "./parts/CreateAdminModal";
-import AdminsListModal from "./parts/AdminListModal";
-import BentoMenu from "./parts/BentoMenu";
+import "../parts/styleBento.css";
+import { withAuth } from "../../../src/server/middleware/withAuth";
+import apiendpoint from "../../../apiendpoint";
+import CreateAdminModal from "../parts/CreateAdminModal";
+import AdminsListModal from "../parts/AdminListModal";
+import BentoMenu from "../parts/BentoMenu";
 
 interface Device {
   id: number;

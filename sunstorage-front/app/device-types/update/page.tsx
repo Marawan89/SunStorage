@@ -17,6 +17,7 @@ interface InputField {
 }
 
 function UpdateDeviceType() {
+   
   const [name, setName] = useState("");
   const [id, setId] = useState<string | null>(null);
   const [inputs, setInputs] = useState<InputField[]>([]);
@@ -213,7 +214,7 @@ function UpdateDeviceType() {
                     onChange={(e) => setName(e.target.value)}
                   />
                   {inputs.map((input, index) => (
-                    <div key={index} className="mt-4 border p-3">
+                    <div key={index} className="mt-4 border border-3 border-white p-3">
                       Nome dell'input che sarà visibile nel db (es.
                       LAPTOP_DISK_TYPE)
                       <input

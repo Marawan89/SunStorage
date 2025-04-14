@@ -20,7 +20,7 @@ config.autoAddCss = false;
 
 export default function Menu() {
    const pathname = usePathname();
-   const isActive = (path: string) => pathname === path;
+   const isActive = (path: string) => pathname?.startsWith(path);
    const [admin, setAdmin] = useState({ role: "" });
   // fetch per ottenere i dati dell'admin loggato
   useEffect(() => {
@@ -43,7 +43,7 @@ export default function Menu() {
       <div className="col-12 col-md-11 bg-side-bar">
         <div className="d-flex flex-column align-items-start p-2">
           <button className="nav-item btn p-0 mb-2">
-            <a href="/" className={`d-flex align-items-center ${isActive("/") ? "active-link": "" } ` }>
+            <a href="/dashboard" className={`d-flex align-items-center ${isActive("/dashboard") ? "active-link": "" } ` }>
               <FontAwesomeIcon icon={faHouse} className="menuIcons mr-2" />
               <p className="mb-0">Dashboard</p>
             </a>

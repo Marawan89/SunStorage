@@ -165,7 +165,7 @@ function AddDevice() {
         const fieldValue = (
           document.getElementById(field.id) as HTMLInputElement
         )?.value;
-        if (!fieldValue || fieldValue === "Choose an option...") {
+        if (!fieldValue || fieldValue === "Scegli una opzione...") {
           alert(`Perfavore completa il campo ${field.input_label}`);
           return;
         }
@@ -358,7 +358,7 @@ function AddDevice() {
                         <>
                           <p>{input.input_label}:</p>
                           <select id={input.id} name={input.id} required>
-                            <option>Choose an option...</option>
+                            <option>Scegli un'opzione...</option>
                             {options.map((option: string) => (
                               <option value={option}>{option}</option>
                             ))}

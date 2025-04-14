@@ -177,7 +177,11 @@ function CreateDeviceTypes() {
                     onChange={(e) => setDeviceTypeName(e.target.value)}
                   />
                   {inputs.map((input, index) => (
-                    <div key={index} className="mt-4 border p-3">
+                    <div
+                      key={index}
+                      className="mt-4 border border-3 border-white p-3"
+                    >
+                      <h5>Aggiungi un nuovo input</h5>
                       Scrivere il nome dell'input che sarà visibile nel db (es.
                       LAPTOP_DISK_TYPE)
                       <input
@@ -268,11 +272,11 @@ function CreateDeviceTypes() {
                       )}
                       <div>
                         <button
-                          className="btn btn-danger mt-2"
+                          className="btn btn-secondary mt-2"
                           type="button"
                           onClick={() => handleRemoveInput(index)}
                         >
-                          Elimina input
+                          Cancella
                         </button>
                       </div>
                     </div>

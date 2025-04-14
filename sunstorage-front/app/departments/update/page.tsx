@@ -206,7 +206,7 @@ function UpdateDepartment() {
               />
               <h4 className="mt-4">Utenti nel reparto</h4>
               {users.map((user, index) => (
-                <div key={index} className="mt-4 border p-3">
+                <div key={index} className="mt-4 border border-3 border-white p-3">
                   <h5>Dati dell'utente</h5>
                   Nome
                   <input
@@ -238,7 +238,7 @@ function UpdateDepartment() {
                 </div>
               ))}
               {isUserFormVisible && (
-                <div className="mt-4 border p-3">
+                <div className="mt-4 border border-3 border-white p-3">
                   <h5>Aggiungi un nuovo utente</h5>
                   Nome
                   <input

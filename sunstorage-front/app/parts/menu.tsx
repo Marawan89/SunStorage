@@ -1,4 +1,7 @@
+'use client';
 import React, { useState, useEffect } from "react";
+import { usePathname } from 'next/navigation';
+// usePathname is a Client Component hook that lets you read the current URL's pathname.
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faLaptop,
@@ -16,7 +19,9 @@ import apiendpoint from "../../../apiendpoint";
 config.autoAddCss = false;
 
 export default function Menu() {
-  const [admin, setAdmin] = useState({ role: "" });
+   const pathname = usePathname();
+   const isActive = (path: string) => pathname === path;
+   const [admin, setAdmin] = useState({ role: "" });
   // fetch per ottenere i dati dell'admin loggato
   useEffect(() => {
     const fetchAdminData = async () => {
@@ -38,21 +43,21 @@ export default function Menu() {
       <div className="col-12 col-md-11 bg-side-bar">
         <div className="d-flex flex-column align-items-start p-2">
           <button className="nav-item btn p-0 mb-2">
-            <a href="/" className="d-flex align-items-center">
+            <a href="/" className={`d-flex align-items-center ${isActive("/") ? "active-link": "" } ` }>
               <FontAwesomeIcon icon={faHouse} className="menuIcons mr-2" />
               <p className="mb-0">Dashboard</p>
             </a>
           </button>
           <div className="spacer"></div>
           <button className="nav-item btn p-0 mb-2">
-            <a href="/devices" className="d-flex align-items-center">
+            <a href="/devices" className={`d-flex align-items-center ${isActive("/devices") ? "active-link": "" } ` }>
               <FontAwesomeIcon icon={faLaptop} className="menuIcons mr-2" />
               <p className="mb-0">Dispositivi</p>
             </a>
           </button>
           <div className="spacer"></div>
           <button className="nav-item btn p-0 mb-2">
-            <a href="/departments" className="d-flex align-items-center">
+            <a href="/departments" className={`d-flex align-items-center ${isActive("/departments") ? "active-link": "" } ` }>
               <FontAwesomeIcon icon={faUsers} className="menuIcons mr-2" />
               <p className="mb-0">Reparti</p>
             </a>
@@ -62,7 +67,7 @@ export default function Menu() {
               <div className="spacer"></div>
 
               <button className="nav-item btn p-0 mb-2">
-                <a href="/device-types" className="d-flex align-items-center">
+                <a href="/device-types" className={`d-flex align-items-center ${isActive("/device-types") ? "active-link": "" } ` }>
                   <FontAwesomeIcon
                     icon={faComputer}
                     className="menuIcons mr-2"

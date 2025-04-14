@@ -3,6 +3,10 @@ nav a .logo {
   text-decoration: underline;
 }
 
+.active-link p {
+  color: white;
+}
+
 .logo {
   font-weight: bold;
   font-family: "Inter", sans-serif;
@@ -74,6 +78,10 @@ nav a .logo {
 .menuIcons {
   width: 40px;
   margin-right: 8px;
+}
+
+.active-link .menuIcons {
+  color: white;
 }
 
 .admin-icons {

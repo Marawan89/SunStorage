@@ -14,10 +14,10 @@ interface InputField {
   type: string;
   values: string[];
   placeholder: string;
+  toDelete?: boolean;
 }
 
 function UpdateDeviceType() {
-   
   const [name, setName] = useState("");
   const [id, setId] = useState<string | null>(null);
   const [inputs, setInputs] = useState<InputField[]>([]);
@@ -87,6 +87,7 @@ function UpdateDeviceType() {
 
   const handleRemoveValue = (index: number, valueIndex: number) => {
     const updatedInputs = [...inputs];
+    updatedInputs[index].toDelete = true;
     updatedInputs[index].values = updatedInputs[index].values.filter(
       (_, i) => i !== valueIndex
     );
@@ -169,7 +170,10 @@ function UpdateDeviceType() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, inputs }),
+        body: JSON.stringify({
+          name,
+          inputs: inputs.filter((input) => !input.toDelete),
+        }),
         credentials: "include",
       })
         .then((res) => res.json())
@@ -214,7 +218,14 @@ function UpdateDeviceType() {
                     onChange={(e) => setName(e.target.value)}
                   />
                   {inputs.map((input, index) => (
-                    <div key={index} className="mt-4 border border-3 border-white p-3">
+                    <div
+                      key={index}
+                      className={`mt-4 border border-3 p-3 ${
+                        input.toDelete
+                          ? "bg-secondary text-white opacity-50"
+                          : "border-white"
+                      }`}
+                    >
                       Nome dell'input che sarà visibile nel db (es.
                       LAPTOP_DISK_TYPE)
                       <input
@@ -307,13 +318,27 @@ function UpdateDeviceType() {
                         </button>
                       )}
                       <div>
-                        <button
-                          className="btn btn-danger mt-2"
-                          type="button"
-                          onClick={() => handleRemoveInput(index)}
-                        >
-                          Elimina input
-                        </button>
+                        {!input.toDelete ? (
+                          <button
+                            className="btn btn-danger mt-2"
+                            type="button"
+                            onClick={() => handleRemoveInput(index)}
+                          >
+                            Elimina input
+                          </button>
+                        ) : (
+                          <button
+                            className="btn btn-warning mt-2"
+                            type="button"
+                            onClick={() => {
+                              const updatedInputs = [...inputs];
+                              updatedInputs[index].toDelete = false;
+                              setInputs(updatedInputs);
+                            }}
+                          >
+                            Annulla eliminazione
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}

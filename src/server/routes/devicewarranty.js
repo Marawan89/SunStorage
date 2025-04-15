@@ -57,7 +57,7 @@ try {
    if (result.affectedRows === 0) {
       return res.status(404).json({ error: "Device warranty not found" });
    }
-   await writeLog(id, "DEVICE_MODIFICATION", "Modifica della garanzia del dispositivo");
+   await writeLog(id, "DEVICE_EDITED", "Modifica della garanzia del dispositivo");
    res.json({ id, device_id, start_date, end_date });
 } catch (error) {
    res.status(400).json({ error: error.message });

@@ -234,24 +234,50 @@ router.get("/:id/details", async (req, res) => {
   }
 });
 
+const authMiddleware = require("../../server/middleware/authMiddleware");
+
 // route to update a device by id
-router.patch("/:id", async (req, res) => {
-const { id } = req.params;
-const { device_type_id, sn, qr_code_string } = req.body;
-try {
-   const [result] = await pool.query(
-      "UPDATE devices SET device_type_id = ?, sn = ?, qr_code_string = ? WHERE id = ?",
-      [device_type_id, sn, qr_code_string, id]
-   );
-   if (result.affectedRows === 0) {
-      return res.status(404).json({ error: "Device not found" });
+router.patch("/:id", authMiddleware, async (req, res) => {
+   const { id } = req.params;
+   const { device_type_id, sn, qr_code_string } = req.body;
+   const admin = req.user;
+ 
+   try {
+     // Recupera il device prima della modifica
+     const [existingRows] = await pool.query("SELECT * FROM devices WHERE id = ?", [id]);
+     if (existingRows.length === 0) {
+       return res.status(404).json({ error: "Device not found" });
+     }
+     const oldDevice = existingRows[0];
+ 
+     // Aggiorna il device
+     const [result] = await pool.query(
+       "UPDATE devices SET device_type_id = ?, sn = ?, qr_code_string = ? WHERE id = ?",
+       [device_type_id, sn, qr_code_string, id]
+     );
+ 
+     if (result.affectedRows === 0) {
+       return res.status(404).json({ error: "Device not updated" });
+     }
+ 
+     // Confronto campi modificati
+     let changes = [];
+     if (oldDevice.sn !== sn) changes.push("serial number");
+     if (oldDevice.qr_code_string !== qr_code_string) changes.push("QR code");
+     if (oldDevice.device_type_id !== device_type_id) changes.push("modello");
+ 
+     const changeDesc = changes.length > 0 ? `ha modificato ${changes.join(", ")}` : "nessuna modifica rilevata";
+ 
+     const adminFullName = `Admin_${admin.role} ${admin.name}`;
+ 
+     await writeLog(id, "DEVICE_EDITED", `${adminFullName} ${changeDesc}`);
+ 
+     res.json({ id, device_type_id, sn, qr_code_string });
+ 
+   } catch (error) {
+     res.status(400).json({ error: error.message });
    }
-   await writeLog(id, "DEVICE_MODIFICATION", "Modifica del dispositivo effettuata");
-   res.json({ id, device_type_id, sn, qr_code_string });
-} catch (error) {
-   res.status(400).json({ error: error.message });
-}
-});
+ });
 
 // route to delete a device by id
 router.delete("/:id", async (req, res) => {

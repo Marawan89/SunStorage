@@ -143,7 +143,7 @@ router.patch("/:id", async (req, res) => {
 
     await writeLog(
       id,
-      "DEVICE_MODIFICATION",
+      "DEVICE_EDITED",
       `Modifica del tipo di dispositivo: ${name}`
     );
     res.json({ message: "Device type updated successfully" });

@@ -98,7 +98,7 @@ function ViewDevice() {
                 <li className="list-group-item">
                   <strong>Stato:</strong> {device.status}
                 </li>
-                {device.devicespecifics.map((devicespecific, index) => (
+                {device.devicespecifics?.map((devicespecific, index) => (
                   <li key={index} className="list-group-item">
                     <strong>{devicespecific.input_label}: </strong>
                     {devicespecific.value}

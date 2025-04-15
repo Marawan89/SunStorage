@@ -47,7 +47,6 @@ export default function CreateAdminModal({ showModal, onClose }: CreateAdminModa
       await axios.post(`${apiendpoint}api/auth/register`, formData);
       onClose();
       alert("Admin registrato con successo");
-      window.location.href = "/"
     } catch (error) {
       console.error("Errore durante la registrazione dell'admin:", error);
       alert("Errore durante la registrazione");

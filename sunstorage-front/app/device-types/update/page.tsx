@@ -14,13 +14,16 @@ interface InputField {
   type: string;
   values: string[];
   placeholder: string;
-  toDelete?: boolean;
 }
 
 function UpdateDeviceType() {
-  const [name, setName] = useState("");
   const [id, setId] = useState<string | null>(null);
+
+  const [name, setName] = useState("");
   const [inputs, setInputs] = useState<InputField[]>([]);
+
+  const [editedName, setEditedName] = useState("");
+  const [editedInputs, setEditedInputs] = useState<InputField[]>([]);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -35,6 +38,8 @@ function UpdateDeviceType() {
         .then((data) => {
           setName(data.name);
           setInputs(data.inputs || []);
+          setEditedName(data.name);
+          setEditedInputs(data.inputs || []);
         });
     }
   }, []);
@@ -44,21 +49,19 @@ function UpdateDeviceType() {
     field: keyof InputField,
     value: string
   ) => {
-    const updatedInputs = [...inputs];
+    const updatedInputs = [...editedInputs];
 
-    // Se stiamo cambiando il tipo di input a 'select', inizializziamo `values` come array vuoto
     if (field === "type" && value === "select") {
-      updatedInputs[index].values = updatedInputs[index].values || []; // Inizializziamo solo se non esiste già
+      updatedInputs[index].values = updatedInputs[index].values || [];
     }
 
-    // Se il campo è "name", lo trasformiamo in maiuscolo e sostituiamo gli spazi con "_"
     if (field === "name") {
       updatedInputs[index][field] = value.toUpperCase().replace(/\s+/g, "_");
     } else {
       updatedInputs[index][field] = value;
     }
 
-    setInputs(updatedInputs);
+    setEditedInputs(updatedInputs);
   };
 
   const handleValueChange = (
@@ -66,66 +69,64 @@ function UpdateDeviceType() {
     valueIndex: number,
     value: string
   ) => {
-    const updatedInputs = [...inputs];
+    const updatedInputs = [...editedInputs];
     if (value.trim() !== "") {
       updatedInputs[index].values[valueIndex] = value;
     }
-    setInputs(updatedInputs);
+    setEditedInputs(updatedInputs);
   };
 
   const handleAddValue = (index: number) => {
-    const updatedInputs = [...inputs];
+    const updatedInputs = [...editedInputs];
     const lastValue =
       updatedInputs[index].values[updatedInputs[index].values.length - 1];
     if (lastValue?.trim() !== "") {
       updatedInputs[index].values.push("");
-      setInputs(updatedInputs);
+      setEditedInputs(updatedInputs);
     } else {
       alert("Hai lasciato il valore prima vuoto");
     }
   };
 
   const handleRemoveValue = (index: number, valueIndex: number) => {
-    const updatedInputs = [...inputs];
-    updatedInputs[index].toDelete = true;
+    const updatedInputs = [...editedInputs];
     updatedInputs[index].values = updatedInputs[index].values.filter(
       (_, i) => i !== valueIndex
     );
-    setInputs(updatedInputs);
+    setEditedInputs(updatedInputs);
   };
 
   const handleAddInput = () => {
-    setInputs([
-      ...inputs,
+    setEditedInputs([
+      ...editedInputs,
       { name: "", label: "", type: "text", values: [], placeholder: "" },
     ]);
   };
 
   const handleRemoveInput = (index: number) => {
     if (window.confirm("Sei sicuro di cancellare l'input?")) {
-      setInputs(inputs.filter((_, i) => i !== index));
+      setEditedInputs(editedInputs.filter((_, i) => i !== index));
     }
   };
 
   const submit = () => {
     const regex = /^[a-zA-Z0-9\s]+$/;
-    if (!name || !regex.test(name)) {
+    if (!editedName || !regex.test(editedName)) {
       alert(
         "Il nome del tipo di device non può essere vuoto o contenere caratteri speciali."
       );
       return;
     }
 
-    if (inputs.length === 0) {
+    if (editedInputs.length === 0) {
       alert("Devi aggiungere almeno un input per il tipo di device.");
       return;
     }
 
-    for (let input of inputs) {
-      // Controllo che il nome dell'input inizi con il nome del tipo di device
-      if (!input.name.startsWith(name.toUpperCase() + "_")) {
+    for (let input of editedInputs) {
+      if (!input.name.startsWith(editedName.toUpperCase() + "_")) {
         alert(
-          `Il nome dell'input deve essere composto da "${name.toUpperCase()}" seguito dal nome dell'input separato da "_"`
+          `Il nome dell'input deve essere composto da "${editedName.toUpperCase()}" seguito dal nome dell'input separato da "_"`
         );
         return;
       }
@@ -134,16 +135,19 @@ function UpdateDeviceType() {
         alert("Ogni input deve avere un nome e un'etichetta.");
         return;
       }
+
       if (input.type === "choose") {
         alert("Devi scegliere un tipo di input valido (text, number, select).");
         return;
       }
+
       if (input.type === "select" && input.values.length < 2) {
         alert(
           "Se il tipo di input è 'select', devi aggiungere almeno due valori."
         );
         return;
       }
+
       if (
         input.type === "select" &&
         input.values.some((v) => v.trim() === "")
@@ -153,6 +157,7 @@ function UpdateDeviceType() {
         );
         return;
       }
+
       if (
         (input.type === "text" || input.type === "number") &&
         !input.placeholder
@@ -170,10 +175,7 @@ function UpdateDeviceType() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          name,
-          inputs: inputs.filter((input) => !input.toDelete),
-        }),
+        body: JSON.stringify({ name: editedName, inputs: editedInputs }),
         credentials: "include",
       })
         .then((res) => res.json())
@@ -214,17 +216,13 @@ function UpdateDeviceType() {
                     name="name"
                     className="form-control"
                     id="name_devicetypes"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    value={editedName}
+                    onChange={(e) => setEditedName(e.target.value)}
                   />
-                  {inputs.map((input, index) => (
+                  {editedInputs.map((input, index) => (
                     <div
                       key={index}
-                      className={`mt-4 border border-3 p-3 ${
-                        input.toDelete
-                          ? "bg-secondary text-white opacity-50"
-                          : "border-white"
-                      }`}
+                      className="mt-4 border border-3 border-white p-3"
                     >
                       Nome dell'input che sarà visibile nel db (es.
                       LAPTOP_DISK_TYPE)
@@ -279,34 +277,32 @@ function UpdateDeviceType() {
                       )}
                       {input.type === "select" &&
                         input.values.map((value, valueIndex) => (
-                          <>
-                            <div key={valueIndex} className="input-group mb-2">
-                              <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Add value of select"
-                                value={value}
-                                onChange={(e) =>
-                                  handleValueChange(
-                                    index,
-                                    valueIndex,
-                                    e.target.value
-                                  )
+                          <div key={valueIndex} className="input-group mb-2">
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Add value of select"
+                              value={value}
+                              onChange={(e) =>
+                                handleValueChange(
+                                  index,
+                                  valueIndex,
+                                  e.target.value
+                                )
+                              }
+                            />
+                            <div className="input-group-append">
+                              <button
+                                className="btn btn-danger"
+                                type="button"
+                                onClick={() =>
+                                  handleRemoveValue(index, valueIndex)
                                 }
-                              />
-                              <div className="input-group-append">
-                                <button
-                                  className="btn btn-danger"
-                                  type="button"
-                                  onClick={() =>
-                                    handleRemoveValue(index, valueIndex)
-                                  }
-                                >
-                                  Elimina
-                                </button>
-                              </div>
+                              >
+                                Elimina
+                              </button>
                             </div>
-                          </>
+                          </div>
                         ))}
                       {input.type === "select" && (
                         <button
@@ -318,27 +314,13 @@ function UpdateDeviceType() {
                         </button>
                       )}
                       <div>
-                        {!input.toDelete ? (
-                          <button
-                            className="btn btn-danger mt-2"
-                            type="button"
-                            onClick={() => handleRemoveInput(index)}
-                          >
-                            Elimina input
-                          </button>
-                        ) : (
-                          <button
-                            className="btn btn-warning mt-2"
-                            type="button"
-                            onClick={() => {
-                              const updatedInputs = [...inputs];
-                              updatedInputs[index].toDelete = false;
-                              setInputs(updatedInputs);
-                            }}
-                          >
-                            Annulla eliminazione
-                          </button>
-                        )}
+                        <button
+                          className="btn btn-danger mt-2"
+                          type="button"
+                          onClick={() => handleRemoveInput(index)}
+                        >
+                          Elimina input
+                        </button>
                       </div>
                     </div>
                   ))}

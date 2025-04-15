@@ -152,124 +152,140 @@ function EditDevice() {
       !serialNumberPattern.test(serialNumber)
     ) {
       alert(
-        "Serial Number must be at least 10 characters long and contain only letters and numbers."
+        "Il serial number deve contenere almeno 10 caratteri e solo lettere e numeri."
       );
       return false;
     }
 
     if (!selectedDeviceType) {
-      alert("Please select a device type.");
+      alert("Seleziona un tipo di dispositivo.");
       return false;
+    }
+
+    // Controllo sulla garanzia
+    if (hasWarranty) {
+      if (!warrantyStart || !warrantyEnd) {
+        alert("Inserisci entrambe le date di garanzia: inizio e fine.");
+        return false;
+      }
+      if (warrantyEnd < warrantyStart) {
+        alert(
+          "La data di fine garanzia non può essere precedente a quella di inizio."
+        );
+        return false;
+      }
     }
 
     return true;
   };
 
   const submit = async () => {
-   if (!validateForm()) return;
- 
-   try {
-     // Aggiorna le informazioni del dispositivo
-     await fetch(`${apiendpoint}api/devices/${idDevice}`, {
-       headers: { "Content-Type": "application/json" },
-       credentials: "include",
-       method: "PATCH",
-       body: JSON.stringify({
-         device_type_id: selectedDeviceType,
-         sn: serialNumber,
-         qr_code_string: deviceData?.qr_code_string,
-       }),
-     });
- 
-     // Gestione dei device specifics
-     if (selectedDeviceType === deviceData?.device_type_id) {
-       deviceSpecifics.forEach((spec) => {
-         fetch(`${apiendpoint}api/devicespecifics/${spec.id}`, {
-           headers: { "Content-Type": "application/json" },
-           credentials: "include",
-           method: "PATCH",
-           body: JSON.stringify({
-             device_id: idDevice,
-             devicespecific_input_id: spec.devicespecific_input_id,
-             value: spec.value,
-           }),
-         });
-       });
-     } else {
-       deviceSpecificsOriginal.forEach((spec) =>
-         fetch(`${apiendpoint}api/devicespecifics/${spec.id}`, {
-           method: "DELETE",
-           headers: { "Content-Type": "application/json" },
-           credentials: "include",
-         })
-       );
- 
-       deviceSpecifics.forEach((spec) =>
-         fetch(`${apiendpoint}api/devicespecifics`, {
-           method: "POST",
-           headers: {
-             Accept: "application/json",
-             "Content-Type": "application/json",
-           },
-           credentials: "include",
-           body: JSON.stringify({
-             device_id: idDevice,
-             devicespecific_input_id: spec.devicespecific_input_id,
-             value: spec.value,
-           }),
-         })
-       );
-     }
- 
-     // Gestione della garanzia
-     if (hasWarranty) {
-       if (deviceWarranty?.id) {
-         // Effettua PATCH se la garanzia esiste
-         await fetch(`${apiendpoint}api/devicewarranties/${deviceWarranty.id}`, {
-           method: "PATCH",
-           headers: {
-             Accept: "application/json",
-             "Content-Type": "application/json",
-           },
-           credentials: "include",
-           body: JSON.stringify({
-             device_id: idDevice,
-             start_date: warrantyStart ?? null,
-             end_date: warrantyEnd ?? null,
-           }),
-         });
-       } else {
-         // Effettua POST se la garanzia non esiste
-         await fetch(`${apiendpoint}api/devicewarranties`, {
-           method: "POST",
-           headers: {
-             Accept: "application/json",
-             "Content-Type": "application/json",
-           },
-           credentials: "include",
-           body: JSON.stringify({
-             device_id: idDevice,
-             start_date: warrantyStart,
-             end_date: warrantyEnd,
-           }),
-         });
-       }
-     } else if (!hasWarranty && deviceWarranty?.id) {
-       // Elimina la garanzia se non selezionata
-       await fetch(`${apiendpoint}api/devicewarranties/${deviceWarranty.id}`, {
-         method: "DELETE",
-         headers: { "Content-Type": "application/json" },
-         credentials: "include",
-       });
-     }
- 
-     alert("Device updated successfully!");
-     window.location.href = "/devices";
-   } catch (error) {
-     alert(`Error editing device: ${error.message}`);
-   }
- };
- 
+    if (!validateForm()) return;
+
+    try {
+      // Aggiorna le informazioni del dispositivo
+      await fetch(`${apiendpoint}api/devices/${idDevice}`, {
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        method: "PATCH",
+        body: JSON.stringify({
+          device_type_id: selectedDeviceType,
+          sn: serialNumber,
+          qr_code_string: deviceData?.qr_code_string,
+        }),
+      });
+
+      // Gestione dei device specifics
+      if (selectedDeviceType === deviceData?.device_type_id) {
+        deviceSpecifics.forEach((spec) => {
+          fetch(`${apiendpoint}api/devicespecifics/${spec.id}`, {
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            method: "PATCH",
+            body: JSON.stringify({
+              device_id: idDevice,
+              devicespecific_input_id: spec.devicespecific_input_id,
+              value: spec.value,
+            }),
+          });
+        });
+      } else {
+        deviceSpecificsOriginal.forEach((spec) =>
+          fetch(`${apiendpoint}api/devicespecifics/${spec.id}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+          })
+        );
+
+        deviceSpecifics.forEach((spec) =>
+          fetch(`${apiendpoint}api/devicespecifics`, {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({
+              device_id: idDevice,
+              devicespecific_input_id: spec.devicespecific_input_id,
+              value: spec.value,
+            }),
+          })
+        );
+      }
+
+      // Gestione della garanzia
+      if (hasWarranty) {
+        if (deviceWarranty?.id) {
+          // Effettua PATCH se la garanzia esiste
+          await fetch(
+            `${apiendpoint}api/devicewarranties/${deviceWarranty.id}`,
+            {
+              method: "PATCH",
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+              },
+              credentials: "include",
+              body: JSON.stringify({
+                device_id: idDevice,
+                start_date: warrantyStart ?? null,
+                end_date: warrantyEnd ?? null,
+              }),
+            }
+          );
+        } else {
+          // Effettua POST se la garanzia non esiste
+          await fetch(`${apiendpoint}api/devicewarranties`, {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({
+              device_id: idDevice,
+              start_date: warrantyStart,
+              end_date: warrantyEnd,
+            }),
+          });
+        }
+      } else if (!hasWarranty && deviceWarranty?.id) {
+        // Elimina la garanzia se non selezionata
+        await fetch(`${apiendpoint}api/devicewarranties/${deviceWarranty.id}`, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        });
+      }
+
+      alert("Device updated successfully!");
+      window.location.href = "/devices";
+    } catch (error) {
+      alert(`Error editing device: ${error.message}`);
+    }
+  };
 
   if (!serialNumber || !deviceData || deviceSpecifics.length === 0) {
     return <div>Loading...</div>;

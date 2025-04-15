@@ -160,6 +160,27 @@ function AddDevice() {
       return;
     }
 
+    // check if the device type is selected
+    if (!selectedDeviceType) {
+      alert("Please select a device type.");
+      return;
+    }
+
+    // check warranty dates presence and validity
+    if (hasWarranty) {
+      if (!warrantyStart || !warrantyEnd) {
+        alert("Inserisci entrambe le date di garanzia: inizio e fine.");
+        return;
+      }
+
+      if (new Date(warrantyEnd) <= new Date(warrantyStart)) {
+        alert(
+          "La data di fine garanzia deve essere successiva alla data di inizio."
+        );
+        return;
+      }
+    }
+
     try {
       for (const field of deviceTypeInputs) {
         const fieldValue = (

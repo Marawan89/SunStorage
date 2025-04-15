@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../../../db");
+const writeLog = require("../../../logger");
 
 // Create a new device warranty
 router.post("/", async (req, res) => {

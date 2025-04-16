@@ -38,21 +38,17 @@ function CreateDeviceTypes() {
     value: string
   ) => {
     const updatedInputs = [...inputs];
-    updatedInputs[index][field] = value;
-    setInputs(updatedInputs);
-  };
 
-  const handleValueChange = (
-    index: number,
-    valueIndex: number,
-    value: string
-  ) => {
-    const updatedInputs = [...inputs];
-
-    // solo se il valore non è vuoto
-    if (value.trim() !== "") {
-      updatedInputs[index].values[valueIndex] = value;
+    if (field === "type" && value === "select") {
+      updatedInputs[index].values = updatedInputs[index].values || [];
     }
+
+    if (field === "name") {
+      updatedInputs[index][field] = value.toUpperCase().replace(/\s+/g, "_");
+    } else {
+      updatedInputs[index][field] = value;
+    }
+
     setInputs(updatedInputs);
   };
 
@@ -97,6 +93,21 @@ function CreateDeviceTypes() {
         alert("Ogni input deve avere un nome e un'etichetta.");
         return;
       }
+
+      if (!input.name.startsWith(deviceTypeName.toUpperCase() + "_")) {
+        alert(
+          `Il nome dell'input deve iniziare con "${deviceTypeName.toUpperCase()}_", seguito da un nome descrittivo.`
+        );
+        return;
+      }
+
+      if (!input.name.startsWith(deviceTypeName.toUpperCase() + "_")) {
+        alert(
+          `Il nome dell'input deve iniziare con "${deviceTypeName.toUpperCase()}_", seguito da un nome descrittivo.`
+        );
+        return;
+      }
+
       if (input.type === "choose") {
         alert("Devi scegliere un tipo di input valido (text, number, select).");
         return;

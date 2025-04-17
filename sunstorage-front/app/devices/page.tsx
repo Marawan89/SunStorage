@@ -70,7 +70,10 @@ function Devices() {
   const [selectedDeviceId, setSelectedDeviceId] = useState<number>(0);
   const [admin, setAdmin] = useState({ role: "" });
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const devicesPerPage = 5;
+  const [showMoreRows, setShowMoreRows] = useState(false);
+  const baseDevicesPerPage = 5;
+  const [rowsPerPage, setRowsPerPage] = useState(baseDevicesPerPage);
+
 
   const handleOpenModal = (deviceId: number) => {
     setSelectedDeviceId(deviceId);
@@ -254,18 +257,27 @@ function Devices() {
   };
 
   // pagination
-  const indexOfLastDevice = currentPage * devicesPerPage;
-  const indexOfFirstDevice = indexOfLastDevice - devicesPerPage;
+  const indexOfLastDevice = currentPage * rowsPerPage;
+  const indexOfFirstDevice = indexOfLastDevice - rowsPerPage;
   const currentDevices = filteredDevices.slice(
     indexOfFirstDevice,
     indexOfLastDevice
   );
-  const totalPages = Math.ceil(filteredDevices.length / devicesPerPage);
+  const totalPages = Math.ceil(filteredDevices.length / rowsPerPage);
 
   const handlePageChange = (pageNumber: number) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
     }
+  };
+
+  const toggleRows = () => {
+    if (showMoreRows) {
+      setRowsPerPage(baseDevicesPerPage);
+    } else {
+      setRowsPerPage(baseDevicesPerPage + 5);
+    }
+    setShowMoreRows(!showMoreRows);
   };
 
   const getPageNumbers = () => {
@@ -478,8 +490,8 @@ function Devices() {
                   </tbody>
                 </table>
               </div>
-              <nav>
-                <ul className="pagination justify-content-center">
+              <nav className="d-flex justify-content-between align-items-center">
+                <ul className="pagination mb-0">
                   <li
                     className={`page-item ${
                       currentPage === 1 ? "disabled" : ""
@@ -529,6 +541,15 @@ function Devices() {
                     </a>
                   </li>
                 </ul>
+                <span
+                  onClick={toggleRows}
+                  style={{ cursor: "pointer", textDecoration: "underline" }}
+                  className="ms-3 text-primary"
+                >
+                  {showMoreRows
+                    ? "Visualizza meno righe"
+                    : "Visualizza più righe"}
+                </span>
               </nav>
             </div>
           </div>

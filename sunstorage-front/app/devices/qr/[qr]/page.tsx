@@ -233,7 +233,7 @@ function QrCodePage() {
                     {device.deviceassignments[0]?.email}
                   </li>
                   <li className="list-group-item">
-                    <strong>Reparto proprietario:</strong>{" "}
+                      <strong>Reparto proprietario:</strong>{" "}
                     {device.deviceassignments[0]?.department_name}
                   </li>
                 </>

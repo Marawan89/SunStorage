@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import apiendpoint from "../../../apiendpoint";
@@ -10,13 +10,13 @@ export function withAuth(WrappedComponent) {
 
   return function AuthHOC(props) {
     const router = useRouter();
+    const pathname = usePathname();
     const [isLoading, setIsLoading] = useState(true);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
       const checkAuth = async () => {
         try {
-          // verifica del token
           const response = await axios.get(`${apiendpoint}api/auth/verify`, {
             withCredentials: true,
           });
@@ -24,9 +24,11 @@ export function withAuth(WrappedComponent) {
           if (response.status === 200) {
             setIsAuthenticated(true);
           } else {
+            sessionStorage.setItem("redirectAfterLogin", pathname);
             router.push("/login");
           }
         } catch (error) {
+          sessionStorage.setItem("redirectAfterLogin", pathname);
           router.push("/login");
         } finally {
           setIsLoading(false);
@@ -34,7 +36,7 @@ export function withAuth(WrappedComponent) {
       };
 
       checkAuth();
-    }, [router]);
+    }, [router, pathname]);
 
     if (isLoading) {
       return <div>Loading...</div>;

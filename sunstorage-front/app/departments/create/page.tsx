@@ -8,6 +8,7 @@ import "../../globals.css";
 import "./style.css";
 import apiendpoint from "../../../../apiendpoint";
 import { withAuth } from "../../../../src/server/middleware/withAuth";
+import BackButton from "@/app/parts/BackButton";
 
 interface User {
   name: string;
@@ -62,9 +63,9 @@ function CreateDepartment() {
   };
 
   const handleCancelNewUserForm = () => {
-   setIsUserFormVisible(false);
-   setNewUser({ name: "", surname: "", email: "" });
- };
+    setIsUserFormVisible(false);
+    setNewUser({ name: "", surname: "", email: "" });
+  };
 
   const handleSaveDepartment = async () => {
     if (!departmentName) {
@@ -131,6 +132,7 @@ function CreateDepartment() {
           <Menu />
           <div className="col-12 col-md-8 nav-container mt-3 mt-md-0 p-0">
             <div className="col-12 bg-content p-3 p-md-5">
+              <BackButton />
               <h2>Aggiungi un reparto</h2>
               <div className="spacer"></div>
               Nome del reparto
@@ -143,7 +145,10 @@ function CreateDepartment() {
               />
               {/* Elenco degli utenti aggiunti */}
               {users.map((user, index) => (
-                <div key={index} className="mt-4 border border-3 border-white p-3">
+                <div
+                  key={index}
+                  className="mt-4 border border-3 border-white p-3"
+                >
                   <p>
                     <strong>
                       {user.name} {user.surname}
@@ -199,14 +204,14 @@ function CreateDepartment() {
                   </button>
                 </div>
               )}
-            <div className="col-12 mt-3">
-            <button
-                className="btn btn-light"
-                type="button"
-                onClick={handleAddUserForm}
-              >
-                Aggiungi un nuovo utente
-              </button>
+              <div className="col-12 mt-3">
+                <button
+                  className="btn btn-light"
+                  type="button"
+                  onClick={handleAddUserForm}
+                >
+                  Aggiungi un nuovo utente
+                </button>
                 <button
                   type="submit"
                   className="btn btn-success m-2"

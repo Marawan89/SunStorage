@@ -8,6 +8,7 @@ import "../../globals.css";
 import "./style.css";
 import apiendpoint from "../../../../apiendpoint";
 import { withAuth } from "../../../../src/server/middleware/withAuth";
+import BackButton from "@/app/parts/BackButton";
 
 interface User {
   id?: number;
@@ -84,7 +85,9 @@ function UpdateDepartment() {
 
   const handleSaveNewUser = () => {
     if (!validateUser(newUser)) {
-      alert("Per favore, riempi tutti i campi per il nuovo utente con un'email valida.");
+      alert(
+        "Per favore, riempi tutti i campi per il nuovo utente con un'email valida."
+      );
       return;
     }
 
@@ -119,13 +122,17 @@ function UpdateDepartment() {
 
     for (const user of users) {
       if (!validateUser(user)) {
-        alert("Tutti i campi devono essere riempiti e l'email deve essere valida.");
+        alert(
+          "Tutti i campi devono essere riempiti e l'email deve essere valida."
+        );
         return;
       }
     }
 
     if (isUserFormVisible && !validateUser(newUser)) {
-      alert("Per favore, riempi tutti i campi per il nuovo utente con un'email valida.");
+      alert(
+        "Per favore, riempi tutti i campi per il nuovo utente con un'email valida."
+      );
       return;
     }
 
@@ -194,6 +201,7 @@ function UpdateDepartment() {
           <Menu />
           <div className="col-12 col-md-8 nav-container mt-3 mt-md-0 p-0">
             <div className="col-12 bg-content p-3 p-md-5">
+              <BackButton />
               <h2>Modifica Reparto</h2>
               <div className="spacer"></div>
               Nome del reparto
@@ -206,7 +214,10 @@ function UpdateDepartment() {
               />
               <h4 className="mt-4">Utenti nel reparto</h4>
               {users.map((user, index) => (
-                <div key={index} className="mt-4 border border-3 border-white p-3">
+                <div
+                  key={index}
+                  className="mt-4 border border-3 border-white p-3"
+                >
                   <h5>Dati dell'utente</h5>
                   Nome
                   <input

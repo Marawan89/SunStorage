@@ -7,6 +7,7 @@ import "../../globals.css";
 import "./style.css";
 import apiendpoint from "../../../../apiendpoint";
 import { withAuth } from "../../../../src/server/middleware/withAuth";
+import BackButton from "@/app/parts/BackButton";
 
 interface InputField {
   name: string;
@@ -208,6 +209,7 @@ function UpdateDeviceType() {
             <div className="col-12 bg-content p-3 p-md-5">
               <div className="row">
                 <div className="col-12">
+                  <BackButton />
                   <h2>Modifica tipo di dispositivo</h2>
                   <div className="spacer"></div>
                   Nome del tipo di device

@@ -10,6 +10,7 @@ import "../../../globals.css";
 import apiendpoint from "../../../../../apiendpoint";
 const formatDate = require("../../../../dateFormatter");
 import { withAuth } from "../../../../../src/server/middleware/withAuth";
+import BackButton from "@/app/parts/BackButton";
 
 interface Device {
   sn: string;
@@ -88,6 +89,7 @@ function ViewDevice() {
           <Menu />
           <div className="col-12 col-md-8 nav-container mt-3 mt-md-0 p-0">
             <div className="col-12 bg-content p-3 p-md-5">
+              <BackButton />
               <h2 style={{ fontSize: "2em" }}>S/N: {device.sn}</h2>
               <ul className="list-group">
                 <li className="list-group-item disabled">

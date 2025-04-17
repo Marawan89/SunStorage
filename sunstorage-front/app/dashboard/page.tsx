@@ -186,7 +186,9 @@ function Dashboard() {
                 {!isSearchingSN ? (
                   <>
                     <li className="list-group-item">
-                      <a href="/devices/create">➕ Aggiungi nuovo dispositivo</a>
+                      <a href="/devices/create">
+                        ➕ Aggiungi nuovo dispositivo
+                      </a>
                     </li>
                     <li className="list-group-item">
                       <a href="/devices">💻 Visualizza tutti i dispositivi</a>
@@ -196,7 +198,9 @@ function Dashboard() {
                     </li>
                     {admin.role === "ADMIN_FULL" && (
                       <li className="list-group-item">
-                        <a href="/device-types">📱 Visualizza i tipi di dispositivi</a>
+                        <a href="/device-types">
+                          📱 Visualizza i tipi di dispositivi
+                        </a>
                       </li>
                     )}
                   </>

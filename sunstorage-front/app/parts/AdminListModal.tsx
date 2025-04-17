@@ -3,7 +3,11 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPen, faFloppyDisk, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPen,
+  faFloppyDisk,
+  faTrashCan,
+} from "@fortawesome/free-solid-svg-icons";
 import { Tooltip, OverlayTrigger } from "react-bootstrap";
 import axios from "axios";
 import apiendpoint from "../../../apiendpoint";
@@ -22,7 +26,10 @@ interface AdminsListModalProps {
   onClose: () => void;
 }
 
-const AdminsListModal: React.FC<AdminsListModalProps> = ({ showModal, onClose }) => {
+const AdminsListModal: React.FC<AdminsListModalProps> = ({
+  showModal,
+  onClose,
+}) => {
   const [admins, setAdmins] = useState<Admin[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editingAdminId, setEditingAdminId] = useState<number | null>(null); // ID dell'admin che si sta modificand
@@ -52,9 +59,12 @@ const AdminsListModal: React.FC<AdminsListModalProps> = ({ showModal, onClose })
 
     const fetchLoggedInAdmin = async () => {
       try {
-        const response = await axios.get(`${apiendpoint}api/auth/admin-details`, {
-          withCredentials: true,
-        });
+        const response = await axios.get(
+          `${apiendpoint}api/auth/admin-details`,
+          {
+            withCredentials: true,
+          }
+        );
         if (response.status === 200) {
           setLoggedInAdminId(response.data.id);
         }
@@ -113,7 +123,9 @@ const AdminsListModal: React.FC<AdminsListModalProps> = ({ showModal, onClose })
           withCredentials: true,
         });
 
-        setAdmins((prevAdmins) => prevAdmins.filter((admin) => admin.id !== adminId));
+        setAdmins((prevAdmins) =>
+          prevAdmins.filter((admin) => admin.id !== adminId)
+        );
         alert("Admin deleted successfully");
       } catch (error) {
         console.error("Error deleting admin:", error);
@@ -127,12 +139,19 @@ const AdminsListModal: React.FC<AdminsListModalProps> = ({ showModal, onClose })
   return (
     <>
       <div className={`modal-backdrop fade ${showModal ? "show" : ""}`}></div>
-      <div className={`modal fade ${showModal ? "show d-block" : ""}`} tabIndex={-1}>
+      <div
+        className={`modal fade ${showModal ? "show d-block" : ""}`}
+        tabIndex={-1}
+      >
         <div className="modal-dialog modal-lg modal-dialog-centered">
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">List of Admins</h5>
-              <button type="button" className="btn-close" onClick={onClose}></button>
+              <button
+                type="button"
+                className="btn-close"
+                onClick={onClose}
+              ></button>
             </div>
             <div className="modal-body">
               {isLoading ? (
@@ -140,7 +159,10 @@ const AdminsListModal: React.FC<AdminsListModalProps> = ({ showModal, onClose })
               ) : (
                 <ul className="list-group">
                   {admins.map((admin) => (
-                    <li key={admin.id} className="list-group-item d-flex justify-content-between align-items-center">
+                    <li
+                      key={admin.id}
+                      className="list-group-item d-flex justify-content-between align-items-center"
+                    >
                       <span>
                         {admin.email}
                         {admin.id === loggedInAdminId && " (Tu)"}
@@ -158,7 +180,7 @@ const AdminsListModal: React.FC<AdminsListModalProps> = ({ showModal, onClose })
                             </select>
                           ) : (
                             <>
-                            {admin.role}
+                              {admin.role}
                               <OverlayTrigger
                                 placement="top"
                                 overlay={<Tooltip>Edit</Tooltip>}

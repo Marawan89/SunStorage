@@ -148,7 +148,10 @@ export default function StatusModal({
   return (
     <>
       <div className={`modal-backdrop fade ${showModal ? "show" : ""}`}></div>
-      <div className={`modal fade ${showModal ? "show d-block" : ""}`} tabIndex={-1}>
+      <div
+        className={`modal fade ${showModal ? "show d-block" : ""}`}
+        tabIndex={-1}
+      >
         <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content">
             <div className="modal-header">

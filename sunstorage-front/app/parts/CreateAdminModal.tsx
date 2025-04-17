@@ -10,7 +10,10 @@ interface CreateAdminModalProps {
   onClose: () => void;
 }
 
-export default function CreateAdminModal({ showModal, onClose }: CreateAdminModalProps) {
+export default function CreateAdminModal({
+  showModal,
+  onClose,
+}: CreateAdminModalProps) {
   const [formData, setFormData] = useState({
     name: "",
     surname: "",
@@ -19,7 +22,9 @@ export default function CreateAdminModal({ showModal, onClose }: CreateAdminModa
     role: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -27,7 +32,13 @@ export default function CreateAdminModal({ showModal, onClose }: CreateAdminModa
     e.preventDefault();
 
     // controlli
-    if (!formData.name || !formData.surname || !formData.email || !formData.password || !formData.role) {
+    if (
+      !formData.name ||
+      !formData.surname ||
+      !formData.email ||
+      !formData.password ||
+      !formData.role
+    ) {
       alert("Tutti i campi devono essere compilati");
       return;
     }
@@ -58,12 +69,19 @@ export default function CreateAdminModal({ showModal, onClose }: CreateAdminModa
   return (
     <>
       <div className={`modal-backdrop fade ${showModal ? "show" : ""}`}></div>
-      <div className={`modal fade ${showModal ? "show d-block" : ""}`} tabIndex={-1}>
+      <div
+        className={`modal fade ${showModal ? "show d-block" : ""}`}
+        tabIndex={-1}
+      >
         <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">Registra Nuovo Admin</h5>
-              <button type="button" className="btn-close" onClick={onClose}></button>
+              <button
+                type="button"
+                className="btn-close"
+                onClick={onClose}
+              ></button>
             </div>
             <div className="modal-body">
               <form onSubmit={handleSubmit}>
@@ -121,7 +139,11 @@ export default function CreateAdminModal({ showModal, onClose }: CreateAdminModa
                   </select>
                 </div>
                 <div className="text-end">
-                  <button type="button" className="btn btn-secondary me-2" onClick={onClose}>
+                  <button
+                    type="button"
+                    className="btn btn-secondary me-2"
+                    onClick={onClose}
+                  >
                     Chiudi
                   </button>
                   <button type="submit" className="btn btn-primary">

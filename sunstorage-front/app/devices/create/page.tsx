@@ -14,6 +14,7 @@ import "../../globals.css";
 import "./style.css";
 import apiendpoint from "../../../../apiendpoint";
 import { withAuth } from "../../../../src/server/middleware/withAuth";
+import BackButton from "@/app/parts/BackButton";
 
 interface DeviceType {
   id: number;
@@ -292,6 +293,7 @@ function AddDevice() {
           <Menu />
           <div className="col-12 col-md-8 nav-container mt-3 mt-md-0">
             <div className="col-12 bg-content p-5">
+              <BackButton />
               <h2>Aggiungi Dispositivo</h2>
               <div className="spacer"></div>
               <div className="add-device-data">

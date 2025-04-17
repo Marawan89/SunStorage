@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from 'next/navigation';
-import axios from 'axios';
+import { useRouter } from "next/navigation";
+import axios from "axios";
 import "../globals.css";
 import "./style.css";
 import apiendpoint from "../../../apiendpoint";
@@ -10,20 +10,23 @@ import apiendpoint from "../../../apiendpoint";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);  
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const handleSubmit = async (e: { preventDefault: () => void; }) => {
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
 
     try {
       // Effettua la richiesta POST alla route di login
-      await axios.post(`${apiendpoint}api/auth/login`, { email, password }, { withCredentials: true });
-      
+      await axios.post(
+        `${apiendpoint}api/auth/login`,
+        { email, password },
+        { withCredentials: true }
+      );
+
       // Se la risposta è positiva, reindirizza l'utente
       alert("Login successo");
       router.push("/dashboard");
-
     } catch (err) {
       // Se ci sono errori, mostra un messaggio all'utente
       setError("Credenziali errate");
@@ -35,7 +38,9 @@ export default function Login() {
       <div className="col-12 d-flex justify-content-center align-items-center">
         <div className="col-12 col-md-6">
           <div className="logo text-center">
-            <h1>Sun<span>Storage</span></h1>
+            <h1>
+              Sun<span>Storage</span>
+            </h1>
           </div>
           <div className="login-container p-4">
             <h2>Login</h2>
@@ -62,7 +67,9 @@ export default function Login() {
                 />
               </div>
               <div className="text-end">
-                <button type="submit" className="btn btn-dark m-2">Sign in</button>
+                <button type="submit" className="btn btn-dark m-2">
+                  Sign in
+                </button>
               </div>
             </form>
           </div>

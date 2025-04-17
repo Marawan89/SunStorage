@@ -28,9 +28,12 @@ export default function Navbar() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get(`${apiendpoint}api/auth/admin-details`, {
-          withCredentials: true,
-        });
+        const response = await axios.get(
+          `${apiendpoint}api/auth/admin-details`,
+          {
+            withCredentials: true,
+          }
+        );
         const capitalizedUser = {
           name: capitalizeFirstLetter(response.data.name),
           role: response.data.role,
@@ -87,7 +90,9 @@ export default function Navbar() {
                     <Dropdown.Item onClick={handleShowCreateAdminModal}>
                       Create new admin
                     </Dropdown.Item>
-                    <Dropdown.Item onClick={handleShowAdminsListModal}>Admins</Dropdown.Item>
+                    <Dropdown.Item onClick={handleShowAdminsListModal}>
+                      Admins
+                    </Dropdown.Item>
                   </>
                 )}
 
@@ -97,8 +102,14 @@ export default function Navbar() {
           </div>
         </div>
       </nav>
-      <CreateAdminModal showModal={showCreateAdminModal} onClose={handleCloseCreateAdminModal} />
-      <AdminsListModal showModal={showAdminsListModal} onClose={handleCloseAdminsListModal} />
+      <CreateAdminModal
+        showModal={showCreateAdminModal}
+        onClose={handleCloseCreateAdminModal}
+      />
+      <AdminsListModal
+        showModal={showAdminsListModal}
+        onClose={handleCloseAdminsListModal}
+      />
     </>
   );
 }

@@ -47,9 +47,9 @@ export default function Menu() {
         <div className="d-flex flex-column align-items-start p-2">
           <button className="nav-item btn p-0 mb-2">
             <a
-              href="/dashboard"
+              href="/"
               className={`d-flex align-items-center ${
-                isActive("/dashboard") ? "active-link" : ""
+                isActive("/") ? "active-link" : ""
               } `}
             >
               <FontAwesomeIcon icon={faHouse} className="menuIcons mr-2" />

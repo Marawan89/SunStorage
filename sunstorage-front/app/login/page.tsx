@@ -38,7 +38,7 @@ export default function Login() {
         sessionStorage.removeItem("redirectAfterLogin");
         router.push(redirectPath);
       } else {
-        router.push("/dashboard");
+        router.push("/");
       }
     } catch (err) {
       setError("Credenziali errate");
